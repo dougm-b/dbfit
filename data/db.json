@@ -1,6 +1,16 @@
 {
   "foods": {},
-  "training": {},
+  "training": {
+    "2026-04-06": [
+      {
+        "type": "Full Body A — Ênfase Peito + Bíceps",
+        "dur": 0,
+        "intensity": "Moderada",
+        "notes": "supino com 2 halteres cada um com 32,5kg e 12 repetições. Bicepis com 16,5kg um braço de cada vez e 4 repetiçoes em cada braço. Triceps 14,5kg sendo 12 repetiçoes e 4 series em cada braço.",
+        "ts": 1775502235427
+      }
+    ]
+  },
   "health": {
     "peso": "122,5 kg",
     "gc": "37,0%",
