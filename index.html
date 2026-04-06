@@ -13,29 +13,35 @@
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --g0: #0a0f0a;
-  --g1: #111811;
-  --g2: #162016;
-  --g3: #1e2e1e;
-  --g4: #2a3f2a;
-  --acc: #4ade80;
-  --acc2: #86efac;
-  --acc3: #bbf7d0;
-  --warn: #fb923c;
-  --red: #f87171;
-  --blue: #60a5fa;
-  --txt: #e8f5e9;
-  --txt2: #a7c4a7;
-  --txt3: #6b8f6b;
-  --card: rgba(255,255,255,0.04);
-  --card-b: rgba(255,255,255,0.08);
-  --r: 16px;
-  --r2: 12px;
+  --g0: #0a0f0a; --g1: #111811; --g2: #162016; --g3: #1e2e1e; --g4: #2a3f2a;
+  --acc: #4ade80; --acc2: #86efac; --acc3: #bbf7d0;
+  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --txt: #e8f5e9; --txt2: #a7c4a7; --txt3: #6b8f6b;
+  --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
+  --r: 16px; --r2: 12px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font-family:'DM Sans',sans-serif}
+
+/* ── SYNC INDICATOR ── */
+#sync-bar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  padding:calc(var(--safe-top) + 6px) 16px 6px;
+  display:flex;align-items:center;justify-content:flex-end;
+  gap:6px;z-index:999;pointer-events:none;
+}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--txt3);transition:all .3s}
+.sync-dot.syncing{background:var(--warn);animation:pulse 1s infinite}
+.sync-dot.ok{background:var(--acc)}
+.sync-dot.error{background:var(--red)}
+.sync-label{font-size:10px;color:var(--txt3);transition:color .3s}
+.sync-label.syncing{color:var(--warn)}
+.sync-label.ok{color:var(--acc)}
+.sync-label.error{color:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
 /* ── LAYOUT ── */
 #app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
@@ -51,7 +57,6 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .logo span{font-weight:400;font-size:13px;display:block;color:var(--txt3);-webkit-text-fill-color:var(--txt3);margin-top:-2px}
 .date-chip{background:var(--card);border:1px solid var(--card-b);border-radius:20px;
   padding:5px 12px;font-size:12px;color:var(--txt2)}
-
 #content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:0 16px 120px;scroll-behavior:smooth}
 #content::-webkit-scrollbar{display:none}
@@ -62,15 +67,13 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   width:100%;max-width:480px;
   padding:12px 16px calc(var(--safe-bot) + 12px);
   background:linear-gradient(0deg,var(--g0) 70%,transparent);
-  display:flex;justify-content:space-around;align-items:center;
-  z-index:100;
+  display:flex;justify-content:space-around;align-items:center;z-index:100;
 }
 .nav-btn{
   display:flex;flex-direction:column;align-items:center;gap:4px;
   background:none;border:none;cursor:pointer;
   color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:10px;
   transition:color .2s;padding:8px 14px;border-radius:12px;
-  -webkit-tap-highlight-color:transparent;
 }
 .nav-btn.active{color:var(--acc)}
 .nav-btn svg{width:22px;height:22px;stroke-width:1.8}
@@ -89,8 +92,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 /* ── DASHBOARD ── */
 .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.stat-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
-  padding:14px;text-align:center}
+.stat-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px;text-align:center}
 .stat-val{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -99,7 +101,6 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .badge-ok{background:rgba(74,222,128,.15);color:var(--acc)}
 .badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
 .badge-red{background:rgba(248,113,113,.15);color:var(--red)}
-
 .ring-row{display:flex;gap:10px;margin-bottom:12px}
 .ring-card{flex:1;background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px;display:flex;align-items:center;gap:10px}
@@ -108,11 +109,10 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .ring-label{font-size:11px;color:var(--txt3)}
 .ring-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--txt)}
 .ring-sub{font-size:10px;color:var(--txt3)}
-
 .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px}
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
 
-/* ── MACROS TODAY ── */
+/* ── MACRO GRID ── */
 .macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .macro-item{text-align:center}
 .macro-val{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
@@ -123,7 +123,6 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .section-hdr h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
 .add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
   padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
-
 .meal-group{margin-bottom:14px}
 .meal-group-hdr{font-size:11px;color:var(--txt3);text-transform:uppercase;
   letter-spacing:.1em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
@@ -146,12 +145,11 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   border-bottom:1px solid rgba(255,255,255,.04)}
 .exercise-row:last-child{border-bottom:none}
 .ex-name{flex:1;font-size:13px}
-.ex-chips{display:flex;gap:6px}
+.ex-chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{background:rgba(74,222,128,.1);color:var(--acc);border-radius:8px;
   padding:3px 8px;font-size:11px;font-weight:500}
 .chip-blue{background:rgba(96,165,250,.1);color:var(--blue)}
 .chip-warn{background:rgba(251,146,60,.1);color:var(--warn)}
-
 .week-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px}
 .day-dot{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;
   justify-content:center;flex-direction:column;font-size:9px;color:var(--txt3);gap:2px;
@@ -170,10 +168,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 /* ── CHAT ── */
 #chat-screen{display:none;flex-direction:column;height:100%}
 #chat-screen.active{display:flex}
-#chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;
-  padding-bottom:80px}
+#chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;padding-bottom:80px}
 #chat-messages::-webkit-scrollbar{display:none}
-
 .msg{max-width:85%;animation:msgIn .2s ease}
 @keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 .msg.user{align-self:flex-end}
@@ -183,14 +179,11 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .msg.ai .msg-bubble{background:var(--g3);border:1px solid var(--g4);color:var(--txt);border-bottom-left-radius:4px}
 .msg-time{font-size:10px;color:var(--txt3);margin-top:4px;text-align:right}
 .msg.ai .msg-time{text-align:left}
-
 .typing-indicator{display:flex;gap:4px;padding:14px 16px}
-.typing-indicator span{width:6px;height:6px;background:var(--txt3);border-radius:50%;
-  animation:typing 1.2s infinite}
+.typing-indicator span{width:6px;height:6px;background:var(--txt3);border-radius:50%;animation:typing 1.2s infinite}
 .typing-indicator span:nth-child(2){animation-delay:.2s}
 .typing-indicator span:nth-child(3){animation-delay:.4s}
 @keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
-
 #chat-input-wrap{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
   width:100%;max-width:480px;
@@ -201,8 +194,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 #chat-input{
   flex:1;background:var(--g2);border:1px solid var(--g4);border-radius:22px;
   padding:11px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
-  resize:none;max-height:120px;outline:none;line-height:1.4;
-  transition:border-color .2s;
+  resize:none;max-height:120px;outline:none;line-height:1.4;transition:border-color .2s;
 }
 #chat-input:focus{border-color:var(--acc)}
 #chat-input::placeholder{color:var(--txt3)}
@@ -220,13 +212,12 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .modal-overlay.open{display:flex}
 .modal{background:var(--g1);border:1px solid var(--g3);border-radius:24px 24px 0 0;
   width:100%;max-width:480px;padding:24px 20px calc(var(--safe-bot) + 24px);
-  animation:slideUp .3s ease}
+  animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
 .modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
   display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
   width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
 .form-group{margin-bottom:14px}
 .form-label{font-size:12px;color:var(--txt3);margin-bottom:6px;display:block;font-weight:500}
 .form-input{width:100%;background:var(--g2);border:1px solid var(--g3);border-radius:12px;
@@ -238,30 +229,69 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
   transition:opacity .2s;margin-top:4px}
 .btn-primary:active{opacity:.85}
+.btn-secondary{width:100%;background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:14px;
+  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
+
+/* ── SETUP TOKEN ── */
+#token-setup{
+  position:fixed;inset:0;background:var(--g0);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 24px;text-align:center;
+}
+.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
+.setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:28px;max-width:320px}
+.setup-input{width:100%;max-width:360px;background:var(--g2);border:1px solid var(--g4);border-radius:14px;
+  padding:14px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;text-align:center;margin-bottom:12px}
+.setup-input:focus{border-color:var(--acc)}
+.setup-btn{width:100%;max-width:360px;background:var(--acc);color:#000;border:none;border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.setup-note{font-size:11px;color:var(--txt3);margin-top:16px;max-width:300px;line-height:1.5}
+#setup-error{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.lock-icon{font-size:40px;margin-bottom:16px}
 
 /* ── EMPTY ── */
 .empty-state{text-align:center;padding:40px 20px;color:var(--txt3)}
 .empty-state .icon{font-size:40px;margin-bottom:12px;opacity:.5}
 .empty-state p{font-size:14px}
 
-/* ── SCROLLBAR ── */
-::-webkit-scrollbar{width:3px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--g4);border-radius:2px}
-
-/* ── API KEY SETUP ── */
-#setup-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:60vh;padding:30px 20px;text-align:center}
-.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:48px;
-  background:linear-gradient(135deg,var(--acc),var(--acc2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
-.setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:24px}
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:calc(var(--safe-top) + 60px);left:50%;transform:translateX(-50%) translateY(-10px);
+  background:var(--g3);border:1px solid var(--g4);border-radius:20px;
+  padding:8px 18px;font-size:13px;color:var(--txt);
+  opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<div id="app">
 
+<!-- TOKEN SETUP SCREEN -->
+<div id="token-setup">
+  <div class="lock-icon">🔐</div>
+  <div class="setup-logo">DB Fit</div>
+  <div class="setup-title">Configuração inicial</div>
+  <div class="setup-sub">Para sincronizar os teus dados entre dispositivos, insere o teu GitHub Personal Access Token. Fica guardado só neste browser, nunca é enviado para nenhum servidor.</div>
+  <input type="password" class="setup-input" id="token-input" placeholder="github_pat_..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
+  <div id="setup-error"></div>
+  <button class="setup-btn" onclick="saveToken()">Entrar →</button>
+  <div class="setup-note">🔒 O token é guardado apenas no teu browser (localStorage). Nunca é enviado a terceiros.</div>
+</div>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- SYNC BAR -->
+<div id="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span class="sync-label" id="sync-label">sincronizado</span>
+</div>
+
+<div id="app">
   <!-- TOP BAR -->
   <div id="topbar">
     <div class="logo">DB Fit<span>Douglas Barros</span></div>
@@ -275,29 +305,27 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
     <div id="dash-screen" class="screen active">
       <div class="hero-stats">
         <div class="stat-box">
-          <div class="stat-val">122<span style="font-size:16px">.5</span></div>
+          <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
           <div class="stat-lbl">Peso (kg)</div>
-          <div class="stat-badge badge-warn">IMC 36.6</div>
+          <div class="stat-badge badge-warn" id="dash-imc">IMC 36.6</div>
         </div>
         <div class="stat-box">
-          <div class="stat-val">37<span style="font-size:16px">%</span></div>
+          <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
           <div class="stat-lbl">Gordura corporal</div>
           <div class="stat-badge badge-red">Meta: 18–22%</div>
         </div>
       </div>
-
       <div class="ring-row">
         <div class="ring-card">
           <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
             <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
             <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
-              stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round"
-              transform="rotate(-90 22 22)"/>
-            <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Syne">73</text>
+              stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+            <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Syne" id="ring-musc-txt">73</text>
           </svg>
           <div class="ring-info">
             <div class="ring-label">Músculo total</div>
-            <div class="ring-val">73,3 kg</div>
+            <div class="ring-val" id="ring-musc">73,3 kg</div>
             <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
           </div>
         </div>
@@ -305,38 +333,24 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
           <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
             <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(248,113,113,.12)" stroke-width="5"/>
             <circle cx="22" cy="22" r="18" fill="none" stroke="#f87171" stroke-width="5"
-              stroke-dasharray="113" stroke-dashoffset="20" stroke-linecap="round"
-              transform="rotate(-90 22 22)"/>
-            <text x="22" y="26" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Syne">15</text>
+              stroke-dasharray="113" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+            <text x="22" y="26" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Syne" id="ring-gv-txt">15</text>
           </svg>
           <div class="ring-info">
             <div class="ring-label">Gordura visceral</div>
-            <div class="ring-val">Nível 15</div>
+            <div class="ring-val" id="ring-gv">Nível 15</div>
             <div class="ring-sub" style="color:var(--red)">🔴 Meta: &lt;9</div>
           </div>
         </div>
       </div>
 
-      <!-- MACROS DO DIA -->
       <div class="card">
         <div class="card-title">📊 Macros de hoje</div>
-        <div class="macro-grid" id="macro-grid">
-          <div class="macro-item">
-            <div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div>
-            <div class="macro-lbl">kcal / 2600</div>
-          </div>
-          <div class="macro-item">
-            <div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div>
-            <div class="macro-lbl">prot / 195g</div>
-          </div>
-          <div class="macro-item">
-            <div class="macro-val" id="m-carb" style="color:var(--blue)">0g</div>
-            <div class="macro-lbl">carb / 290g</div>
-          </div>
-          <div class="macro-item">
-            <div class="macro-val" id="m-fat" style="color:#c084fc">0g</div>
-            <div class="macro-lbl">gord / 75g</div>
-          </div>
+        <div class="macro-grid">
+          <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl">kcal / 2600</div></div>
+          <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl">prot / 195g</div></div>
+          <div class="macro-item"><div class="macro-val" id="m-carb" style="color:var(--blue)">0g</div><div class="macro-lbl">carb / 290g</div></div>
+          <div class="macro-item"><div class="macro-val" id="m-fat" style="color:#c084fc">0g</div><div class="macro-lbl">gord / 75g</div></div>
         </div>
         <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
           <div>
@@ -354,37 +368,23 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
         </div>
       </div>
 
-      <!-- TREINO HOJE -->
       <div class="card">
         <div class="card-title">🏋️ Treino de hoje</div>
         <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
       </div>
 
-      <!-- METAS RÁPIDAS -->
       <div class="card">
         <div class="card-title">🎯 Metas diárias</div>
         <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>💧 Água</span>
-            <span style="color:var(--blue);font-weight:600">3+ litros/dia</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>🥩 Proteína diária</span>
-            <span style="color:var(--acc);font-weight:600">190–200 g</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>🔥 Calorias</span>
-            <span style="color:var(--warn);font-weight:600">2.500–2.700 kcal</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px">
-            <span>🏃 Cardio</span>
-            <span style="color:var(--txt2);font-weight:600">3–4x/semana</span>
-          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>💧 Água</span><span style="color:var(--blue);font-weight:600">3+ litros/dia</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🥩 Proteína diária</span><span style="color:var(--acc);font-weight:600">190–200 g</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🔥 Calorias</span><span style="color:var(--warn);font-weight:600">2.500–2.700 kcal</span></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🏃 Cardio</span><span style="color:var(--txt2);font-weight:600">3–4x/semana</span></div>
         </div>
       </div>
     </div>
 
-    <!-- FOOD DIARY -->
+    <!-- FOOD -->
     <div id="food-screen" class="screen">
       <div class="section-hdr">
         <h3>🍽️ Diário alimentar</h3>
@@ -403,14 +403,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
         <h3>🏋️ Treino</h3>
         <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
       </div>
-
-      <!-- Week view -->
       <div class="week-grid" id="week-grid"></div>
-
-      <!-- Today's plan -->
       <div id="plan-today"></div>
-
-      <!-- Log -->
       <div id="train-log-list"></div>
       <div id="train-empty" class="empty-state" style="display:none">
         <div class="icon">💪</div>
@@ -424,73 +418,44 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
         <h3>📊 Saúde</h3>
         <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
       </div>
-
       <div class="health-row">
-        <div class="health-box">
-          <div class="health-lbl">Peso</div>
-          <div class="health-val" id="h-peso">122,5 kg</div>
-          <div class="health-status" style="color:var(--warn)">IMC 36.6</div>
-        </div>
-        <div class="health-box">
-          <div class="health-lbl">Gordura corporal</div>
-          <div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div>
-          <div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div>
-        </div>
+        <div class="health-box"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" style="color:var(--warn)">IMC 36.6</div></div>
+        <div class="health-box"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
       </div>
       <div class="health-row">
-        <div class="health-box">
-          <div class="health-lbl">Músculo total</div>
-          <div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div>
-          <div class="health-status" style="color:var(--acc)">✅ Excelente</div>
-        </div>
-        <div class="health-box">
-          <div class="health-lbl">Gordura visceral</div>
-          <div class="health-val" id="h-gv" style="color:var(--red)">15</div>
-          <div class="health-status" style="color:var(--txt3)">Meta: &lt; 9</div>
-        </div>
+        <div class="health-box"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+        <div class="health-box"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
       </div>
       <div class="health-row">
-        <div class="health-box">
-          <div class="health-lbl">Músculo esquelético</div>
-          <div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div>
-          <div class="health-status" style="color:var(--acc)">✅ Excelente</div>
-        </div>
-        <div class="health-box">
-          <div class="health-lbl">Proteína corporal</div>
-          <div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div>
-          <div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div>
-        </div>
+        <div class="health-box"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+        <div class="health-box"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
       </div>
       <div class="health-row">
-        <div class="health-box">
-          <div class="health-lbl">Água corporal</div>
-          <div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div>
-          <div class="health-status" style="color:var(--acc)">✅ Normal (~71% massa magra)</div>
-        </div>
-        <div class="health-box">
-          <div class="health-lbl">Metabolismo basal</div>
-          <div class="health-val" id="h-met" style="color:var(--warn)">2.309</div>
-          <div class="health-status" style="color:var(--txt3)">kcal/dia</div>
-        </div>
+        <div class="health-box"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
+        <div class="health-box"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
       </div>
       <div class="health-row">
-        <div class="health-box">
-          <div class="health-lbl">Idade corporal</div>
-          <div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div>
-          <div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div>
-        </div>
-        <div class="health-box">
-          <div class="health-lbl">Massa óssea</div>
-          <div class="health-val" id="h-ossea">4,0 kg</div>
-          <div class="health-status" style="color:var(--txt3)">Normal</div>
-        </div>
+        <div class="health-box"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
+        <div class="health-box"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
       </div>
 
-      <!-- API KEY -->
+      <!-- CONFIGURAÇÕES -->
       <div class="card" style="margin-top:8px">
-        <div class="card-title">🔑 Chave API Claude</div>
-        <p style="font-size:12px;color:var(--txt3);margin-bottom:10px">Necessária para o chat. Obtém em console.anthropic.com</p>
-        <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-..." value=""/>
+        <div class="card-title">⚙️ Configurações</div>
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">
+          Token GitHub: <span id="token-status" style="color:var(--acc)">✅ Configurado</span>
+        </div>
+        <button class="btn-secondary" onclick="resetToken()" style="margin-top:0">🔄 Alterar token GitHub</button>
+        <div style="font-size:11px;color:var(--txt3);margin-top:10px">
+          📡 Dados sincronizados com github.com/dougm-b/dbfit
+        </div>
+      </div>
+
+      <!-- API KEY CLAUDE -->
+      <div class="card">
+        <div class="card-title">🤖 Chave API Claude</div>
+        <p style="font-size:12px;color:var(--txt3);margin-bottom:10px">Necessária para o chat IA. Obtém em console.anthropic.com</p>
+        <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-..."/>
         <button class="btn-primary" style="margin-top:10px" onclick="saveApiKey()">Guardar chave</button>
         <p id="api-key-status" style="font-size:11px;color:var(--acc);margin-top:8px;text-align:center"></p>
       </div>
@@ -500,7 +465,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
     <div id="chat-screen" class="screen">
       <div id="chat-messages">
         <div class="msg ai">
-          <div class="msg-bubble">Olá Douglas! 💪 Sou o teu assistente de fitness. Posso atualizar o teu plano alimentar, de treino e de saúde, responder a dúvidas e fazer análises com base nos teus dados. Como posso ajudar?</div>
+          <div class="msg-bubble">Olá Douglas! 💪 Sou o teu assistente de fitness. Posso analisar os teus dados de saúde, treino e alimentação e responder a qualquer dúvida. Como posso ajudar?</div>
           <div class="msg-time">agora</div>
         </div>
       </div>
@@ -540,8 +505,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
       Chat IA
     </button>
   </nav>
-
-</div><!-- /app -->
+</div>
 
 <!-- MODAL: ADD FOOD -->
 <div class="modal-overlay" id="food-modal">
@@ -550,13 +514,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
     <div class="form-group">
       <label class="form-label">Refeição</label>
       <select class="form-input" id="f-meal">
-        <option>☕ Café da manhã</option>
-        <option>🥛 Meio da manhã</option>
-        <option>🍽️ Almoço</option>
-        <option>🍫 Lanche da tarde</option>
-        <option>⚡ Pré-treino</option>
-        <option>🌙 Jantar</option>
-        <option>🌛 Ceia</option>
+        <option>☕ Café da manhã</option><option>🥛 Meio da manhã</option>
+        <option>🍽️ Almoço</option><option>🍫 Lanche da tarde</option>
+        <option>⚡ Pré-treino</option><option>🌙 Jantar</option><option>🌛 Ceia</option>
       </select>
     </div>
     <div class="form-group">
@@ -564,29 +524,14 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
       <input type="text" class="form-input" id="f-food" placeholder="ex: Peito de frango grelhado"/>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Quantidade (g / ml)</label>
-        <input type="number" class="form-input" id="f-qty" placeholder="180"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Proteína (g)</label>
-        <input type="number" class="form-input" id="f-prot" placeholder="38"/>
-      </div>
+      <div class="form-group"><label class="form-label">Quantidade (g/ml)</label><input type="number" class="form-input" id="f-qty" placeholder="180"/></div>
+      <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-input" id="f-prot" placeholder="38"/></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Calorias (kcal)</label>
-        <input type="number" class="form-input" id="f-kcal" placeholder="200"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Carboidratos (g)</label>
-        <input type="number" class="form-input" id="f-carb" placeholder="0"/>
-      </div>
+      <div class="form-group"><label class="form-label">Calorias (kcal)</label><input type="number" class="form-input" id="f-kcal" placeholder="200"/></div>
+      <div class="form-group"><label class="form-label">Carboidratos (g)</label><input type="number" class="form-input" id="f-carb" placeholder="0"/></div>
     </div>
-    <div class="form-group">
-      <label class="form-label">Gordura (g)</label>
-      <input type="number" class="form-input" id="f-fat" placeholder="4"/>
-    </div>
+    <div class="form-group"><label class="form-label">Gordura (g)</label><input type="number" class="form-input" id="f-fat" placeholder="4"/></div>
     <button class="btn-primary" onclick="addFood()">Guardar refeição</button>
   </div>
 </div>
@@ -600,30 +545,19 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
       <select class="form-input" id="t-type">
         <option>Full Body A — Ênfase Peito + Bíceps</option>
         <option>Full Body B — Ênfase Costas + Tríceps</option>
-        <option>Cardio — Caminhada</option>
-        <option>Cardio — HIIT</option>
-        <option>Descanso ativo</option>
-        <option>Outro</option>
+        <option>Cardio — Caminhada</option><option>Cardio — HIIT</option>
+        <option>Descanso ativo</option><option>Outro</option>
       </select>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Duração (min)</label>
-        <input type="number" class="form-input" id="t-dur" placeholder="60"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Intensidade</label>
-        <select class="form-input" id="t-int">
-          <option>Leve</option>
-          <option selected>Moderada</option>
-          <option>Alta</option>
-          <option>Máxima</option>
-        </select>
+      <div class="form-group"><label class="form-label">Duração (min)</label><input type="number" class="form-input" id="t-dur" placeholder="60"/></div>
+      <div class="form-group"><label class="form-label">Intensidade</label>
+        <select class="form-input" id="t-int"><option>Leve</option><option selected>Moderada</option><option>Alta</option><option>Máxima</option></select>
       </div>
     </div>
     <div class="form-group">
-      <label class="form-label">Notas (exercícios, pesos, sensações)</label>
-      <textarea class="form-input" id="t-notes" rows="3" placeholder="ex: Supino 2x32,5kg — 12 reps. Senti-me forte hoje."></textarea>
+      <label class="form-label">Notas</label>
+      <textarea class="form-input" id="t-notes" rows="3" placeholder="ex: Supino 2x32,5kg — 12 reps..."></textarea>
     </div>
     <button class="btn-primary" onclick="addTraining()">Guardar treino</button>
   </div>
@@ -634,154 +568,308 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   <div class="modal">
     <h3>📊 Atualizar saúde <button class="modal-close" onclick="closeModal('health-modal')">×</button></h3>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Peso (kg)</label>
-        <input type="number" class="form-input" id="h-peso-i" step="0.1" placeholder="122.5"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Gordura corporal (%)</label>
-        <input type="number" class="form-input" id="h-gc-i" step="0.1" placeholder="37.0"/>
-      </div>
+      <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" class="form-input" id="h-peso-i" step="0.1" placeholder="122.5"/></div>
+      <div class="form-group"><label class="form-label">Gordura corporal (%)</label><input type="number" class="form-input" id="h-gc-i" step="0.1" placeholder="37.0"/></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Músculo total (kg)</label>
-        <input type="number" class="form-input" id="h-musc-i" step="0.1" placeholder="73.3"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Gordura visceral</label>
-        <input type="number" class="form-input" id="h-gv-i" placeholder="15"/>
-      </div>
+      <div class="form-group"><label class="form-label">Músculo total (kg)</label><input type="number" class="form-input" id="h-musc-i" step="0.1" placeholder="73.3"/></div>
+      <div class="form-group"><label class="form-label">Gordura visceral</label><input type="number" class="form-input" id="h-gv-i" placeholder="15"/></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Músculo esquelético (kg)</label>
-        <input type="number" class="form-input" id="h-me-i" step="0.1" placeholder="43.0"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Proteína corporal (%)</label>
-        <input type="number" class="form-input" id="h-prot-i" step="0.1" placeholder="11.4"/>
-      </div>
+      <div class="form-group"><label class="form-label">Músculo esquelético (kg)</label><input type="number" class="form-input" id="h-me-i" step="0.1" placeholder="43.0"/></div>
+      <div class="form-group"><label class="form-label">Proteína corporal (%)</label><input type="number" class="form-input" id="h-prot-i" step="0.1" placeholder="11.4"/></div>
     </div>
     <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Água corporal (%)</label>
-        <input type="number" class="form-input" id="h-agua-i" step="0.1" placeholder="44.9"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Metabolismo basal (kcal)</label>
-        <input type="number" class="form-input" id="h-met-i" placeholder="2309"/>
-      </div>
+      <div class="form-group"><label class="form-label">Água corporal (%)</label><input type="number" class="form-input" id="h-agua-i" step="0.1" placeholder="44.9"/></div>
+      <div class="form-group"><label class="form-label">Metabolismo basal (kcal)</label><input type="number" class="form-input" id="h-met-i" placeholder="2309"/></div>
     </div>
     <button class="btn-primary" onclick="saveHealth()">Guardar dados</button>
   </div>
 </div>
 
 <script>
-// ── STATE ──
+// ══════════════════════════════════════════
+// GITHUB API CONFIG
+// ══════════════════════════════════════════
+const GH_OWNER = 'dougm-b';
+const GH_REPO  = 'dbfit';
+const GH_FILE  = 'data/db.json';
+const GH_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+
+let ghToken = localStorage.getItem('dbfit_ghtoken') || '';
+let apiKey  = localStorage.getItem('dbfit_apikey')  || '';
+
+// ── INIT ──
 const TODAY = new Date().toISOString().slice(0,10);
-let state = JSON.parse(localStorage.getItem('dbfit_state') || '{}');
-if(!state.foods) state.foods = {};
-if(!state.training) state.training = {};
-if(!state.health) state.health = {
-  peso:'122,5 kg', gc:'37,0%', musc:'73,3 kg', gv:'15',
-  me:'43,0 kg', prot:'11,4%', agua:'44,9%', met:'2.309', idade:'21 anos', ossea:'4,0 kg'
+const now   = new Date();
+
+let state = {
+  foods: {}, training: {},
+  health: {
+    peso:'122,5 kg', gc:'37,0%', musc:'73,3 kg', gv:'15',
+    me:'43,0 kg', prot:'11,4%', agua:'44,9%', met:'2.309',
+    idade:'21 anos', ossea:'4,0 kg'
+  },
+  chatHistory: []
 };
-if(!state.chatHistory) state.chatHistory = [];
-let apiKey = localStorage.getItem('dbfit_apikey') || '';
+let dbSha = null; // GitHub file SHA needed for updates
 
-function save(){ localStorage.setItem('dbfit_state', JSON.stringify(state)); }
-
-// ── DATE ──
-const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
-const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-const now = new Date();
-document.getElementById('date-chip').textContent =
-  `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
-
-// ── SCREENS ──
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
-  const sc = document.getElementById(id+'-screen');
-  if(sc) sc.classList.add('active');
-  const nb = document.getElementById('nav-'+id);
-  if(nb) nb.classList.add('active');
-  if(id==='food') renderFood();
-  if(id==='train') renderTraining();
-  if(id==='health') renderHealth();
-  if(id==='dash') updateDash();
-  if(id==='chat') scrollChat();
-  document.getElementById('content').scrollTop=0;
+// ══════════════════════════════════════════
+// TOKEN SETUP
+// ══════════════════════════════════════════
+function checkToken() {
+  if (ghToken) {
+    document.getElementById('token-setup').style.display = 'none';
+    initApp();
+  }
 }
 
-// ── MODALS ──
-function openFoodModal(){ document.getElementById('food-modal').classList.add('open'); }
-function openTrainModal(){ document.getElementById('train-modal').classList.add('open'); }
-function openHealthModal(){ document.getElementById('health-modal').classList.add('open'); }
-function closeModal(id){ document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.modal-overlay').forEach(m=>{
-  m.addEventListener('click',e=>{ if(e.target===m) m.classList.remove('open'); });
+async function saveToken() {
+  const val = document.getElementById('token-input').value.trim();
+  const err = document.getElementById('setup-error');
+  if (!val.startsWith('github_pat_') && !val.startsWith('ghp_')) {
+    err.textContent = '❌ Token inválido. Deve começar com github_pat_ ou ghp_';
+    return;
+  }
+  err.textContent = 'A verificar token...';
+  // Test the token
+  try {
+    const res = await fetch(GH_API, {
+      headers: { Authorization: `token ${val}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) {
+      err.textContent = '⚠️ Token válido mas ficheiro data/db.json não encontrado. Criando...';
+      ghToken = val;
+      localStorage.setItem('dbfit_ghtoken', ghToken);
+      await pushToGitHub();
+      document.getElementById('token-setup').style.display = 'none';
+      initApp();
+      return;
+    }
+    if (!res.ok) {
+      err.textContent = '❌ Token inválido ou sem permissões. Verifica e tenta novamente.';
+      return;
+    }
+    ghToken = val;
+    localStorage.setItem('dbfit_ghtoken', ghToken);
+    err.style.color = 'var(--acc)';
+    err.textContent = '✅ Token válido! A carregar dados...';
+    setTimeout(() => {
+      document.getElementById('token-setup').style.display = 'none';
+      initApp();
+    }, 800);
+  } catch(e) {
+    err.textContent = '❌ Erro de rede. Verifica a ligação.';
+  }
+}
+
+function resetToken() {
+  localStorage.removeItem('dbfit_ghtoken');
+  ghToken = '';
+  document.getElementById('token-setup').style.display = 'flex';
+  document.getElementById('token-input').value = '';
+  document.getElementById('setup-error').textContent = '';
+}
+
+// ══════════════════════════════════════════
+// GITHUB SYNC
+// ══════════════════════════════════════════
+function setSyncStatus(status, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  dot.className = 'sync-dot ' + status;
+  lbl.className = 'sync-label ' + status;
+  lbl.textContent = label;
+}
+
+async function loadFromGitHub() {
+  setSyncStatus('syncing', 'a carregar...');
+  try {
+    const res = await fetch(GH_API + '?t=' + Date.now(), {
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    dbSha = data.sha;
+    const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+    state = Object.assign({
+      foods:{}, training:{},
+      health: state.health,
+      chatHistory: []
+    }, content);
+    setSyncStatus('ok', 'sincronizado');
+    return true;
+  } catch(e) {
+    setSyncStatus('error', 'erro ao carregar');
+    showToast('⚠️ Erro ao carregar dados do GitHub');
+    return false;
+  }
+}
+
+async function pushToGitHub() {
+  setSyncStatus('syncing', 'a guardar...');
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+    const body = {
+      message: `dbfit: update ${new Date().toISOString()}`,
+      content,
+      ...(dbSha ? { sha: dbSha } : {})
+    };
+    const res = await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${ghToken}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      // If conflict (SHA mismatch), reload and retry
+      if (res.status === 409 || res.status === 422) {
+        await loadFromGitHub();
+        return await pushToGitHub();
+      }
+      throw new Error(err.message);
+    }
+    const data = await res.json();
+    dbSha = data.content.sha;
+    setSyncStatus('ok', 'guardado ✓');
+    setTimeout(() => setSyncStatus('ok', 'sincronizado'), 2000);
+    return true;
+  } catch(e) {
+    setSyncStatus('error', 'erro ao guardar');
+    showToast('❌ Erro ao guardar: ' + e.message);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════
+// APP INIT
+// ══════════════════════════════════════════
+async function initApp() {
+  await loadFromGitHub();
+  updateDash();
+  renderHealth();
+  setupDate();
+}
+
+// ══════════════════════════════════════════
+// DATE
+// ══════════════════════════════════════════
+const days   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+function setupDate() {
+  document.getElementById('date-chip').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const sc = document.getElementById(id + '-screen');
+  if (sc) sc.classList.add('active');
+  const nb = document.getElementById('nav-' + id);
+  if (nb) nb.classList.add('active');
+  if (id === 'food')   renderFood();
+  if (id === 'train')  renderTraining();
+  if (id === 'health') renderHealth();
+  if (id === 'dash')   updateDash();
+  if (id === 'chat')   scrollChat();
+  document.getElementById('content').scrollTop = 0;
+}
+
+// ══════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════
+function openFoodModal()   { document.getElementById('food-modal').classList.add('open'); }
+function openTrainModal()  { document.getElementById('train-modal').classList.add('open'); }
+function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
+function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
 });
 
-// ── FOOD ──
-const MEAL_EMOJIS = {'☕ Café da manhã':'☕','🥛 Meio da manhã':'🥛','🍽️ Almoço':'🍽️',
-  '🍫 Lanche da tarde':'🍫','⚡ Pré-treino':'⚡','🌙 Jantar':'🌙','🌛 Ceia':'🌛'};
-
-function addFood(){
-  const meal = document.getElementById('f-meal').value;
-  const food = document.getElementById('f-food').value.trim();
-  if(!food){ alert('Indica o alimento'); return; }
-  if(!state.foods[TODAY]) state.foods[TODAY]=[];
-  state.foods[TODAY].push({
-    meal, food,
-    qty: +document.getElementById('f-qty').value||0,
-    prot: +document.getElementById('f-prot').value||0,
-    kcal: +document.getElementById('f-kcal').value||0,
-    carb: +document.getElementById('f-carb').value||0,
-    fat: +document.getElementById('f-fat').value||0,
-    ts: Date.now()
-  });
-  save();
-  closeModal('food-modal');
-  ['f-food','f-qty','f-prot','f-kcal','f-carb','f-fat'].forEach(id=>document.getElementById(id).value='');
-  renderFood();
-  updateDash();
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
 }
 
-function renderFood(){
-  const items = state.foods[TODAY]||[];
-  const list = document.getElementById('food-list');
+// ══════════════════════════════════════════
+// FOOD
+// ══════════════════════════════════════════
+const MEAL_EMOJIS = {
+  '☕ Café da manhã':'☕','🥛 Meio da manhã':'🥛','🍽️ Almoço':'🍽️',
+  '🍫 Lanche da tarde':'🍫','⚡ Pré-treino':'⚡','🌙 Jantar':'🌙','🌛 Ceia':'🌛'
+};
+
+async function addFood() {
+  const food = document.getElementById('f-food').value.trim();
+  if (!food) { showToast('⚠️ Indica o alimento'); return; }
+  if (!state.foods[TODAY]) state.foods[TODAY] = [];
+  state.foods[TODAY].push({
+    meal: document.getElementById('f-meal').value,
+    food,
+    qty:  +document.getElementById('f-qty').value  || 0,
+    prot: +document.getElementById('f-prot').value || 0,
+    kcal: +document.getElementById('f-kcal').value || 0,
+    carb: +document.getElementById('f-carb').value || 0,
+    fat:  +document.getElementById('f-fat').value  || 0,
+    ts: Date.now()
+  });
+  closeModal('food-modal');
+  ['f-food','f-qty','f-prot','f-kcal','f-carb','f-fat'].forEach(id => document.getElementById(id).value = '');
+  renderFood();
+  updateDash();
+  await pushToGitHub();
+  showToast('✅ Refeição guardada!');
+}
+
+function renderFood() {
+  const items = state.foods[TODAY] || [];
+  const list  = document.getElementById('food-list');
   const empty = document.getElementById('food-empty');
-  if(!items.length){ list.innerHTML=''; empty.style.display='block'; return; }
-  empty.style.display='none';
-  // group by meal
+  if (!items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
   const groups = {};
-  items.forEach(it=>{ if(!groups[it.meal]) groups[it.meal]=[]; groups[it.meal].push(it); });
-  list.innerHTML = Object.entries(groups).map(([meal,its])=>`
+  items.forEach(it => { if (!groups[it.meal]) groups[it.meal] = []; groups[it.meal].push(it); });
+  list.innerHTML = Object.entries(groups).map(([meal, its]) => `
     <div class="meal-group">
       <div class="meal-group-hdr">${meal}</div>
-      ${its.map((it,i)=>`
+      ${its.map(it => `
         <div class="meal-entry" onclick="deleteFood(${items.indexOf(it)})">
-          <div class="meal-emoji">${MEAL_EMOJIS[meal]||'🍴'}</div>
+          <div class="meal-emoji">${MEAL_EMOJIS[meal] || '🍴'}</div>
           <div class="meal-info">
-            <div class="meal-name">${it.food}${it.qty?` — ${it.qty}g`:''}</div>
-            <div class="meal-detail">${it.prot?it.prot+'g prot':''} ${it.kcal?'· '+it.kcal+' kcal':''} ${it.carb?'· '+it.carb+'g carb':''}</div>
+            <div class="meal-name">${it.food}${it.qty ? ` — ${it.qty}g` : ''}</div>
+            <div class="meal-detail">${it.prot ? it.prot + 'g prot' : ''} ${it.kcal ? '· ' + it.kcal + ' kcal' : ''} ${it.carb ? '· ' + it.carb + 'g carb' : ''}</div>
           </div>
-          <div class="meal-kcal">${it.kcal||'—'}<span style="font-size:9px;color:var(--txt3)"> kcal</span></div>
+          <div class="meal-kcal">${it.kcal || '—'}<span style="font-size:9px;color:var(--txt3)"> kcal</span></div>
         </div>
       `).join('')}
     </div>
   `).join('');
 }
 
-function deleteFood(idx){
-  if(!confirm('Remover este alimento?')) return;
-  state.foods[TODAY].splice(idx,1);
-  save(); renderFood(); updateDash();
+async function deleteFood(idx) {
+  if (!confirm('Remover este alimento?')) return;
+  state.foods[TODAY].splice(idx, 1);
+  renderFood(); updateDash();
+  await pushToGitHub();
 }
 
-// ── TRAINING ──
+// ══════════════════════════════════════════
+// TRAINING
+// ══════════════════════════════════════════
 const WORKOUT_PLAN = {
   1:'Full Body A — Ênfase Peito + Bíceps',
   2:'Descanso / Cardio leve',
@@ -812,294 +900,321 @@ const FBB = [
   {ex:'Elevação pélvica no banco',series:'3',reps:'15',peso:'1x 25–30 kg'},
 ];
 
-function addTraining(){
-  const type = document.getElementById('t-type').value;
-  if(!state.training[TODAY]) state.training[TODAY]=[];
+async function addTraining() {
+  if (!state.training[TODAY]) state.training[TODAY] = [];
   state.training[TODAY].push({
-    type,
-    dur: +document.getElementById('t-dur').value||0,
+    type:      document.getElementById('t-type').value,
+    dur:       +document.getElementById('t-dur').value || 0,
     intensity: document.getElementById('t-int').value,
-    notes: document.getElementById('t-notes').value.trim(),
+    notes:     document.getElementById('t-notes').value.trim(),
     ts: Date.now()
   });
-  save();
   closeModal('train-modal');
-  document.getElementById('t-dur').value='';
-  document.getElementById('t-notes').value='';
-  renderTraining();
+  document.getElementById('t-dur').value = '';
+  document.getElementById('t-notes').value = '';
+  renderTraining(); updateDash();
+  await pushToGitHub();
+  showToast('✅ Treino guardado!');
 }
 
-function renderTraining(){
-  // week grid
+function renderTraining() {
+  // Week grid
   const wg = document.getElementById('week-grid');
-  const dayNames=['D','S','T','Q','Q','S','S'];
-  let html='';
-  for(let i=0;i<7;i++){
-    const d=new Date(); d.setDate(d.getDate()-now.getDay()+i);
-    const dk=d.toISOString().slice(0,10);
-    const done=state.training[dk]&&state.training[dk].length>0;
-    const isToday=dk===TODAY;
-    html+=`<div class="day-dot ${done?'done':''} ${isToday?'today':''}">
+  const dayNames = ['D','S','T','Q','Q','S','S'];
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(); d.setDate(d.getDate() - now.getDay() + i);
+    const dk = d.toISOString().slice(0,10);
+    const done = state.training[dk] && state.training[dk].length > 0;
+    const isToday = dk === TODAY;
+    html += `<div class="day-dot ${done?'done':''} ${isToday?'today':''}">
       ${dayNames[i]}<span>${d.getDate()}</span>${done?'✓':''}
     </div>`;
   }
-  wg.innerHTML=html;
+  wg.innerHTML = html;
 
-  // today plan
+  // Plan today
   const plan = WORKOUT_PLAN[now.getDay()];
   const exercises = plan.includes('Full Body A') ? FBA : plan.includes('Full Body B') ? FBB : null;
-  const pd = document.getElementById('plan-today');
-  pd.innerHTML=`<div class="workout-card">
-    <div class="workout-title">${plan}</div>
-    <div class="workout-sub">Plano para hoje</div>
-    ${exercises ? exercises.map(e=>`
-      <div class="exercise-row">
-        <div class="ex-name">${e.ex}</div>
-        <div class="ex-chips">
-          <span class="chip">${e.series}×${e.reps}</span>
-          <span class="chip chip-blue">${e.peso}</span>
+  document.getElementById('plan-today').innerHTML = `
+    <div class="workout-card">
+      <div class="workout-title">${plan}</div>
+      <div class="workout-sub">Plano para hoje</div>
+      ${exercises ? exercises.map(e => `
+        <div class="exercise-row">
+          <div class="ex-name">${e.ex}</div>
+          <div class="ex-chips">
+            <span class="chip">${e.series}×${e.reps}</span>
+            <span class="chip chip-blue">${e.peso}</span>
+          </div>
         </div>
-      </div>
-    `).join('') : `<p style="color:var(--txt3);font-size:13px">Dia de descanso ou cardio. Aproveita para recuperar! 🧘</p>`}
-  </div>`;
+      `).join('') : `<p style="color:var(--txt3);font-size:13px">Dia de descanso ou cardio 🧘</p>`}
+    </div>`;
 
-  // log
-  const logs = state.training[TODAY]||[];
+  // Log
+  const logs = state.training[TODAY] || [];
   const le = document.getElementById('train-empty');
   const ll = document.getElementById('train-log-list');
-  if(!logs.length){ le.style.display='block'; ll.innerHTML=''; return; }
-  le.style.display='none';
-  ll.innerHTML=`<div class="card-title" style="margin-top:4px">📋 Registado hoje</div>`+
-    logs.map((l,i)=>`
-    <div class="meal-entry" onclick="deleteTraining(${i})">
-      <div class="meal-emoji">🏋️</div>
-      <div class="meal-info">
-        <div class="meal-name">${l.type}</div>
-        <div class="meal-detail">${l.dur?l.dur+' min · ':''} ${l.intensity}${l.notes?' · '+l.notes.slice(0,40):''}</div>
+  if (!logs.length) { le.style.display = 'block'; ll.innerHTML = ''; return; }
+  le.style.display = 'none';
+  ll.innerHTML = `<div class="card-title" style="margin-top:4px">📋 Registado hoje</div>` +
+    logs.map((l,i) => `
+      <div class="meal-entry" onclick="deleteTraining(${i})">
+        <div class="meal-emoji">🏋️</div>
+        <div class="meal-info">
+          <div class="meal-name">${l.type}</div>
+          <div class="meal-detail">${l.dur?l.dur+' min · ':''} ${l.intensity}${l.notes?' · '+l.notes.slice(0,40):''}</div>
+        </div>
+        <span class="chip chip-warn" style="flex-shrink:0">${l.intensity}</span>
       </div>
-      <span class="chip chip-warn" style="flex-shrink:0">${l.intensity}</span>
-    </div>
-  `).join('');
+    `).join('');
 }
 
-function deleteTraining(idx){
-  if(!confirm('Remover este treino?')) return;
-  state.training[TODAY].splice(idx,1);
-  save(); renderTraining();
+async function deleteTraining(idx) {
+  if (!confirm('Remover este treino?')) return;
+  state.training[TODAY].splice(idx, 1);
+  renderTraining(); updateDash();
+  await pushToGitHub();
 }
 
-// ── HEALTH ──
-function renderHealth(){
+// ══════════════════════════════════════════
+// HEALTH
+// ══════════════════════════════════════════
+function renderHealth() {
   const h = state.health;
-  document.getElementById('h-peso').textContent = h.peso;
-  document.getElementById('h-gc').textContent = h.gc;
-  document.getElementById('h-musc').textContent = h.musc;
-  document.getElementById('h-gv').textContent = h.gv;
-  document.getElementById('h-me').textContent = h.me;
-  document.getElementById('h-prot').textContent = h.prot;
-  document.getElementById('h-agua').textContent = h.agua;
-  document.getElementById('h-met').textContent = h.met;
-  document.getElementById('h-idade').textContent = h.idade||'21 anos';
-  document.getElementById('h-ossea').textContent = h.ossea||'4,0 kg';
-  if(apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8)+'...';
+  document.getElementById('h-peso').textContent  = h.peso;
+  document.getElementById('h-gc').textContent    = h.gc;
+  document.getElementById('h-musc').textContent  = h.musc;
+  document.getElementById('h-gv').textContent    = h.gv;
+  document.getElementById('h-me').textContent    = h.me;
+  document.getElementById('h-prot').textContent  = h.prot;
+  document.getElementById('h-agua').textContent  = h.agua;
+  document.getElementById('h-met').textContent   = h.met;
+  document.getElementById('h-idade').textContent = h.idade || '21 anos';
+  document.getElementById('h-ossea').textContent = h.ossea || '4,0 kg';
+  if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
 }
 
-function saveHealth(){
+async function saveHealth() {
   const fields = {
     peso: document.getElementById('h-peso-i').value,
-    gc: document.getElementById('h-gc-i').value,
+    gc:   document.getElementById('h-gc-i').value,
     musc: document.getElementById('h-musc-i').value,
-    gv: document.getElementById('h-gv-i').value,
-    me: document.getElementById('h-me-i').value,
+    gv:   document.getElementById('h-gv-i').value,
+    me:   document.getElementById('h-me-i').value,
     prot: document.getElementById('h-prot-i').value,
     agua: document.getElementById('h-agua-i').value,
-    met: document.getElementById('h-met-i').value,
+    met:  document.getElementById('h-met-i').value,
   };
-  if(fields.peso) state.health.peso = fields.peso+' kg';
-  if(fields.gc) state.health.gc = fields.gc+'%';
-  if(fields.musc) state.health.musc = fields.musc+' kg';
-  if(fields.gv) state.health.gv = fields.gv;
-  if(fields.me) state.health.me = fields.me+' kg';
-  if(fields.prot) state.health.prot = fields.prot+'%';
-  if(fields.agua) state.health.agua = fields.agua+'%';
-  if(fields.met) state.health.met = fields.met;
-  save();
+  if (fields.peso) state.health.peso = fields.peso + ' kg';
+  if (fields.gc)   state.health.gc   = fields.gc + '%';
+  if (fields.musc) state.health.musc = fields.musc + ' kg';
+  if (fields.gv)   state.health.gv   = fields.gv;
+  if (fields.me)   state.health.me   = fields.me + ' kg';
+  if (fields.prot) state.health.prot = fields.prot + '%';
+  if (fields.agua) state.health.agua = fields.agua + '%';
+  if (fields.met)  state.health.met  = fields.met;
   closeModal('health-modal');
-  renderHealth();
-  updateDash();
+  renderHealth(); updateDash();
+  await pushToGitHub();
+  showToast('✅ Dados de saúde atualizados!');
 }
 
-function saveApiKey(){
+function saveApiKey() {
   const val = document.getElementById('api-key-input').value.trim();
-  if(!val.startsWith('sk-')){ 
-    document.getElementById('api-key-status').textContent='❌ Chave inválida — deve começar com sk-';
+  if (!val.startsWith('sk-')) {
+    document.getElementById('api-key-status').textContent = '❌ Chave inválida — deve começar com sk-';
     return;
   }
   apiKey = val;
   localStorage.setItem('dbfit_apikey', apiKey);
-  document.getElementById('api-key-status').textContent='✅ Chave guardada com sucesso!';
-  document.getElementById('api-key-input').value = apiKey.slice(0,8)+'...';
+  document.getElementById('api-key-status').textContent = '✅ Chave guardada!';
+  document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
 }
 
-// ── DASHBOARD ──
-function updateDash(){
-  const items = state.foods[TODAY]||[];
-  const totals = items.reduce((a,it)=>({
-    kcal:a.kcal+(it.kcal||0), prot:a.prot+(it.prot||0),
-    carb:a.carb+(it.carb||0), fat:a.fat+(it.fat||0)
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function updateDash() {
+  const items = state.foods[TODAY] || [];
+  const totals = items.reduce((a,it) => ({
+    kcal: a.kcal + (it.kcal||0), prot: a.prot + (it.prot||0),
+    carb: a.carb + (it.carb||0), fat:  a.fat  + (it.fat||0)
   }), {kcal:0,prot:0,carb:0,fat:0});
 
   document.getElementById('m-kcal').textContent = totals.kcal;
-  document.getElementById('m-prot').textContent = totals.prot+'g';
-  document.getElementById('m-carb').textContent = totals.carb+'g';
-  document.getElementById('m-fat').textContent = totals.fat+'g';
+  document.getElementById('m-prot').textContent = totals.prot + 'g';
+  document.getElementById('m-carb').textContent = totals.carb + 'g';
+  document.getElementById('m-fat').textContent  = totals.fat  + 'g';
 
-  const protPct = Math.min(100, Math.round(totals.prot/195*100));
-  const kcalPct = Math.min(100, Math.round(totals.kcal/2600*100));
-  document.getElementById('prot-bar').style.width = protPct+'%';
-  document.getElementById('kcal-bar').style.width = kcalPct+'%';
-  document.getElementById('prot-pct').textContent = protPct+'%';
-  document.getElementById('kcal-pct').textContent = kcalPct+'%';
+  const protPct = Math.min(100, Math.round(totals.prot / 195 * 100));
+  const kcalPct = Math.min(100, Math.round(totals.kcal / 2600 * 100));
+  document.getElementById('prot-bar').style.width  = protPct + '%';
+  document.getElementById('kcal-bar').style.width  = kcalPct + '%';
+  document.getElementById('prot-pct').textContent  = protPct + '%';
+  document.getElementById('kcal-pct').textContent  = kcalPct + '%';
+
+  // Update dashboard health stats from state
+  const h = state.health;
+  const pesoNum = parseFloat(h.peso);
+  if (!isNaN(pesoNum)) {
+    const imc = (pesoNum / (1.84 * 1.84)).toFixed(1);
+    document.getElementById('dash-peso').innerHTML = Math.floor(pesoNum) + `<span style="font-size:16px">.${String(pesoNum.toFixed(1)).split('.')[1]}</span>`;
+    document.getElementById('dash-imc').textContent = 'IMC ' + imc;
+  }
+  const gcNum = parseFloat(h.gc);
+  if (!isNaN(gcNum)) {
+    document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
+  }
+  const muscNum = parseFloat(h.musc);
+  if (!isNaN(muscNum)) {
+    document.getElementById('ring-musc').textContent = h.musc;
+    document.getElementById('ring-musc-txt').textContent = Math.round(muscNum);
+  }
+  const gvNum = parseFloat(h.gv);
+  if (!isNaN(gvNum)) {
+    document.getElementById('ring-gv').textContent = 'Nível ' + h.gv;
+    document.getElementById('ring-gv-txt').textContent = h.gv;
+  }
 
   const plan = WORKOUT_PLAN[now.getDay()];
-  const done = state.training[TODAY]&&state.training[TODAY].length>0;
+  const done = state.training[TODAY] && state.training[TODAY].length > 0;
   document.getElementById('today-workout-info').innerHTML =
     `<span style="color:var(--acc2);font-weight:600">${plan}</span><br>
      <span style="color:${done?'var(--acc)':'var(--txt3)'}">
-       ${done?'✅ Treino registado!':'⏳ Por registar'}
+       ${done ? '✅ Treino registado!' : '⏳ Por registar'}
      </span>`;
 }
 
-// ── CHAT ──
+// ══════════════════════════════════════════
+// CHAT
+// ══════════════════════════════════════════
 let chatHistory = [];
 
-function buildSystemPrompt(){
-  const items = state.foods[TODAY]||[];
-  const totals = items.reduce((a,it)=>({
-    kcal:a.kcal+(it.kcal||0), prot:a.prot+(it.prot||0),
-    carb:a.carb+(it.carb||0), fat:a.fat+(it.fat||0)
+function buildSystemPrompt() {
+  const items = state.foods[TODAY] || [];
+  const totals = items.reduce((a,it) => ({
+    kcal: a.kcal+(it.kcal||0), prot: a.prot+(it.prot||0),
+    carb: a.carb+(it.carb||0), fat: a.fat+(it.fat||0)
   }), {kcal:0,prot:0,carb:0,fat:0});
   const h = state.health;
-  const trainLogs = state.training[TODAY]||[];
+  const trainLogs = state.training[TODAY] || [];
 
-  return `És o assistente pessoal de fitness e nutrição do Douglas Barros. Tens acesso aos dados reais do Douglas abaixo e deves usá-los nas tuas respostas. Responde sempre em português europeu, de forma direta, prática e motivadora.
+  return `És o assistente pessoal de fitness e nutrição do Douglas Barros. Responde sempre em português europeu, de forma direta, prática e motivadora.
 
-PERFIL DO DOUGLAS:
+PERFIL:
 - 29 anos, 122,5 kg, 1,84 m
 - Objetivo: ganho muscular + recomposição corporal
 - Usa testosterona
 - Trabalha em casa (8h–17h), treina à noite
-- Intolerância leve ao leite puro (tolera queijo, iogurte, soja)
+- Intolerância leve ao leite puro (tolera queijo, iogurte)
 
-BIOIMPEDÂNCIA (mais recente):
-- Peso: ${h.peso} | Gordura corporal: ${h.gc} (meta: 18–22%)
+BIOIMPEDÂNCIA ATUAL:
+- Peso: ${h.peso} | Gordura: ${h.gc} (meta: 18–22%)
 - Gordura visceral: ${h.gv} (PRIORIDADE — meta: <9)
-- Músculo total: ${h.musc} ✅ Excelente | Músculo esquelético: ${h.me}
-- Proteína corporal: ${h.prot} (baixo — meta: 16–18%)
-- Água corporal: ${h.agua} (normal quando ajustado à massa magra)
-- Metabolismo basal: ${h.met} kcal | Idade corporal: ${h.idade||'21 anos'}
+- Músculo total: ${h.musc} | Músculo esquelético: ${h.me}
+- Proteína corporal: ${h.prot} | Água corporal: ${h.agua}
+- Metabolismo basal: ${h.met} kcal | Idade corporal: ${h.idade}
 
-EQUIPAMENTO:
-- Par halteres 32,5 kg cada (supino + remada)
-- Halter 16,5 kg (bíceps) | Halter 14,5 kg (tríceps)
-- Banco Corength ajustável
-- 12x disco 5kg, 8x disco 2kg, 16x disco 1kg
+HOJE (${TODAY}):
+- Calorias consumidas: ${totals.kcal} / 2600 kcal
+- Proteína: ${totals.prot}g / 195g
+- Carboidratos: ${totals.carb}g | Gordura: ${totals.fat}g
+- Refeições: ${items.map(i=>i.food).join(', ') || 'Nenhuma registada'}
+- Treino: ${trainLogs.length ? trainLogs.map(t=>t.type).join(', ') : 'Não registado'}
 
-TREINO HOJE (${WORKOUT_PLAN[now.getDay()]}):
-${trainLogs.length ? trainLogs.map(t=>`- ${t.type} (${t.dur}min, ${t.intensity})${t.notes?': '+t.notes:''}`).join('\n') : 'Ainda não registado'}
-
-ALIMENTAÇÃO HOJE (${new Date().toLocaleDateString('pt-PT')}):
-${items.length ? items.map(it=>`- ${it.meal}: ${it.food} ${it.qty?it.qty+'g':''} — ${it.prot||0}g prot, ${it.kcal||0} kcal`).join('\n') : 'Sem refeições registadas ainda'}
-TOTAIS HOJE: ${totals.prot}g proteína / ${totals.kcal} kcal / ${totals.carb}g carb / ${totals.fat}g gordura
-META DIÁRIA: 190–200g proteína / 2500–2700 kcal
-
-Sê específico, usa os dados reais do Douglas. Quando relevante, faz cálculos e dá recomendações práticas para o dia/semana.`;
+Plano de treino hoje: ${WORKOUT_PLAN[now.getDay()]}
+Metas diárias: 2500–2700 kcal | 190–200g proteína | 3L água`;
 }
 
-async function sendMessage(){
-  const input = document.getElementById('chat-input');
-  const msg = input.value.trim();
-  if(!msg) return;
-  if(!apiKey){
-    addMsg('ai','⚠️ Configura a tua chave API Claude no separador Saúde para poderes usar o chat.');
+async function sendMessage() {
+  if (!apiKey) {
+    showToast('⚠️ Configura a chave API Claude em Saúde → Chave API Claude');
+    showScreen('health');
     return;
   }
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if (!text) return;
 
-  input.value='';
-  input.style.height='auto';
-  addMsg('user', msg);
-  chatHistory.push({role:'user', content:msg});
+  input.value = '';
+  input.style.height = 'auto';
 
-  const sendBtn = document.getElementById('send-btn');
-  sendBtn.disabled=true;
+  addMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
 
-  // typing indicator
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true;
+
+  // Typing indicator
   const typing = document.createElement('div');
-  typing.className='msg ai';
-  typing.id='typing';
-  typing.innerHTML='<div class="msg-bubble"><div class="typing-indicator"><span></span><span></span><span></span></div></div>';
+  typing.className = 'msg ai';
+  typing.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
   document.getElementById('chat-messages').appendChild(typing);
   scrollChat();
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
-        max_tokens:1000,
+        model: 'claude-opus-4-5',
+        max_tokens: 1024,
         system: buildSystemPrompt(),
-        messages: chatHistory.slice(-20)
+        messages: chatHistory.slice(-10)
       })
     });
     const data = await res.json();
     typing.remove();
-    if(data.content && data.content[0]){
+    if (data.content && data.content[0]) {
       const reply = data.content[0].text;
-      chatHistory.push({role:'assistant', content:reply});
+      chatHistory.push({ role: 'assistant', content: reply });
       addMsg('ai', reply);
     } else {
-      addMsg('ai','❌ Erro na resposta da API. Verifica a tua chave no separador Saúde.');
+      addMsg('ai', '⚠️ Erro: ' + (data.error?.message || 'Resposta inválida'));
     }
-  } catch(e){
+  } catch(e) {
     typing.remove();
-    addMsg('ai','❌ Erro de ligação. Verifica a tua ligação à internet e a chave API.');
+    addMsg('ai', '❌ Erro de rede. Verifica a ligação.');
   }
-  sendBtn.disabled=false;
-}
-
-function addMsg(role, text){
-  const msgs = document.getElementById('chat-messages');
-  const t = new Date().toLocaleTimeString('pt-PT',{hour:'2-digit',minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  // simple markdown-like formatting
-  const formatted = text
-    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
-    .replace(/\n/g,'<br>');
-  div.innerHTML=`<div class="msg-bubble">${formatted}</div><div class="msg-time">${t}</div>`;
-  msgs.appendChild(div);
+  btn.disabled = false;
   scrollChat();
 }
 
-function scrollChat(){
-  const msgs = document.getElementById('chat-messages');
-  setTimeout(()=>msgs.scrollTop=msgs.scrollHeight, 50);
+function addMsg(role, text) {
+  const t = new Date();
+  const time = t.getHours().toString().padStart(2,'0') + ':' + t.getMinutes().toString().padStart(2,'0');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div><div class="msg-time">${time}</div>`;
+  document.getElementById('chat-messages').appendChild(div);
+  scrollChat();
 }
 
-// chat input auto-resize
-document.getElementById('chat-input').addEventListener('input',function(){
-  this.style.height='auto';
-  this.style.height=Math.min(this.scrollHeight,120)+'px';
+function scrollChat() {
+  const msgs = document.getElementById('chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+// Chat input auto-resize
+document.getElementById('chat-input').addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 120) + 'px';
 });
-document.getElementById('chat-input').addEventListener('keydown',function(e){
-  if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); }
+document.getElementById('chat-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 });
 
-// ── INIT ──
-updateDash();
-renderTraining();
-renderHealth();
+// ══════════════════════════════════════════
+// START
+// ══════════════════════════════════════════
+setupDate();
+checkToken();
 </script>
 </body>
 </html>
