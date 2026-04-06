@@ -1,0 +1,17 @@
+{
+  "foods": {},
+  "training": {},
+  "health": {
+    "peso": "122,5 kg",
+    "gc": "37,0%",
+    "musc": "73,3 kg",
+    "gv": "15",
+    "me": "43,0 kg",
+    "prot": "11,4%",
+    "agua": "44,9%",
+    "met": "2.309",
+    "idade": "21 anos",
+    "ossea": "4,0 kg"
+  },
+  "chatHistory": []
+}
