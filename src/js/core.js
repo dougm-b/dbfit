@@ -62,6 +62,7 @@ function defaultState(){
       me:'43,0 kg', prot:'11,4%', agua:'44,9%', met:'2.309',
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
+    healthHistory: {},
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
   };
@@ -79,6 +80,7 @@ function migrateState(loaded){
   s.workoutPlans = (loaded.workoutPlans && loaded.workoutPlans.length) ? loaded.workoutPlans : base.workoutPlans;
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
+  s.healthHistory = loaded.healthHistory || {};
   s.chatHistory  = loaded.chatHistory || [];
 
   // migrate old flat foods -> meals
@@ -196,13 +198,19 @@ function resetToken() {
 function setSyncStatus(status, label) {
   const dot = document.getElementById('sync-dot');
   const lbl = document.getElementById('sync-label');
+  if (!dot || !lbl) return; // page has no sync-bar (e.g. detail.html without it)
   dot.className = 'sync-dot ' + status;
   lbl.className = 'sync-label ' + status;
   lbl.textContent = label;
 }
 
-async function loadFromGitHub() {
-  setSyncStatus('syncing', 'a carregar...');
+let syncBusy = false;
+
+async function loadFromGitHub(opts) {
+  opts = opts || {};
+  if (opts.skipIfBusy && syncBusy) return false;
+  syncBusy = true;
+  if (!opts.silent) setSyncStatus('syncing', 'a carregar...');
   try {
     const res = await fetch(GH_API + '?t=' + Date.now(), {
       headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
@@ -215,11 +223,43 @@ async function loadFromGitHub() {
     setSyncStatus('ok', 'sincronizado');
     return true;
   } catch(e) {
-    setSyncStatus('error', 'erro ao carregar');
-    showToast('⚠️ Erro ao carregar dados do GitHub');
-    state = migrateState(null);
+    setSyncStatus(opts.silent ? 'ok' : 'error', opts.silent ? 'sincronizado' : 'erro ao carregar');
+    // On a silent background refresh, never discard local state on failure —
+    // only the very first explicit load may fall back to defaults.
+    if (!opts.silent) {
+      showToast('⚠️ Erro ao carregar dados do GitHub');
+      state = migrateState(null);
+    }
     return false;
+  } finally {
+    syncBusy = false;
   }
+}
+
+// ══════════════════════════════════════════
+// AUTO-SYNC (multi-device) — poll GitHub in the background so changes made
+// on another device/browser show up here without a manual reload.
+// ══════════════════════════════════════════
+async function silentSync() {
+  if (!ghToken || document.visibilityState === 'hidden') return;
+  const ok = await loadFromGitHub({ silent: true, skipIfBusy: true });
+  if (!ok) return;
+  const activeScreen = document.querySelector('.screen.active');
+  const activeId = activeScreen ? activeScreen.id.replace('-screen', '') : 'dash';
+  updateDash();
+  if (activeId === 'diet')     renderDiet();
+  if (activeId === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
+  if (activeId === 'health')   renderHealth();
+  if (activeId === 'settings') renderSettings();
+}
+
+let autoSyncTimer = null;
+function startAutoSync() {
+  if (autoSyncTimer) return;
+  autoSyncTimer = setInterval(silentSync, 45000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') silentSync();
+  });
 }
 
 async function pushToGitHub() {
@@ -271,6 +311,7 @@ async function initApp() {
   renderPlans();
   renderCalendar();
   setupDate();
+  startAutoSync();
 }
 
 // ══════════════════════════════════════════
@@ -301,6 +342,7 @@ function showScreen(id) {
   if (id === 'dash')     updateDash();
   if (id === 'settings') renderSettings();
   document.getElementById('content').scrollTop = 0;
+  silentSync(); // pull latest data from other devices in the background
 }
 
 // ══════════════════════════════════════════

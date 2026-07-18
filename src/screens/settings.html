@@ -45,6 +45,20 @@
     <button class="btn-primary" onclick="saveAltura()">Guardar altura</button>
   </div>
 
+  <!-- IMPORTAR HISTÓRICO -->
+  <div class="card">
+    <div class="card-title">📥 Importar histórico (Google Fit / Zepp)</div>
+    <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">
+      Experimental — melhor esforço. No Google Fit, exporta via Google Takeout (secção "Fit", ficheiros .json).
+      Na Zepp, usa Perfil → Configurações → Exportar dados (ficheiros .csv). Seleciona aqui um ficheiro de cada vez —
+      reconhece peso, gordura corporal, frequência cardíaca e passos, por data. Se o resultado não bater certo, avisa
+      para eu ajustar o importador ao teu formato exato.
+    </p>
+    <input type="file" class="form-input" id="import-file" accept=".csv,.json"/>
+    <button class="btn-primary" style="margin-top:10px" onclick="importHealthFile()">Importar ficheiro</button>
+    <p id="import-status" style="font-size:11px;margin-top:8px"></p>
+  </div>
+
   <!-- GITHUB TOKEN -->
   <div class="card">
     <div class="card-title">🔗 Sincronização GitHub</div>

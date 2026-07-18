@@ -44,6 +44,7 @@
     ]
   },
   "meals": {},
+  "healthHistory": {},
   "health": {
     "altura": 184,
     "peso": "122,5 kg",
