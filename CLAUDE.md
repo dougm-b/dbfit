@@ -1,4 +1,4 @@
-# DB Fit
+# The CHANGE App
 
 App pessoal de fitness (treino, dieta, bioimpedância, chat IA) de página única,
 sem dependências nem build tooling em runtime. `index.html` é aberto

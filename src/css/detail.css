@@ -8,33 +8,33 @@
   width:34px;height:34px;font-size:18px;cursor:pointer;display:flex;align-items:center;
   justify-content:center;flex-shrink:0;text-decoration:none;
 }
-#detail-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px}
+#detail-title{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:19px}
 #detail-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:0 16px 40px;scroll-behavior:smooth}
 #detail-content::-webkit-scrollbar{display:none}
 
-.detail-current{font-family:'Syne',sans-serif;font-weight:800;font-size:38px;color:var(--txt);margin:4px 0 12px}
+.detail-current{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:38px;color:var(--txt);margin:4px 0 12px}
 .detail-unit{font-size:16px;color:var(--txt3);margin-left:4px}
 
 .range-bar-wrap{margin-top:4px}
 .range-bar{position:relative;height:8px;background:rgba(255,255,255,.08);border-radius:4px}
-.range-bar-zone{position:absolute;top:0;height:100%;background:rgba(74,222,128,.35);border-radius:4px}
+.range-bar-zone{position:absolute;top:0;height:100%;background:rgba(212,212,216,.35);border-radius:4px}
 .range-bar-marker{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;transform:translateX(-2px)}
 
 .detail-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
 .detail-stat{text-align:center}
-.detail-stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.detail-stat-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .detail-stat-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
 
 .related-item{display:flex;justify-content:space-between;align-items:center;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer}
 .related-item:last-child{border-bottom:none}
 .related-name{font-size:13px;color:var(--txt2)}
-.related-val{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc)}
+.related-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;color:var(--acc)}
 
 .corr-row{display:flex;justify-content:space-between;align-items:center;
   padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
 .corr-row:last-child{border-bottom:none}
 .corr-name{color:var(--txt2)}
-.corr-val{font-family:'Syne',sans-serif;font-weight:700;font-size:12px}
-.corr-tag{font-family:'DM Sans',sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
+.corr-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px}
+.corr-tag{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
