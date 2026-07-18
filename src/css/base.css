@@ -37,6 +37,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;align-items:center;justify-content:space-between;
   position:relative;z-index:10;flex-shrink:0;
 }
+.logo-row{display:flex;align-items:center;gap:8px}
+#flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -87,6 +89,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .section-hdr h3{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
   padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
+.date-nav-label{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;min-width:90px;text-align:center}
+.cal-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 .meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
   cursor:pointer;transition:border-color .2s}

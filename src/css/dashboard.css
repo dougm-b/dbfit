@@ -14,4 +14,10 @@
 .ring-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px;color:var(--txt)}
 .ring-sub{font-size:10px;color:var(--txt3)}
 .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px}
-.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease,background-color .4s}
+
+/* ── SCORE CARD ── */
+.score-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.score-num{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:36px}
+.score-label{font-size:13px;color:var(--txt2);font-weight:600}
+.score-bar{height:8px}

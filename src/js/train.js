@@ -179,6 +179,15 @@ function openDayModal(dk) {
 // TRAINING — LOG SESSIONS
 // ══════════════════════════════════════════
 let trainModalDate = TODAY;
+let trainViewDate = TODAY;
+
+function trainShiftDay(delta) {
+  const next = shiftDate(trainViewDate, delta);
+  if (next > TODAY) return;
+  trainViewDate = next;
+  renderTraining();
+}
+
 function openTrainModal(dateKey) {
   trainModalDate = dateKey || TODAY;
   const sel = document.getElementById('t-type');
@@ -212,13 +221,16 @@ async function addTraining() {
 }
 
 function renderTraining() {
-  const logs = state.workoutLogs[TODAY] || [];
+  document.getElementById('train-date-label').textContent = dateNavLabel(trainViewDate);
+  document.getElementById('train-next-btn').disabled = trainViewDate >= TODAY;
+
+  const logs = state.workoutLogs[trainViewDate] || [];
   const le = document.getElementById('train-empty');
   const ll = document.getElementById('train-log-list');
   if (!logs.length) { le.style.display = 'block'; ll.innerHTML = ''; return; }
   le.style.display = 'none';
   ll.innerHTML = logs.map((l, i) => `
-    <div class="meal-entry" onclick="deleteTraining(${i})">
+    <div class="meal-entry" onclick="deleteTrainingAt('${trainViewDate}',${i})">
       <div class="meal-emoji">🏋️</div>
       <div class="meal-info">
         <div class="meal-name">${esc(l.planName)}</div>
@@ -229,19 +241,13 @@ function renderTraining() {
   `).join('');
 }
 
-async function deleteTraining(idx) {
-  if (!confirm('Remover este treino?')) return;
-  state.workoutLogs[TODAY].splice(idx, 1);
-  renderTraining(); renderCalendar(); updateDash();
-  await pushToGitHub();
-}
-
 async function deleteTrainingAt(dk, idx) {
   if (!confirm('Remover esta sessão?')) return;
   state.workoutLogs[dk].splice(idx, 1);
   if (!state.workoutLogs[dk].length) delete state.workoutLogs[dk];
   renderCalendar();
-  if (dk === TODAY) { renderTraining(); updateDash(); }
-  openDayModal(dk);
+  renderTraining();
+  updateDash();
+  if (document.getElementById('day-modal').classList.contains('open')) openDayModal(dk);
   await pushToGitHub();
 }

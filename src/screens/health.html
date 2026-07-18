@@ -29,4 +29,14 @@
     <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc">— bpm</div><div class="health-status" id="h-fc-status">Repouso</div></div>
     <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
   </div>
+
+  <div class="section-hdr">
+    <h3>📏 Medidas corporais</h3>
+    <button class="add-btn" onclick="openMeasurementModal()">+ Adicionar</button>
+  </div>
+  <div class="health-row" id="measurements-list"></div>
+  <div id="measurements-empty" class="empty-state">
+    <div class="icon">📏</div>
+    <p>Sem medidas registadas ainda.<br>Toca em "+ Adicionar" para criar a primeira (ex: cintura, peito, braço).</p>
+  </div>
 </div>

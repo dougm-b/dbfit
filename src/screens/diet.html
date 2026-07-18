@@ -4,13 +4,18 @@
     <h3>🍽️ Diário alimentar</h3>
     <button class="add-btn" onclick="openFoodModal()">+ Adicionar</button>
   </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="dietShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="diet-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="diet-next-btn" onclick="dietShiftDay(1)">›</button>
+  </div>
   <div class="card">
-    <div class="card-title">📊 Total de hoje</div>
+    <div class="card-title">📊 Total do dia</div>
     <div class="macro-grid" id="diet-totals"></div>
   </div>
   <div id="meal-list"></div>
   <div id="meal-empty" class="empty-state">
     <div class="icon">🍽️</div>
-    <p>Ainda sem refeições hoje.<br>Toca em "+ Adicionar" para começar.</p>
+    <p>Ainda sem refeições neste dia.<br>Toca em "+ Adicionar" para começar.</p>
   </div>
 </div>

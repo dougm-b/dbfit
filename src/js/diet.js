@@ -6,11 +6,20 @@ const MEAL_EMOJIS = {
   '🍫 Lanche da tarde':'🍫','⚡ Pré-treino':'⚡','🌙 Jantar':'🌙','🌛 Ceia':'🌛'
 };
 
+let dietViewDate = TODAY;
+
+function dietShiftDay(delta) {
+  const next = shiftDate(dietViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  dietViewDate = next;
+  renderDiet();
+}
+
 async function addFood() {
   const mealName = document.getElementById('f-meal').value;
   const food = document.getElementById('f-food').value.trim();
   if (!food) { showToast('⚠️ Indica o alimento'); return; }
-  addFoodToMeal(TODAY, mealName, {
+  addFoodToMeal(dietViewDate, mealName, {
     name: food,
     qty:  +document.getElementById('f-qty').value  || 0,
     prot: +document.getElementById('f-prot').value || 0,
@@ -27,9 +36,13 @@ async function addFood() {
 }
 
 function renderDiet() {
-  const meals = state.meals[TODAY] || [];
-  const totals = dayTotals(TODAY);
+  const meals = state.meals[dietViewDate] || [];
+  const totals = dayTotals(dietViewDate);
   const g = state.settings;
+
+  document.getElementById('diet-date-label').textContent = dateNavLabel(dietViewDate);
+  document.getElementById('diet-next-btn').disabled = dietViewDate >= TODAY;
+
   document.getElementById('diet-totals').innerHTML = `
     <div class="macro-item"><div class="macro-val" style="color:var(--warn)">${totals.kcal}</div><div class="macro-lbl">kcal / ${g.metaKcal}</div></div>
     <div class="macro-item"><div class="macro-val" style="color:var(--acc)">${totals.prot}g</div><div class="macro-lbl">prot / ${g.metaProt}g</div></div>
@@ -68,16 +81,16 @@ function renderDiet() {
 
 async function deleteFood(mi, fi) {
   if (!confirm('Remover este alimento?')) return;
-  const meal = state.meals[TODAY][mi];
+  const meal = state.meals[dietViewDate][mi];
   meal.foods.splice(fi, 1);
-  if (!meal.foods.length) state.meals[TODAY].splice(mi, 1);
+  if (!meal.foods.length) state.meals[dietViewDate].splice(mi, 1);
   renderDiet(); updateDash();
   await pushToGitHub();
 }
 
 async function deleteMeal(mi) {
   if (!confirm('Remover esta refeição e todos os alimentos?')) return;
-  state.meals[TODAY].splice(mi, 1);
+  state.meals[dietViewDate].splice(mi, 1);
   renderDiet(); updateDash();
   await pushToGitHub();
 }

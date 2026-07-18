@@ -2,10 +2,12 @@
 // DETAIL PAGE — histórico, faixa saudável, indicadores relacionados,
 // correlação estatística real (calculada a partir do healthHistory)
 // ══════════════════════════════════════════
-function getQueryMetric() {
+function getQueryParams() {
   const params = new URLSearchParams(location.search);
-  const id = params.get('metric');
-  return (id && METRICS[id]) ? id : 'peso';
+  const measurementId = params.get('measurement');
+  if (measurementId) return { mode: 'measurement', id: measurementId };
+  const metricId = params.get('metric');
+  return { mode: 'metric', id: (metricId && METRICS[metricId]) ? metricId : 'peso' };
 }
 
 function fmtNum(v) {
@@ -80,12 +82,64 @@ function svgLineChart(series) {
 }
 
 function renderDetail() {
-  const id = getQueryMetric();
+  const q = getQueryParams();
+  if (q.mode === 'measurement') { renderMeasurementDetail(q.id); return; }
+  renderMetricDetail(q.id);
+}
+
+function renderMeasurementDetail(id) {
+  const def = state.measurements.defs.find(d => d.id === id);
+  const container = document.getElementById('detail-content');
+  if (!def) {
+    document.getElementById('detail-title').textContent = 'Medida';
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Medida não encontrada.</p></div>`;
+    return;
+  }
+  document.getElementById('detail-title').textContent = def.name;
+  document.title = def.name + ' — Change';
+
+  const series = measurementSeries(id);
+  const current = series.length ? series[series.length - 1].value : null;
+  const unit = def.unit ? ' ' + def.unit : '';
+
+  const chartHtml = series.length >= 2
+    ? svgLineChart(series)
+    : `<div class="empty-state" style="padding:24px 10px">
+         <div class="icon">📈</div>
+         <p>Ainda não há histórico suficiente.<br>Cada vez que registares esta medida fica um novo ponto aqui.</p>
+       </div>`;
+
+  const values = series.map(p => p.value);
+  const statsHtml = values.length ? `
+    <div class="detail-stats-row">
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values[values.length - 1])}</div><div class="detail-stat-lbl">Atual</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.min(...values))}</div><div class="detail-stat-lbl">Mínimo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.max(...values))}</div><div class="detail-stat-lbl">Máximo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values.reduce((a, b) => a + b, 0) / values.length)}</div><div class="detail-stat-lbl">Média</div></div>
+    </div>` : '';
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(def.name)}</div>
+      <div class="detail-current">${current === null ? '—' : fmtNum(current)}<span class="detail-unit">${unit}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Histórico</div>
+      ${chartHtml}
+      ${statsHtml}
+    </div>
+    <div class="card">
+      <button class="btn-secondary" onclick="deleteMeasurementDef('${id}'); location.href='index.html'">🗑 Remover esta medida</button>
+    </div>
+  `;
+}
+
+function renderMetricDetail(id) {
   const m = METRICS[id];
   const container = document.getElementById('detail-content');
 
   document.getElementById('detail-title').textContent = m.label;
-  document.title = m.label + ' — The CHANGE App';
+  document.title = m.label + ' — Change';
 
   const series = metricSeries(id);
   const current = series.length ? series[series.length - 1].value : metricValue(id, state.health);

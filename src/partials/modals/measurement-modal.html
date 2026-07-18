@@ -1,0 +1,25 @@
+<!-- MODAL: BODY MEASUREMENT -->
+<div class="modal-overlay" id="measurement-modal">
+  <div class="modal">
+    <h3>📏 Registar medida <button class="modal-close" onclick="closeModal('measurement-modal')">×</button></h3>
+    <div class="form-group">
+      <label class="form-label">Medida</label>
+      <select class="form-input" id="ms-type" onchange="toggleMeasurementNewFields()"></select>
+    </div>
+    <div id="ms-new-fields" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nome da nova medida</label>
+        <input class="form-input" id="ms-new-name" placeholder="ex: Cintura"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unidade</label>
+        <input class="form-input" id="ms-new-unit" placeholder="ex: cm"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Valor</label>
+      <input type="number" step="0.1" class="form-input" id="ms-value" placeholder="ex: 98"/>
+    </div>
+    <button class="btn-primary" onclick="saveMeasurement()">Guardar medida</button>
+  </div>
+</div>

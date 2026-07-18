@@ -2,7 +2,7 @@
   "name": "dbfit",
   "private": true,
   "version": "1.0.0",
-  "description": "The CHANGE App — app pessoal de treino, dieta e bioimpedância (single-file, sem dependências).",
+  "description": "Change — app pessoal de treino, dieta e bioimpedância (single-file, sem dependências).",
   "scripts": {
     "build": "node build.js"
   }

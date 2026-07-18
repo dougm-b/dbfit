@@ -21,12 +21,17 @@
   </div>
 
   <div class="section-hdr">
-    <h3>📋 Sessões de hoje</h3>
-    <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
+    <h3>📋 Sessões</h3>
+    <button class="add-btn" onclick="openTrainModal(trainViewDate)">+ Registar</button>
+  </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="trainShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="train-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="train-next-btn" onclick="trainShiftDay(1)">›</button>
   </div>
   <div id="train-log-list"></div>
   <div id="train-empty" class="empty-state" style="display:none">
     <div class="icon">💪</div>
-    <p>Sem treino registado hoje.</p>
+    <p>Sem treino registado neste dia.</p>
   </div>
 </div>

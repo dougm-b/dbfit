@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="The CHANGE App"/>
-<title>The CHANGE App — Douglas Barros</title>
+<meta name="apple-mobile-web-app-title" content="Change"/>
+<title>Change — Douglas Barros</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -51,6 +51,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;align-items:center;justify-content:space-between;
   position:relative;z-index:10;flex-shrink:0;
 }
+.logo-row{display:flex;align-items:center;gap:8px}
+#flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -101,6 +103,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .section-hdr h3{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
   padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
+.date-nav-label{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;min-width:90px;text-align:center}
+.cal-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 .meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
   cursor:pointer;transition:border-color .2s}
@@ -197,7 +202,13 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .ring-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px;color:var(--txt)}
 .ring-sub{font-size:10px;color:var(--txt3)}
 .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px}
-.progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.progress-fill{height:100%;border-radius:3px;transition:width .5s ease,background-color .4s}
+
+/* ── SCORE CARD ── */
+.score-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.score-num{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:36px}
+.score-label{font-size:13px;color:var(--txt2);font-weight:600}
+.score-bar{height:8px}
 
 /* ── DIET ── */
 .meal-group{margin-bottom:14px}
@@ -296,7 +307,7 @@ input[type="file"].form-input::file-selector-button{
 <!-- TOKEN SETUP SCREEN -->
 <div id="token-setup">
   <div class="lock-icon">🔐</div>
-  <div class="setup-logo">The CHANGE App</div>
+  <div class="setup-logo">Change</div>
   <div class="setup-title">Configuração inicial</div>
   <div class="setup-sub">Para sincronizar os teus dados entre dispositivos, insere o teu GitHub Personal Access Token. Fica guardado só neste browser, nunca é enviado para nenhum servidor.</div>
   <input type="password" class="setup-input" id="token-input" placeholder="github_pat_..." autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false"/>
@@ -318,7 +329,12 @@ input[type="file"].form-input::file-selector-button{
 <div id="app">
   <!-- TOP BAR -->
   <div id="topbar">
-    <div class="logo">The CHANGE App<span>Douglas Barros</span></div>
+    <div class="logo-row">
+      <svg id="flame-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.176 7.547 7.547 0 01-1.705-1.715.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"/>
+      </svg>
+      <div class="logo">Change<span>Douglas Barros</span></div>
+    </div>
     <div class="date-chip" id="date-chip"></div>
   </div>
 
@@ -326,6 +342,15 @@ input[type="file"].form-input::file-selector-button{
   <div id="content">
 <!-- DASHBOARD -->
 <div id="dash-screen" class="screen active">
+  <div class="card score-card">
+    <div class="card-title">🔥 Desempenho de hoje</div>
+    <div class="score-row">
+      <div class="score-num" id="score-num">—</div>
+      <div class="score-label" id="score-label">A calcular...</div>
+    </div>
+    <div class="progress-bar score-bar"><div class="progress-fill" id="score-bar" style="width:0%"></div></div>
+    <p style="font-size:11px;color:var(--txt3);margin-top:8px">Cruza bioimpedância, alimentação, treino e evolução face aos últimos dias.</p>
+  </div>
   <div class="hero-stats">
     <div class="stat-box">
       <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
@@ -421,14 +446,19 @@ input[type="file"].form-input::file-selector-button{
     <h3>🍽️ Diário alimentar</h3>
     <button class="add-btn" onclick="openFoodModal()">+ Adicionar</button>
   </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="dietShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="diet-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="diet-next-btn" onclick="dietShiftDay(1)">›</button>
+  </div>
   <div class="card">
-    <div class="card-title">📊 Total de hoje</div>
+    <div class="card-title">📊 Total do dia</div>
     <div class="macro-grid" id="diet-totals"></div>
   </div>
   <div id="meal-list"></div>
   <div id="meal-empty" class="empty-state">
     <div class="icon">🍽️</div>
-    <p>Ainda sem refeições hoje.<br>Toca em "+ Adicionar" para começar.</p>
+    <p>Ainda sem refeições neste dia.<br>Toca em "+ Adicionar" para começar.</p>
   </div>
 </div>
 
@@ -455,13 +485,18 @@ input[type="file"].form-input::file-selector-button{
   </div>
 
   <div class="section-hdr">
-    <h3>📋 Sessões de hoje</h3>
-    <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
+    <h3>📋 Sessões</h3>
+    <button class="add-btn" onclick="openTrainModal(trainViewDate)">+ Registar</button>
+  </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="trainShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="train-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="train-next-btn" onclick="trainShiftDay(1)">›</button>
   </div>
   <div id="train-log-list"></div>
   <div id="train-empty" class="empty-state" style="display:none">
     <div class="icon">💪</div>
-    <p>Sem treino registado hoje.</p>
+    <p>Sem treino registado neste dia.</p>
   </div>
 </div>
 
@@ -495,6 +530,16 @@ input[type="file"].form-input::file-selector-button{
   <div class="health-row">
     <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc">— bpm</div><div class="health-status" id="h-fc-status">Repouso</div></div>
     <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
+  </div>
+
+  <div class="section-hdr">
+    <h3>📏 Medidas corporais</h3>
+    <button class="add-btn" onclick="openMeasurementModal()">+ Adicionar</button>
+  </div>
+  <div class="health-row" id="measurements-list"></div>
+  <div id="measurements-empty" class="empty-state">
+    <div class="icon">📏</div>
+    <p>Sem medidas registadas ainda.<br>Toca em "+ Adicionar" para criar a primeira (ex: cintura, peito, braço).</p>
   </div>
 </div>
 
@@ -718,6 +763,32 @@ input[type="file"].form-input::file-selector-button{
   </div>
 </div>
 
+<!-- MODAL: BODY MEASUREMENT -->
+<div class="modal-overlay" id="measurement-modal">
+  <div class="modal">
+    <h3>📏 Registar medida <button class="modal-close" onclick="closeModal('measurement-modal')">×</button></h3>
+    <div class="form-group">
+      <label class="form-label">Medida</label>
+      <select class="form-input" id="ms-type" onchange="toggleMeasurementNewFields()"></select>
+    </div>
+    <div id="ms-new-fields" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Nome da nova medida</label>
+        <input class="form-input" id="ms-new-name" placeholder="ex: Cintura"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unidade</label>
+        <input class="form-input" id="ms-new-unit" placeholder="ex: cm"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Valor</label>
+      <input type="number" step="0.1" class="form-input" id="ms-value" placeholder="ex: 98"/>
+    </div>
+    <button class="btn-primary" onclick="saveMeasurement()">Guardar medida</button>
+  </div>
+</div>
+
 
 <script>
 // ══════════════════════════════════════════
@@ -742,6 +813,18 @@ function parseLocalDate(dk){
 }
 const now   = new Date();
 const TODAY = fmtDate(now);
+
+function shiftDate(dateKey, delta){
+  const d = parseLocalDate(dateKey);
+  d.setDate(d.getDate() + delta);
+  return fmtDate(d);
+}
+function dateNavLabel(dateKey){
+  if (dateKey === TODAY) return 'Hoje';
+  if (dateKey === shiftDate(TODAY, -1)) return 'Ontem';
+  const d = parseLocalDate(dateKey);
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
 
 function esc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
@@ -785,6 +868,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
   };
@@ -803,6 +887,10 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.measurements = {
+    defs: (loaded.measurements && loaded.measurements.defs) || [],
+    history: (loaded.measurements && loaded.measurements.history) || {}
+  };
   s.chatHistory  = loaded.chatHistory || [];
 
   // migrate old flat foods -> meals
@@ -1075,7 +1163,7 @@ function openFoodModal(prefillMeal) {
   document.getElementById('food-modal').classList.add('open');
 }
 function openFoodModalForMeal(mi) {
-  openFoodModal(state.meals[TODAY][mi].name);
+  openFoodModal(state.meals[dietViewDate][mi].name);
 }
 function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
@@ -1304,11 +1392,95 @@ function snapshotHealthHistory(dateKey) {
 }
 
 // ══════════════════════════════════════════
+// NOTA DE DESEMPENHO DIÁRIO — cruza bioimpedância, alimentação, treino e
+// evolução face aos dias anteriores num único valor 0–100. Usado pela
+// barra de progresso do Dashboard e pela cor do ícone de chama no topo.
+//
+// Pesos (ajustáveis): bioimpedância 30%, alimentação 25%, treino 25%,
+// evolução 20%. Uma componente sem dados disponíveis é ignorada e o peso
+// das restantes é redistribuído (não penaliza por falta de registo).
+// ══════════════════════════════════════════
+const SCORE_TIERS = [
+  { min: 90, tier: 'blue',   color: 'var(--blue)',   label: 'Excecional' },
+  { min: 75, tier: 'green',  color: 'var(--good)',   label: 'Muito bom' },
+  { min: 55, tier: 'yellow', color: 'var(--caution)',label: 'Ok' },
+  { min: 35, tier: 'orange', color: 'var(--warn)',   label: 'Precisa de atenção' },
+  { min: 0,  tier: 'red',    color: 'var(--red)',    label: 'Fraco' }
+];
+
+function scoreTierFor(score) {
+  return SCORE_TIERS.find(t => score >= t.min) || SCORE_TIERS[SCORE_TIERS.length - 1];
+}
+
+function avgOf(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
+
+function computeDailyScore() {
+  const parts = [];
+
+  // 1. Bioimpedância: média dos níveis de intensidade dos indicadores com faixa definida
+  const bioIds = ['gc', 'gv', 'prot', 'agua', 'fc', 'passos'];
+  const bioTierScore = { 'badge-ok': 100, 'badge-caution': 70, 'badge-warn': 40, 'badge-red': 10 };
+  const bioScores = bioIds
+    .map(id => classifyMetricValue(id, metricValue(id, state.health)))
+    .filter(Boolean)
+    .map(s => bioTierScore[s.cls]);
+  if (bioScores.length) parts.push({ score: avgOf(bioScores), weight: 30 });
+
+  // 2. Alimentação: proximidade às metas de calorias e proteína de hoje
+  const totals = dayTotals(TODAY);
+  const g = state.settings;
+  if (totals.kcal > 0) {
+    const kcalDevPct = Math.abs(totals.kcal - g.metaKcal) / g.metaKcal;
+    const kcalScore = Math.max(0, 100 - kcalDevPct * 150);
+    const protScore = Math.min(100, (totals.prot / g.metaProt) * 100);
+    parts.push({ score: (kcalScore + protScore) / 2, weight: 25 });
+  }
+
+  // 3. Treino: sessão registada hoje (bónus se treinou num dia sem plano agendado)
+  const scheduled = state.workoutPlans.some(p => (p.frequency || []).includes(now.getDay()));
+  const done = (state.workoutLogs[TODAY] || []).length > 0;
+  parts.push({ score: done ? 100 : (scheduled ? 20 : 65), weight: 25 });
+
+  // 4. Evolução: gordura corporal vs. ~7 dias atrás (a descer = bom, para este objetivo)
+  const gcSeries = metricSeries('gc');
+  if (gcSeries.length >= 2) {
+    const last = gcSeries[gcSeries.length - 1];
+    const weekAgoDate = shiftDate(last.date, -7);
+    const ref = [...gcSeries].reverse().find(p => p.date <= weekAgoDate) || gcSeries[0];
+    const delta = last.value - ref.value; // negativo = melhorou
+    const trendScore = Math.max(0, Math.min(100, 50 - delta * 40));
+    parts.push({ score: trendScore, weight: 20 });
+  }
+
+  if (!parts.length) return { score: null, tier: 'green', color: 'var(--good)', label: 'Sem dados', breakdown: [] };
+
+  const totalWeight = parts.reduce((a, p) => a + p.weight, 0);
+  const score = Math.round(parts.reduce((a, p) => a + p.score * p.weight, 0) / totalWeight);
+  const t = scoreTierFor(score);
+  return { score, tier: t.tier, color: t.color, label: t.label, breakdown: parts };
+}
+
+// ══════════════════════════════════════════
 // DASHBOARD
 // ══════════════════════════════════════════
 function updateDash() {
   const totals = dayTotals(TODAY);
   const g = state.settings;
+
+  const perf = computeDailyScore();
+  const flame = document.getElementById('flame-icon');
+  if (flame) flame.style.color = perf.color;
+  const scoreNum = document.getElementById('score-num');
+  const scoreLabel = document.getElementById('score-label');
+  const scoreBar = document.getElementById('score-bar');
+  if (scoreNum) {
+    scoreNum.textContent = perf.score === null ? '—' : perf.score;
+    scoreNum.style.color = perf.color;
+    scoreLabel.textContent = perf.label;
+    scoreLabel.style.color = perf.color;
+    scoreBar.style.width = (perf.score || 0) + '%';
+    scoreBar.style.background = perf.color;
+  }
   document.getElementById('m-kcal').textContent = totals.kcal;
   document.getElementById('m-prot').textContent = totals.prot + 'g';
   document.getElementById('m-carb').textContent = totals.carb + 'g';
@@ -1390,11 +1562,20 @@ const MEAL_EMOJIS = {
   '🍫 Lanche da tarde':'🍫','⚡ Pré-treino':'⚡','🌙 Jantar':'🌙','🌛 Ceia':'🌛'
 };
 
+let dietViewDate = TODAY;
+
+function dietShiftDay(delta) {
+  const next = shiftDate(dietViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  dietViewDate = next;
+  renderDiet();
+}
+
 async function addFood() {
   const mealName = document.getElementById('f-meal').value;
   const food = document.getElementById('f-food').value.trim();
   if (!food) { showToast('⚠️ Indica o alimento'); return; }
-  addFoodToMeal(TODAY, mealName, {
+  addFoodToMeal(dietViewDate, mealName, {
     name: food,
     qty:  +document.getElementById('f-qty').value  || 0,
     prot: +document.getElementById('f-prot').value || 0,
@@ -1411,9 +1592,13 @@ async function addFood() {
 }
 
 function renderDiet() {
-  const meals = state.meals[TODAY] || [];
-  const totals = dayTotals(TODAY);
+  const meals = state.meals[dietViewDate] || [];
+  const totals = dayTotals(dietViewDate);
   const g = state.settings;
+
+  document.getElementById('diet-date-label').textContent = dateNavLabel(dietViewDate);
+  document.getElementById('diet-next-btn').disabled = dietViewDate >= TODAY;
+
   document.getElementById('diet-totals').innerHTML = `
     <div class="macro-item"><div class="macro-val" style="color:var(--warn)">${totals.kcal}</div><div class="macro-lbl">kcal / ${g.metaKcal}</div></div>
     <div class="macro-item"><div class="macro-val" style="color:var(--acc)">${totals.prot}g</div><div class="macro-lbl">prot / ${g.metaProt}g</div></div>
@@ -1452,16 +1637,16 @@ function renderDiet() {
 
 async function deleteFood(mi, fi) {
   if (!confirm('Remover este alimento?')) return;
-  const meal = state.meals[TODAY][mi];
+  const meal = state.meals[dietViewDate][mi];
   meal.foods.splice(fi, 1);
-  if (!meal.foods.length) state.meals[TODAY].splice(mi, 1);
+  if (!meal.foods.length) state.meals[dietViewDate].splice(mi, 1);
   renderDiet(); updateDash();
   await pushToGitHub();
 }
 
 async function deleteMeal(mi) {
   if (!confirm('Remover esta refeição e todos os alimentos?')) return;
-  state.meals[TODAY].splice(mi, 1);
+  state.meals[dietViewDate].splice(mi, 1);
   renderDiet(); updateDash();
   await pushToGitHub();
 }
@@ -1647,6 +1832,15 @@ function openDayModal(dk) {
 // TRAINING — LOG SESSIONS
 // ══════════════════════════════════════════
 let trainModalDate = TODAY;
+let trainViewDate = TODAY;
+
+function trainShiftDay(delta) {
+  const next = shiftDate(trainViewDate, delta);
+  if (next > TODAY) return;
+  trainViewDate = next;
+  renderTraining();
+}
+
 function openTrainModal(dateKey) {
   trainModalDate = dateKey || TODAY;
   const sel = document.getElementById('t-type');
@@ -1680,13 +1874,16 @@ async function addTraining() {
 }
 
 function renderTraining() {
-  const logs = state.workoutLogs[TODAY] || [];
+  document.getElementById('train-date-label').textContent = dateNavLabel(trainViewDate);
+  document.getElementById('train-next-btn').disabled = trainViewDate >= TODAY;
+
+  const logs = state.workoutLogs[trainViewDate] || [];
   const le = document.getElementById('train-empty');
   const ll = document.getElementById('train-log-list');
   if (!logs.length) { le.style.display = 'block'; ll.innerHTML = ''; return; }
   le.style.display = 'none';
   ll.innerHTML = logs.map((l, i) => `
-    <div class="meal-entry" onclick="deleteTraining(${i})">
+    <div class="meal-entry" onclick="deleteTrainingAt('${trainViewDate}',${i})">
       <div class="meal-emoji">🏋️</div>
       <div class="meal-info">
         <div class="meal-name">${esc(l.planName)}</div>
@@ -1697,20 +1894,14 @@ function renderTraining() {
   `).join('');
 }
 
-async function deleteTraining(idx) {
-  if (!confirm('Remover este treino?')) return;
-  state.workoutLogs[TODAY].splice(idx, 1);
-  renderTraining(); renderCalendar(); updateDash();
-  await pushToGitHub();
-}
-
 async function deleteTrainingAt(dk, idx) {
   if (!confirm('Remover esta sessão?')) return;
   state.workoutLogs[dk].splice(idx, 1);
   if (!state.workoutLogs[dk].length) delete state.workoutLogs[dk];
   renderCalendar();
-  if (dk === TODAY) { renderTraining(); updateDash(); }
-  openDayModal(dk);
+  renderTraining();
+  updateDash();
+  if (document.getElementById('day-modal').classList.contains('open')) openDayModal(dk);
   await pushToGitHub();
 }
 
@@ -1751,6 +1942,7 @@ function renderHealth() {
     st.style.color = cls.color;
   }
   if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
+  renderMeasurements();
 }
 
 async function saveHealth() {
@@ -1785,6 +1977,106 @@ async function saveHealth() {
 
 function goToMetric(id) {
   location.href = 'detail.html?metric=' + encodeURIComponent(id);
+}
+
+// ══════════════════════════════════════════
+// MEDIDAS CORPORAIS — cards totalmente livres definidos pelo utilizador
+// (cintura, peito, braço, etc.), cada um com o seu próprio histórico e
+// gráfico na página de detalhe (?measurement=<id>)
+// ══════════════════════════════════════════
+function nextMeasurementId() {
+  const ids = state.measurements.defs.map(d => d.id);
+  let n = 1;
+  while (ids.includes('m' + n)) n++;
+  return 'm' + n;
+}
+
+function measurementLatestValue(id) {
+  const dates = Object.keys(state.measurements.history)
+    .filter(d => state.measurements.history[d][id] !== undefined)
+    .sort();
+  if (!dates.length) return null;
+  return state.measurements.history[dates[dates.length - 1]][id];
+}
+
+function measurementSeries(id) {
+  return Object.entries(state.measurements.history)
+    .filter(([, day]) => day[id] !== undefined)
+    .map(([date, day]) => ({ date, value: day[id] }))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+function renderMeasurements() {
+  const defs = state.measurements.defs;
+  const list = document.getElementById('measurements-list');
+  const empty = document.getElementById('measurements-empty');
+  if (!defs.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = defs.map(d => {
+    const v = measurementLatestValue(d.id);
+    return `
+    <div class="health-box" onclick="goToMeasurement('${d.id}')">
+      <div class="health-lbl">${esc(d.name)}</div>
+      <div class="health-val">${v === null || v === undefined ? '—' : fmtMeasureVal(v)}<span style="font-size:13px;color:var(--txt3)"> ${esc(d.unit || '')}</span></div>
+      <div class="health-status" style="color:var(--txt3)">toca para ver histórico</div>
+    </div>`;
+  }).join('');
+}
+
+function fmtMeasureVal(v) {
+  return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
+}
+
+function openMeasurementModal() {
+  const sel = document.getElementById('ms-type');
+  sel.innerHTML = state.measurements.defs.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')
+    + `<option value="__new__">+ Nova medida…</option>`;
+  sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
+  document.getElementById('ms-value').value = '';
+  document.getElementById('ms-new-name').value = '';
+  document.getElementById('ms-new-unit').value = '';
+  toggleMeasurementNewFields();
+  document.getElementById('measurement-modal').classList.add('open');
+}
+
+function toggleMeasurementNewFields() {
+  const isNew = document.getElementById('ms-type').value === '__new__';
+  document.getElementById('ms-new-fields').style.display = isNew ? 'block' : 'none';
+}
+
+async function saveMeasurement() {
+  const sel = document.getElementById('ms-type');
+  const value = +document.getElementById('ms-value').value;
+  if (!value && value !== 0) { showToast('⚠️ Indica um valor'); return; }
+
+  let id = sel.value;
+  if (id === '__new__') {
+    const name = document.getElementById('ms-new-name').value.trim();
+    if (!name) { showToast('⚠️ Indica o nome da medida'); return; }
+    const unit = document.getElementById('ms-new-unit').value.trim();
+    id = nextMeasurementId();
+    state.measurements.defs.push({ id, name, unit });
+  }
+
+  if (!state.measurements.history[TODAY]) state.measurements.history[TODAY] = {};
+  state.measurements.history[TODAY][id] = value;
+
+  closeModal('measurement-modal');
+  renderMeasurements();
+  await pushToGitHub();
+  showToast('✅ Medida guardada!');
+}
+
+async function deleteMeasurementDef(id) {
+  if (!confirm('Remover esta medida e todo o seu histórico?')) return;
+  state.measurements.defs = state.measurements.defs.filter(d => d.id !== id);
+  Object.values(state.measurements.history).forEach(day => { delete day[id]; });
+  renderMeasurements();
+  await pushToGitHub();
+}
+
+function goToMeasurement(id) {
+  location.href = 'detail.html?measurement=' + encodeURIComponent(id);
 }
 
 // ══════════════════════════════════════════

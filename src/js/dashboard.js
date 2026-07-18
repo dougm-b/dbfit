@@ -4,6 +4,21 @@
 function updateDash() {
   const totals = dayTotals(TODAY);
   const g = state.settings;
+
+  const perf = computeDailyScore();
+  const flame = document.getElementById('flame-icon');
+  if (flame) flame.style.color = perf.color;
+  const scoreNum = document.getElementById('score-num');
+  const scoreLabel = document.getElementById('score-label');
+  const scoreBar = document.getElementById('score-bar');
+  if (scoreNum) {
+    scoreNum.textContent = perf.score === null ? '—' : perf.score;
+    scoreNum.style.color = perf.color;
+    scoreLabel.textContent = perf.label;
+    scoreLabel.style.color = perf.color;
+    scoreBar.style.width = (perf.score || 0) + '%';
+    scoreBar.style.background = perf.color;
+  }
   document.getElementById('m-kcal').textContent = totals.kcal;
   document.getElementById('m-prot').textContent = totals.prot + 'g';
   document.getElementById('m-carb').textContent = totals.carb + 'g';
