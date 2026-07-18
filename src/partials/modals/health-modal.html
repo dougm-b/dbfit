@@ -1,0 +1,27 @@
+<!-- MODAL: HEALTH UPDATE -->
+<div class="modal-overlay" id="health-modal">
+  <div class="modal">
+    <h3>📊 Atualizar bioimpedância <button class="modal-close" onclick="closeModal('health-modal')">×</button></h3>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Peso (kg)</label><input type="number" class="form-input" id="h-peso-i" step="0.1" placeholder="122.5"/></div>
+      <div class="form-group"><label class="form-label">Gordura corporal (%)</label><input type="number" class="form-input" id="h-gc-i" step="0.1" placeholder="37.0"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Músculo total (kg)</label><input type="number" class="form-input" id="h-musc-i" step="0.1" placeholder="73.3"/></div>
+      <div class="form-group"><label class="form-label">Gordura visceral</label><input type="number" class="form-input" id="h-gv-i" placeholder="15"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Músculo esquelético (kg)</label><input type="number" class="form-input" id="h-me-i" step="0.1" placeholder="43.0"/></div>
+      <div class="form-group"><label class="form-label">Proteína corporal (%)</label><input type="number" class="form-input" id="h-prot-i" step="0.1" placeholder="11.4"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Água corporal (%)</label><input type="number" class="form-input" id="h-agua-i" step="0.1" placeholder="44.9"/></div>
+      <div class="form-group"><label class="form-label">Metabolismo basal (kcal)</label><input type="number" class="form-input" id="h-met-i" placeholder="2309"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Frequência cardíaca (bpm)</label><input type="number" class="form-input" id="h-fc-i" placeholder="72"/></div>
+      <div class="form-group"><label class="form-label">Passos hoje</label><input type="number" class="form-input" id="h-passos-i" placeholder="8500"/></div>
+    </div>
+    <button class="btn-primary" onclick="saveHealth()">Guardar dados</button>
+  </div>
+</div>

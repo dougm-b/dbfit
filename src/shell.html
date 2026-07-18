@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0f0a"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="DB Fit"/>
+<title>DB Fit — Douglas Barros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+<!--INCLUDE:css/base.css-->
+<!--INCLUDE:css/dashboard.css-->
+<!--INCLUDE:css/diet.css-->
+<!--INCLUDE:css/train.css-->
+<!--INCLUDE:css/health.css-->
+<!--INCLUDE:css/settings.css-->
+</style>
+</head>
+<body>
+
+<!--INCLUDE:partials/setup.html-->
+
+<div id="app">
+  <!-- TOP BAR -->
+  <div id="topbar">
+    <div class="logo">DB Fit<span>Douglas Barros</span></div>
+    <div class="date-chip" id="date-chip"></div>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content">
+<!--INCLUDE:screens/dashboard.html-->
+<!--INCLUDE:screens/diet.html-->
+<!--INCLUDE:screens/train.html-->
+<!--INCLUDE:screens/health.html-->
+<!--INCLUDE:screens/settings.html-->
+  </div><!-- /content -->
+
+<!--INCLUDE:partials/nav.html-->
+</div>
+
+<!--INCLUDE:partials/modals/food-modal.html-->
+<!--INCLUDE:partials/modals/plan-modal.html-->
+<!--INCLUDE:partials/modals/day-modal.html-->
+<!--INCLUDE:partials/modals/train-modal.html-->
+<!--INCLUDE:partials/modals/health-modal.html-->
+
+<script>
+<!--INCLUDE:js/core.js-->
+<!--INCLUDE:js/dashboard.js-->
+<!--INCLUDE:js/diet.js-->
+<!--INCLUDE:js/train.js-->
+<!--INCLUDE:js/health.js-->
+<!--INCLUDE:js/settings.js-->
+<!--INCLUDE:js/chat.js-->
+<!--INCLUDE:js/boot.js-->
+</script>
+</body>
+</html>

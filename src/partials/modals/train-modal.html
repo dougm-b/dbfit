@@ -1,0 +1,21 @@
+<!-- MODAL: REGISTER TRAINING SESSION -->
+<div class="modal-overlay" id="train-modal">
+  <div class="modal">
+    <h3>💪 Registar treino <button class="modal-close" onclick="closeModal('train-modal')">×</button></h3>
+    <div class="form-group">
+      <label class="form-label">Treino / tipo</label>
+      <select class="form-input" id="t-type"></select>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Duração (min)</label><input type="number" class="form-input" id="t-dur" placeholder="60"/></div>
+      <div class="form-group"><label class="form-label">Intensidade</label>
+        <select class="form-input" id="t-int"><option>Leve</option><option selected>Moderada</option><option>Alta</option><option>Máxima</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notas</label>
+      <textarea class="form-input" id="t-notes" rows="3" placeholder="ex: Supino 2x32,5kg — 12 reps..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="addTraining()">Guardar treino</button>
+  </div>
+</div>

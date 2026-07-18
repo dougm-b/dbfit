@@ -1,0 +1,5 @@
+/* ── DIET ── */
+.meal-group{margin-bottom:14px}
+.meal-group-hdr{font-size:11px;color:var(--txt3);text-transform:uppercase;
+  letter-spacing:.1em;margin-bottom:6px;display:flex;align-items:center;gap:6px;justify-content:space-between}
+.meal-group-hdr .mg-actions{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0}

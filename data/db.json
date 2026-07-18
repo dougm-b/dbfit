@@ -1,9 +1,41 @@
 {
-  "foods": {},
-  "training": {
+  "workoutPlans": [
+    {
+      "id": 1,
+      "name": "Full Body A — Ênfase Peito + Bíceps",
+      "frequency": [1, 5],
+      "exercises": [
+        {"name":"Press banco plano c/ halteres","series":4,"reps":"10–12","carga":"2x 25–32 kg","descanso":90},
+        {"name":"Press banco inclinado","series":3,"reps":"10–12","carga":"2x 20–25 kg","descanso":90},
+        {"name":"Remada curvada c/ halteres","series":4,"reps":"10–12","carga":"2x 25–32 kg","descanso":90},
+        {"name":"Press ombros sentado","series":3,"reps":"10–12","carga":"2x 16,5 kg","descanso":75},
+        {"name":"Rosca direta","series":4,"reps":"10–12","carga":"2x 16,5 kg","descanso":60},
+        {"name":"Extensão tríceps atrás cabeça","series":3,"reps":"12","carga":"1x 14,5 kg","descanso":60},
+        {"name":"Goblet squat","series":3,"reps":"15","carga":"1x 32,5 kg","descanso":90},
+        {"name":"Lunge estático","series":3,"reps":"10 cada","carga":"2x 14,5 kg","descanso":75}
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Full Body B — Ênfase Costas + Tríceps",
+      "frequency": [3, 6],
+      "exercises": [
+        {"name":"Remada unilateral no banco","series":4,"reps":"10–12 cada","carga":"1x 32,5 kg","descanso":90},
+        {"name":"Pullover c/ halter","series":3,"reps":"12–15","carga":"1x 25–30 kg","descanso":75},
+        {"name":"Crucifixo banco plano","series":3,"reps":"12–15","carga":"2x 14–18 kg","descanso":75},
+        {"name":"Press ombros sentado","series":3,"reps":"10–12","carga":"2x 16,5 kg","descanso":75},
+        {"name":"Rosca martelo","series":3,"reps":"12","carga":"2x 16,5 kg","descanso":60},
+        {"name":"Extensão tríceps (testa)","series":4,"reps":"12","carga":"2x 14,5 kg","descanso":60},
+        {"name":"Stiff c/ halteres","series":3,"reps":"12","carga":"2x 25–30 kg","descanso":90},
+        {"name":"Elevação pélvica no banco","series":3,"reps":"15","carga":"1x 25–30 kg","descanso":75}
+      ]
+    }
+  ],
+  "workoutLogs": {
     "2026-04-06": [
       {
-        "type": "Full Body A — Ênfase Peito + Bíceps",
+        "planId": null,
+        "planName": "Full Body A — Ênfase Peito + Bíceps",
         "dur": 0,
         "intensity": "Moderada",
         "notes": "supino com 2 halteres cada um com 32,5kg e 12 repetições. Bicepis com 16,5kg um braço de cada vez e 4 repetiçoes em cada braço. Triceps 14,5kg sendo 12 repetiçoes e 4 series em cada braço.",
@@ -11,7 +43,9 @@
       }
     ]
   },
+  "meals": {},
   "health": {
+    "altura": 184,
     "peso": "122,5 kg",
     "gc": "37,0%",
     "musc": "73,3 kg",
@@ -21,7 +55,16 @@
     "agua": "44,9%",
     "met": "2.309",
     "idade": "21 anos",
-    "ossea": "4,0 kg"
+    "ossea": "4,0 kg",
+    "fc": 72,
+    "passos": 0
+  },
+  "settings": {
+    "metaKcal": 2600,
+    "metaProt": 195,
+    "metaCarb": 290,
+    "metaFat": 75,
+    "metaAgua": 3
   },
   "chatHistory": []
 }

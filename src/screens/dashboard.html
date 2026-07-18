@@ -1,0 +1,82 @@
+<!-- DASHBOARD -->
+<div id="dash-screen" class="screen active">
+  <div class="hero-stats">
+    <div class="stat-box">
+      <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
+      <div class="stat-lbl">Peso (kg)</div>
+      <div class="stat-badge badge-warn" id="dash-imc">IMC 36.6</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
+      <div class="stat-lbl">Gordura corporal</div>
+      <div class="stat-badge badge-red">Meta: 18–22%</div>
+    </div>
+  </div>
+  <div class="ring-row">
+    <div class="ring-card">
+      <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
+          stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Syne" id="ring-musc-txt">73</text>
+      </svg>
+      <div class="ring-info">
+        <div class="ring-label">Músculo total</div>
+        <div class="ring-val" id="ring-musc">73,3 kg</div>
+        <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
+      </div>
+    </div>
+    <div class="ring-card">
+      <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(248,113,113,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#f87171" stroke-width="5"
+          stroke-dasharray="113" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        <text x="22" y="26" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Syne" id="ring-gv-txt">15</text>
+      </svg>
+      <div class="ring-info">
+        <div class="ring-label">Gordura visceral</div>
+        <div class="ring-val" id="ring-gv">Nível 15</div>
+        <div class="ring-sub" style="color:var(--red)">🔴 Meta: &lt;9</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📊 Macros de hoje</div>
+    <div class="macro-grid">
+      <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl" id="m-kcal-lbl">kcal / 2600</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl" id="m-prot-lbl">prot / 195g</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-carb" style="color:var(--blue)">0g</div><div class="macro-lbl" id="m-carb-lbl">carb / 290g</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-fat" style="color:#c084fc">0g</div><div class="macro-lbl" id="m-fat-lbl">gord / 75g</div></div>
+    </div>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+          <span>Proteína</span><span id="prot-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--acc);width:0%"></div></div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+          <span>Calorias</span><span id="kcal-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="kcal-bar" style="background:var(--warn);width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🏋️ Treino de hoje</div>
+    <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Metas diárias</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>💧 Água</span><span id="goal-agua-txt" style="color:var(--blue);font-weight:600">3+ litros/dia</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🥩 Proteína diária</span><span id="goal-prot-txt" style="color:var(--acc);font-weight:600">190–200 g</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🔥 Calorias</span><span id="goal-kcal-txt" style="color:var(--warn);font-weight:600">2.500–2.700 kcal</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🏃 Treinos</span><span id="goal-cardio-txt" style="color:var(--txt2);font-weight:600">3–4x/semana</span></div>
+    </div>
+  </div>
+</div>

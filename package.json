@@ -1,0 +1,9 @@
+{
+  "name": "dbfit",
+  "private": true,
+  "version": "1.0.0",
+  "description": "DB Fit — app pessoal de treino, dieta e bioimpedância (single-file, sem dependências).",
+  "scripts": {
+    "build": "node build.js"
+  }
+}
