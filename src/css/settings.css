@@ -30,3 +30,10 @@
 }
 #send-btn:active{transform:scale(.92)}
 #send-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── FILE INPUT (import) ── */
+input[type="file"].form-input{padding:10px 12px;color:var(--txt2)}
+input[type="file"].form-input::file-selector-button{
+  background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:8px;
+  padding:6px 10px;margin-right:10px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;
+}

@@ -51,8 +51,13 @@ async function saveHealth() {
   if (fields.met)  state.health.met  = fields.met;
   if (fields.fc)      state.health.fc = +fields.fc;
   if (fields.passos)  state.health.passos = +fields.passos;
+  snapshotHealthHistory(TODAY);
   closeModal('health-modal');
   renderHealth(); updateDash();
   await pushToGitHub();
   showToast('✅ Dados de bioimpedância atualizados!');
+}
+
+function goToMetric(id) {
+  location.href = 'detail.html?metric=' + encodeURIComponent(id);
 }

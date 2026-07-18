@@ -7,8 +7,12 @@ const path = require('path');
 
 const ROOT = __dirname;
 const SRC = path.join(ROOT, 'src');
-const SHELL = path.join(SRC, 'shell.html');
-const OUT = path.join(ROOT, 'index.html');
+
+// One entry per output page: { shell: 'src/<file>', out: '<repo-root file>' }
+const TARGETS = [
+  { shell: 'shell.html', out: 'index.html' },
+  { shell: 'detail-shell.html', out: 'detail.html' },
+];
 
 const INCLUDE_RE = /<!--INCLUDE:([^\s]+?)-->/g;
 
@@ -27,10 +31,14 @@ function resolveIncludes(text, seen) {
 }
 
 function build() {
-  const shell = fs.readFileSync(SHELL, 'utf8');
-  const html = resolveIncludes(shell, new Set([SHELL]));
-  fs.writeFileSync(OUT, html, 'utf8');
-  console.log(`Built index.html (${html.length} bytes) from src/shell.html`);
+  TARGETS.forEach(({ shell, out }) => {
+    const shellPath = path.join(SRC, shell);
+    const outPath = path.join(ROOT, out);
+    const shellText = fs.readFileSync(shellPath, 'utf8');
+    const html = resolveIncludes(shellText, new Set([shellPath]));
+    fs.writeFileSync(outPath, html, 'utf8');
+    console.log(`Built ${out} (${html.length} bytes) from src/${shell}`);
+  });
 }
 
 build();

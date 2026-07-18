@@ -1,6 +1,7 @@
 /* ── HEALTH ── */
 .health-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
-.health-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px}
+.health-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px;cursor:pointer;transition:border-color .2s}
+.health-box:active{border-color:var(--acc)}
 .health-lbl{font-size:11px;color:var(--txt3);margin-bottom:6px}
 .health-val{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
 .health-status{font-size:11px;margin-top:4px}

@@ -4,28 +4,29 @@
     <h3>📊 Bioimpedância</h3>
     <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
   </div>
+  <p style="font-size:11px;color:var(--txt3);margin:-6px 0 12px">🔄 Sincroniza automaticamente entre dispositivos · toca num indicador para ver histórico e gráfico</p>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status" style="color:var(--warn)">IMC 36.6</div></div>
-    <div class="health-box"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
+    <div class="health-box" onclick="goToMetric('peso')"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status" style="color:var(--warn)">IMC 36.6</div></div>
+    <div class="health-box" onclick="goToMetric('gc')"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-    <div class="health-box"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
+    <div class="health-box" onclick="goToMetric('musc')"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+    <div class="health-box" onclick="goToMetric('gv')"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-    <div class="health-box"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
+    <div class="health-box" onclick="goToMetric('me')"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+    <div class="health-box" onclick="goToMetric('prot')"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
-    <div class="health-box"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
+    <div class="health-box" onclick="goToMetric('agua')"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
+    <div class="health-box" onclick="goToMetric('met')"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
-    <div class="health-box"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
+    <div class="health-box" onclick="goToMetric('idade')"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
+    <div class="health-box" onclick="goToMetric('ossea')"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc" style="color:var(--red)">— bpm</div><div class="health-status" style="color:var(--txt3)">Repouso</div></div>
-    <div class="health-box"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos" style="color:var(--blue)">0</div><div class="health-status" style="color:var(--txt3)">Meta: 8.000+</div></div>
+    <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc" style="color:var(--red)">— bpm</div><div class="health-status" style="color:var(--txt3)">Repouso</div></div>
+    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos" style="color:var(--blue)">0</div><div class="health-status" style="color:var(--txt3)">Meta: 8.000+</div></div>
   </div>
 </div>

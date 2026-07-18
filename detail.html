@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0f0a"/>
+<title>Indicador — DB Fit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --g0: #0a0f0a; --g1: #111811; --g2: #162016; --g3: #1e2e1e; --g4: #2a3f2a;
+  --acc: #4ade80; --acc2: #86efac; --acc3: #bbf7d0;
+  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --txt: #e8f5e9; --txt2: #a7c4a7; --txt3: #6b8f6b;
+  --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
+  --r: 16px; --r2: 12px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bot: env(safe-area-inset-bottom, 0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font-family:'DM Sans',sans-serif}
+
+/* ── SYNC INDICATOR ── */
+#sync-bar{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  padding:calc(var(--safe-top) + 6px) 16px 6px;
+  display:flex;align-items:center;justify-content:flex-end;
+  gap:6px;z-index:999;pointer-events:none;
+}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--txt3);transition:all .3s}
+.sync-dot.syncing{background:var(--warn);animation:pulse 1s infinite}
+.sync-dot.ok{background:var(--acc)}
+.sync-dot.error{background:var(--red)}
+.sync-label{font-size:10px;color:var(--txt3);transition:color .3s}
+.sync-label.syncing{color:var(--warn)}
+.sync-label.ok{color:var(--acc)}
+.sync-label.error{color:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── LAYOUT ── */
+#app{display:flex;flex-direction:column;height:100%;max-width:480px;margin:0 auto;position:relative}
+#topbar{
+  padding:calc(var(--safe-top) + 14px) 20px 14px;
+  background:linear-gradient(180deg,var(--g0) 0%,transparent 100%);
+  display:flex;align-items:center;justify-content:space-between;
+  position:relative;z-index:10;flex-shrink:0;
+}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo span{font-weight:400;font-size:13px;display:block;color:var(--txt3);-webkit-text-fill-color:var(--txt3);margin-top:-2px}
+.date-chip{background:var(--card);border:1px solid var(--card-b);border-radius:20px;
+  padding:5px 12px;font-size:12px;color:var(--txt2)}
+#content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:0 16px 120px;scroll-behavior:smooth}
+#content::-webkit-scrollbar{display:none}
+
+/* ── NAV ── */
+#nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:480px;
+  padding:12px 16px calc(var(--safe-bot) + 12px);
+  background:linear-gradient(0deg,var(--g0) 70%,transparent);
+  display:flex;justify-content:space-around;align-items:center;z-index:100;
+}
+.nav-btn{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;cursor:pointer;
+  color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:10px;
+  transition:color .2s;padding:8px 12px;border-radius:12px;
+}
+.nav-btn.active{color:var(--acc)}
+.nav-btn svg{width:22px;height:22px;stroke-width:1.8}
+.nav-btn.active svg{filter:drop-shadow(0 0 6px var(--acc))}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeIn .25s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ── CARDS ── */
+.card{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+  color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;
+  display:flex;align-items:center;gap:6px}
+
+/* ── MACRO GRID (dashboard + diet) ── */
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.macro-item{text-align:center}
+.macro-val{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
+.macro-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
+
+/* ── SHARED SECTION / LIST-ENTRY PATTERNS (diet + train + calendar day modal) ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
+.section-hdr h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
+  padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:border-color .2s}
+.meal-entry:active{border-color:var(--acc)}
+.meal-emoji{font-size:22px;flex-shrink:0}
+.meal-info{flex:1;min-width:0}
+.meal-name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-detail{font-size:11px;color:var(--txt3);margin-top:2px}
+.meal-kcal{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc);flex-shrink:0}
+.mg-icon-btn{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
+  width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ── STATUS BADGE ── */
+.stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--acc)}
+.badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
+.badge-red{background:rgba(248,113,113,.15);color:var(--red)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--g1);border:1px solid var(--g3);border-radius:24px 24px 0 0;
+  width:100%;max-width:480px;padding:24px 20px calc(var(--safe-bot) + 24px);
+  animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
+  display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
+  width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--txt3);margin-bottom:6px;display:block;font-weight:500}
+.form-input{width:100%;background:var(--g2);border:1px solid var(--g3);border-radius:12px;
+  padding:12px 14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--acc)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-primary{width:100%;background:var(--acc);color:#000;border:none;border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
+  transition:opacity .2s;margin-top:4px}
+.btn-primary:active{opacity:.85}
+.btn-secondary{width:100%;background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:14px;
+  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
+
+/* ── SETUP TOKEN ── */
+#token-setup{
+  position:fixed;inset:0;background:var(--g0);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 24px;text-align:center;
+}
+.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
+.setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:28px;max-width:320px}
+.setup-input{width:100%;max-width:360px;background:var(--g2);border:1px solid var(--g4);border-radius:14px;
+  padding:14px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;text-align:center;margin-bottom:12px}
+.setup-input:focus{border-color:var(--acc)}
+.setup-btn{width:100%;max-width:360px;background:var(--acc);color:#000;border:none;border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.setup-note{font-size:11px;color:var(--txt3);margin-top:16px;max-width:300px;line-height:1.5}
+#setup-error{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.lock-icon{font-size:40px;margin-bottom:16px}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:40px 20px;color:var(--txt3)}
+.empty-state .icon{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:14px}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:calc(var(--safe-top) + 60px);left:50%;transform:translateX(-50%) translateY(-10px);
+  background:var(--g3);border:1px solid var(--g4);border-radius:20px;
+  padding:8px 18px;font-size:13px;color:var(--txt);
+  opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── HEALTH ── */
+.health-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.health-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px;cursor:pointer;transition:border-color .2s}
+.health-box:active{border-color:var(--acc)}
+.health-lbl{font-size:11px;color:var(--txt3);margin-bottom:6px}
+.health-val{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.health-status{font-size:11px;margin-top:4px}
+
+/* ── DETAIL PAGE ── */
+#detail-topbar{
+  padding:calc(var(--safe-top) + 14px) 20px 14px;
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+#detail-back{
+  background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
+  width:34px;height:34px;font-size:18px;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;text-decoration:none;
+}
+#detail-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px}
+#detail-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  padding:0 16px 40px;scroll-behavior:smooth}
+#detail-content::-webkit-scrollbar{display:none}
+
+.detail-current{font-family:'Syne',sans-serif;font-weight:800;font-size:38px;color:var(--txt);margin:4px 0 12px}
+.detail-unit{font-size:16px;color:var(--txt3);margin-left:4px}
+
+.range-bar-wrap{margin-top:4px}
+.range-bar{position:relative;height:8px;background:rgba(255,255,255,.08);border-radius:4px}
+.range-bar-zone{position:absolute;top:0;height:100%;background:rgba(74,222,128,.35);border-radius:4px}
+.range-bar-marker{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;transform:translateX(-2px)}
+
+.detail-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.detail-stat{text-align:center}
+.detail-stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.detail-stat-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
+
+.related-item{display:flex;justify-content:space-between;align-items:center;
+  padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer}
+.related-item:last-child{border-bottom:none}
+.related-name{font-size:13px;color:var(--txt2)}
+.related-val{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc)}
+
+.corr-row{display:flex;justify-content:space-between;align-items:center;
+  padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
+.corr-row:last-child{border-bottom:none}
+.corr-name{color:var(--txt2)}
+.corr-val{font-family:'Syne',sans-serif;font-weight:700;font-size:12px}
+.corr-tag{font-family:'DM Sans',sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
+
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- SYNC BAR -->
+<div id="sync-bar">
+  <div class="sync-dot" id="sync-dot"></div>
+  <span class="sync-label" id="sync-label">sincronizado</span>
+</div>
+
+<div id="app">
+  <div id="detail-topbar">
+    <a id="detail-back" href="index.html">‹</a>
+    <div id="detail-title">Indicador</div>
+  </div>
+  <div id="detail-content"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// GITHUB API CONFIG
+// ══════════════════════════════════════════
+const GH_OWNER = 'dougm-b';
+const GH_REPO  = 'dbfit';
+const GH_FILE  = 'data/db.json';
+const GH_API   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_FILE}`;
+
+let ghToken = localStorage.getItem('dbfit_ghtoken') || '';
+let apiKey  = localStorage.getItem('dbfit_apikey')  || '';
+
+// ── DATE HELPERS ──
+function fmtDate(d){
+  const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), day = String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function parseLocalDate(dk){
+  const [y,m,d] = dk.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+const now   = new Date();
+const TODAY = fmtDate(now);
+
+function esc(s){
+  return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ══════════════════════════════════════════
+// DEFAULT WORKOUT PLANS
+// ══════════════════════════════════════════
+const FBA_DEFAULT = [
+  {name:'Press banco plano c/ halteres', series:4, reps:'10–12', carga:'2x 25–32 kg', descanso:90},
+  {name:'Press banco inclinado', series:3, reps:'10–12', carga:'2x 20–25 kg', descanso:90},
+  {name:'Remada curvada c/ halteres', series:4, reps:'10–12', carga:'2x 25–32 kg', descanso:90},
+  {name:'Press ombros sentado', series:3, reps:'10–12', carga:'2x 16,5 kg', descanso:75},
+  {name:'Rosca direta', series:4, reps:'10–12', carga:'2x 16,5 kg', descanso:60},
+  {name:'Extensão tríceps atrás cabeça', series:3, reps:'12', carga:'1x 14,5 kg', descanso:60},
+  {name:'Goblet squat', series:3, reps:'15', carga:'1x 32,5 kg', descanso:90},
+  {name:'Lunge estático', series:3, reps:'10 cada', carga:'2x 14,5 kg', descanso:75},
+];
+const FBB_DEFAULT = [
+  {name:'Remada unilateral no banco', series:4, reps:'10–12 cada', carga:'1x 32,5 kg', descanso:90},
+  {name:'Pullover c/ halter', series:3, reps:'12–15', carga:'1x 25–30 kg', descanso:75},
+  {name:'Crucifixo banco plano', series:3, reps:'12–15', carga:'2x 14–18 kg', descanso:75},
+  {name:'Press ombros sentado', series:3, reps:'10–12', carga:'2x 16,5 kg', descanso:75},
+  {name:'Rosca martelo', series:3, reps:'12', carga:'2x 16,5 kg', descanso:60},
+  {name:'Extensão tríceps (testa)', series:4, reps:'12', carga:'2x 14,5 kg', descanso:60},
+  {name:'Stiff c/ halteres', series:3, reps:'12', carga:'2x 25–30 kg', descanso:90},
+  {name:'Elevação pélvica no banco', series:3, reps:'15', carga:'1x 25–30 kg', descanso:75},
+];
+
+function defaultState(){
+  return {
+    workoutPlans: [
+      { id:1, name:'Full Body A — Ênfase Peito + Bíceps', frequency:[1,5], exercises: FBA_DEFAULT.map(e=>({...e})) },
+      { id:2, name:'Full Body B — Ênfase Costas + Tríceps', frequency:[3,6], exercises: FBB_DEFAULT.map(e=>({...e})) }
+    ],
+    workoutLogs: {},
+    meals: {},
+    health: {
+      altura:184, peso:'122,5 kg', gc:'37,0%', musc:'73,3 kg', gv:'15',
+      me:'43,0 kg', prot:'11,4%', agua:'44,9%', met:'2.309',
+      idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
+    },
+    healthHistory: {},
+    settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
+    chatHistory: []
+  };
+}
+
+let state = defaultState();
+let dbSha = null; // GitHub file SHA needed for updates
+
+function migrateState(loaded){
+  const base = defaultState();
+  if (!loaded) return base;
+  const s = Object.assign({}, base, loaded);
+  s.health   = Object.assign({}, base.health, loaded.health || {});
+  s.settings = Object.assign({}, base.settings, loaded.settings || {});
+  s.workoutPlans = (loaded.workoutPlans && loaded.workoutPlans.length) ? loaded.workoutPlans : base.workoutPlans;
+  s.workoutLogs  = loaded.workoutLogs || {};
+  s.meals        = loaded.meals || {};
+  s.healthHistory = loaded.healthHistory || {};
+  s.chatHistory  = loaded.chatHistory || [];
+
+  // migrate old flat foods -> meals
+  if (loaded.foods && !loaded.meals) {
+    s.meals = {};
+    Object.entries(loaded.foods).forEach(([dk, items]) => {
+      items.forEach(it => {
+        if (!s.meals[dk]) s.meals[dk] = [];
+        let meal = s.meals[dk].find(m => m.name === it.meal);
+        if (!meal) { meal = { name: it.meal, foods: [] }; s.meals[dk].push(meal); }
+        meal.foods.push({ name: it.food, qty: it.qty||0, kcal: it.kcal||0, prot: it.prot||0, carb: it.carb||0, fat: it.fat||0, ts: it.ts||Date.now() });
+      });
+    });
+  }
+  // migrate old training -> workoutLogs
+  if (loaded.training && !loaded.workoutLogs) {
+    s.workoutLogs = {};
+    Object.entries(loaded.training).forEach(([dk, items]) => {
+      s.workoutLogs[dk] = items.map(it => ({
+        planId: null, planName: it.type, dur: it.dur||0,
+        intensity: it.intensity||'Moderada', notes: it.notes||'', ts: it.ts||Date.now()
+      }));
+    });
+  }
+  return s;
+}
+
+function classifyIMC(imc){
+  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-warn' };
+  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok' };
+  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn' };
+  return { label:'Obesidade', cls:'badge-red' };
+}
+
+function nextPlanId(){
+  return state.workoutPlans.length ? Math.max(...state.workoutPlans.map(p => p.id)) + 1 : 1;
+}
+
+function dayTotals(dk){
+  const meals = state.meals[dk] || [];
+  return meals.reduce((a, meal) => {
+    (meal.foods || []).forEach(f => { a.kcal += f.kcal||0; a.prot += f.prot||0; a.carb += f.carb||0; a.fat += f.fat||0; });
+    return a;
+  }, { kcal:0, prot:0, carb:0, fat:0 });
+}
+
+function addFoodToMeal(dateKey, mealName, food){
+  if (!state.meals[dateKey]) state.meals[dateKey] = [];
+  let meal = state.meals[dateKey].find(m => m.name === mealName);
+  if (!meal) { meal = { name: mealName, foods: [] }; state.meals[dateKey].push(meal); }
+  meal.foods.push({ ...food, ts: Date.now() });
+  return meal;
+}
+
+// ══════════════════════════════════════════
+// TOKEN SETUP
+// ══════════════════════════════════════════
+function checkToken() {
+  if (ghToken) {
+    document.getElementById('token-setup').style.display = 'none';
+    initApp();
+  }
+}
+
+async function saveToken() {
+  const val = document.getElementById('token-input').value.trim();
+  const err = document.getElementById('setup-error');
+  if (!val.startsWith('github_pat_') && !val.startsWith('ghp_')) {
+    err.textContent = '❌ Token inválido. Deve começar com github_pat_ ou ghp_';
+    return;
+  }
+  err.textContent = 'A verificar token...';
+  try {
+    const res = await fetch(GH_API, {
+      headers: { Authorization: `token ${val}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (res.status === 404) {
+      err.textContent = '⚠️ Token válido mas ficheiro data/db.json não encontrado. Criando...';
+      ghToken = val;
+      localStorage.setItem('dbfit_ghtoken', ghToken);
+      state = defaultState();
+      await pushToGitHub();
+      document.getElementById('token-setup').style.display = 'none';
+      initApp();
+      return;
+    }
+    if (!res.ok) {
+      err.textContent = '❌ Token inválido ou sem permissões. Verifica e tenta novamente.';
+      return;
+    }
+    ghToken = val;
+    localStorage.setItem('dbfit_ghtoken', ghToken);
+    err.style.color = 'var(--acc)';
+    err.textContent = '✅ Token válido! A carregar dados...';
+    setTimeout(() => {
+      document.getElementById('token-setup').style.display = 'none';
+      initApp();
+    }, 800);
+  } catch(e) {
+    err.textContent = '❌ Erro de rede. Verifica a ligação.';
+  }
+}
+
+function resetToken() {
+  localStorage.removeItem('dbfit_ghtoken');
+  ghToken = '';
+  document.getElementById('token-setup').style.display = 'flex';
+  document.getElementById('token-input').value = '';
+  document.getElementById('setup-error').textContent = '';
+}
+
+// ══════════════════════════════════════════
+// GITHUB SYNC
+// ══════════════════════════════════════════
+function setSyncStatus(status, label) {
+  const dot = document.getElementById('sync-dot');
+  const lbl = document.getElementById('sync-label');
+  if (!dot || !lbl) return; // page has no sync-bar (e.g. detail.html without it)
+  dot.className = 'sync-dot ' + status;
+  lbl.className = 'sync-label ' + status;
+  lbl.textContent = label;
+}
+
+let syncBusy = false;
+
+async function loadFromGitHub(opts) {
+  opts = opts || {};
+  if (opts.skipIfBusy && syncBusy) return false;
+  syncBusy = true;
+  if (!opts.silent) setSyncStatus('syncing', 'a carregar...');
+  try {
+    const res = await fetch(GH_API + '?t=' + Date.now(), {
+      headers: { Authorization: `token ${ghToken}`, Accept: 'application/vnd.github.v3+json' }
+    });
+    if (!res.ok) throw new Error('fetch failed');
+    const data = await res.json();
+    dbSha = data.sha;
+    const content = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    state = migrateState(content);
+    setSyncStatus('ok', 'sincronizado');
+    return true;
+  } catch(e) {
+    setSyncStatus(opts.silent ? 'ok' : 'error', opts.silent ? 'sincronizado' : 'erro ao carregar');
+    // On a silent background refresh, never discard local state on failure —
+    // only the very first explicit load may fall back to defaults.
+    if (!opts.silent) {
+      showToast('⚠️ Erro ao carregar dados do GitHub');
+      state = migrateState(null);
+    }
+    return false;
+  } finally {
+    syncBusy = false;
+  }
+}
+
+// ══════════════════════════════════════════
+// AUTO-SYNC (multi-device) — poll GitHub in the background so changes made
+// on another device/browser show up here without a manual reload.
+// ══════════════════════════════════════════
+async function silentSync() {
+  if (!ghToken || document.visibilityState === 'hidden') return;
+  const ok = await loadFromGitHub({ silent: true, skipIfBusy: true });
+  if (!ok) return;
+  const activeScreen = document.querySelector('.screen.active');
+  const activeId = activeScreen ? activeScreen.id.replace('-screen', '') : 'dash';
+  updateDash();
+  if (activeId === 'diet')     renderDiet();
+  if (activeId === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
+  if (activeId === 'health')   renderHealth();
+  if (activeId === 'settings') renderSettings();
+}
+
+let autoSyncTimer = null;
+function startAutoSync() {
+  if (autoSyncTimer) return;
+  autoSyncTimer = setInterval(silentSync, 45000);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') silentSync();
+  });
+}
+
+async function pushToGitHub() {
+  setSyncStatus('syncing', 'a guardar...');
+  try {
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(state, null, 2))));
+    const body = {
+      message: `dbfit: update ${new Date().toISOString()}`,
+      content,
+      ...(dbSha ? { sha: dbSha } : {})
+    };
+    const res = await fetch(GH_API, {
+      method: 'PUT',
+      headers: {
+        Authorization: `token ${ghToken}`,
+        Accept: 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      if (res.status === 409 || res.status === 422) {
+        await loadFromGitHub();
+        return await pushToGitHub();
+      }
+      throw new Error(err.message);
+    }
+    const data = await res.json();
+    dbSha = data.content.sha;
+    setSyncStatus('ok', 'guardado ✓');
+    setTimeout(() => setSyncStatus('ok', 'sincronizado'), 2000);
+    return true;
+  } catch(e) {
+    setSyncStatus('error', 'erro ao guardar');
+    showToast('❌ Erro ao guardar: ' + e.message);
+    return false;
+  }
+}
+
+// ══════════════════════════════════════════
+// APP INIT
+// ══════════════════════════════════════════
+async function initApp() {
+  await loadFromGitHub();
+  updateDash();
+  renderHealth();
+  renderSettings();
+  renderPlans();
+  renderCalendar();
+  setupDate();
+  startAutoSync();
+}
+
+// ══════════════════════════════════════════
+// DATE / TOPBAR
+// ══════════════════════════════════════════
+const days   = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const monthsFull = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+function setupDate() {
+  document.getElementById('date-chip').textContent =
+    `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+}
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const sc = document.getElementById(id + '-screen');
+  if (sc) sc.classList.add('active');
+  const nb = document.getElementById('nav-' + id);
+  if (nb) nb.classList.add('active');
+  if (id === 'diet')     renderDiet();
+  if (id === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
+  if (id === 'health')   renderHealth();
+  if (id === 'dash')     updateDash();
+  if (id === 'settings') renderSettings();
+  document.getElementById('content').scrollTop = 0;
+  silentSync(); // pull latest data from other devices in the background
+}
+
+// ══════════════════════════════════════════
+// MODALS (generic open/close)
+// ══════════════════════════════════════════
+function openFoodModal(prefillMeal) {
+  if (prefillMeal) document.getElementById('f-meal').value = prefillMeal;
+  document.getElementById('food-modal').classList.add('open');
+}
+function openFoodModalForMeal(mi) {
+  openFoodModal(state.meals[TODAY][mi].name);
+}
+function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
+function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════════
+// BIOIMPEDÂNCIA — registo de indicadores partilhado
+// (usado pela aba Bioimpedância e pela página de detalhe)
+// ══════════════════════════════════════════
+const METRICS = {
+  peso: {
+    key: 'peso', label: 'Peso', unit: 'kg',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: null, rangeLabel: 'Sem faixa fixa — depende da altura (ver IMC)',
+    explain: 'O peso corporal total inclui água, gordura, músculo e osso. Sozinho não diz se a composição corporal é saudável — deve ser sempre lido junto com o IMC e a percentagem de gordura corporal.',
+    related: ['imc', 'gc', 'musc']
+  },
+  imc: {
+    label: 'IMC', unit: '',
+    derive: h => {
+      const p = parseFloat(String(h.peso).replace(',', '.'));
+      const aM = (h.altura || 184) / 100;
+      if (isNaN(p) || !aM) return null;
+      return +(p / (aM * aM)).toFixed(1);
+    },
+    range: [18.5, 25], rangeLabel: 'Peso normal: 18,5–25',
+    explain: 'Índice de Massa Corporal = peso ÷ altura². É um rastreio populacional simples e rápido, mas não diferencia massa muscular de gordura — por isso nunca deve ser lido isoladamente, sobretudo em pessoas com bastante massa muscular.',
+    related: ['peso', 'gc']
+  },
+  gc: {
+    key: 'gc', label: 'Gordura corporal', unit: '%',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: [18, 22], rangeLabel: 'Meta: 18–22%',
+    explain: 'Percentagem do peso total que é tecido adiposo. Valores elevados aumentam o risco cardiometabólico; valores muito baixos também têm riscos (hormonal, imunológico).',
+    related: ['gv', 'musc', 'imc']
+  },
+  musc: {
+    key: 'musc', label: 'Músculo total', unit: 'kg',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: null, rangeLabel: 'Quanto maior (dentro do razoável), geralmente melhor',
+    explain: 'Massa muscular total no corpo. Mais massa muscular está associada a um metabolismo basal mais alto e a melhor força funcional ao longo da vida.',
+    related: ['met', 'me', 'gc']
+  },
+  gv: {
+    key: 'gv', label: 'Gordura visceral', unit: '',
+    parse: v => parseFloat(v),
+    range: [0, 9], rangeLabel: 'Meta: <9',
+    explain: 'Gordura acumulada à volta dos órgãos internos. É o indicador de bioimpedância mais associado a risco cardiovascular e resistência à insulina — clinicamente mais relevante do que o peso ou a gordura subcutânea.',
+    related: ['gc', 'met', 'peso']
+  },
+  me: {
+    key: 'me', label: 'Músculo esquelético', unit: 'kg',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: null, rangeLabel: 'Quanto maior (dentro do razoável), geralmente melhor',
+    explain: 'Subconjunto do músculo total ligado diretamente ao esqueleto — o principal motor do metabolismo em repouso.',
+    related: ['musc', 'met']
+  },
+  prot: {
+    key: 'prot', label: 'Proteína corporal', unit: '%',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: [16, 18], rangeLabel: 'Meta: 16–18%',
+    explain: 'Percentagem de proteína no corpo (parte do tecido magro). Níveis baixos podem indicar perda muscular ou ingestão proteica insuficiente.',
+    related: ['musc', 'agua']
+  },
+  agua: {
+    key: 'agua', label: 'Água corporal', unit: '%',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: [45, 60], rangeLabel: 'Referência típica: 45–60%',
+    explain: 'Percentagem de água no corpo. A hidratação afeta diretamente a precisão de TODAS as outras leituras de bioimpedância elétrica, porque a corrente usada para medir depende da água nos tecidos — medir sempre nas mesmas condições (ex: em jejum, de manhã) ajuda a comparar valores ao longo do tempo.',
+    related: ['prot', 'peso']
+  },
+  met: {
+    key: 'met', label: 'Metabolismo basal', unit: 'kcal/dia',
+    parse: v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')),
+    range: null, rangeLabel: 'Depende da massa muscular e da idade',
+    explain: 'Energia mínima que o corpo gasta em repouso para se manter vivo. Sobe com mais massa muscular e desce com a idade — é a base usada para calcular as necessidades calóricas diárias.',
+    related: ['musc', 'me', 'idade']
+  },
+  idade: {
+    key: 'idade', label: 'Idade corporal', unit: 'anos',
+    parse: v => parseFloat(v),
+    range: null, rangeLabel: 'Comparar com a idade real',
+    explain: 'Estimativa de "idade metabólica" a partir da composição corporal, comparada à média de pessoas com essa idade cronológica. Ficar abaixo da idade real é um bom sinal.',
+    related: ['musc', 'gc', 'met']
+  },
+  ossea: {
+    key: 'ossea', label: 'Massa óssea', unit: 'kg',
+    parse: v => parseFloat(String(v).replace(',', '.')),
+    range: [2.5, 4.5], rangeLabel: 'Referência típica: 2,5–4,5 kg',
+    explain: 'Peso estimado dos minerais ósseos. Costuma manter-se estável — grandes variações súbitas normalmente indicam erro de medição da balança, não uma mudança real.',
+    related: ['peso']
+  },
+  fc: {
+    key: 'fc', label: 'Frequência cardíaca', unit: 'bpm',
+    parse: v => parseFloat(v),
+    range: [60, 100], rangeLabel: 'Repouso saudável: 60–100 bpm (atletas: 40–60)',
+    explain: 'Batimentos por minuto em repouso. Valores mais baixos dentro do normal costumam indicar melhor condicionamento cardiovascular.',
+    related: ['passos', 'met']
+  },
+  passos: {
+    key: 'passos', label: 'Passos', unit: '',
+    parse: v => parseFloat(v),
+    range: [8000, Infinity], rangeLabel: 'Meta: 8.000+/dia',
+    explain: 'Número de passos dados no dia. Mais passos aumentam o gasto calórico diário fora do treino (NEAT) e ajudam a criar défice calórico sem depender só das sessões de treino.',
+    related: ['fc', 'gc', 'gv']
+  }
+};
+
+function metricValue(id, h) {
+  const m = METRICS[id];
+  if (!m || !h) return null;
+  if (m.derive) return m.derive(h);
+  const raw = h[m.key];
+  if (raw === undefined || raw === null || raw === '') return null;
+  const v = m.parse(raw);
+  return isNaN(v) ? null : v;
+}
+
+function historyEntries() {
+  return Object.entries(state.healthHistory || {})
+    .sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))
+    .map(([date, h]) => ({ date, h }));
+}
+
+function metricSeries(id) {
+  return historyEntries()
+    .map(e => ({ date: e.date, value: metricValue(id, e.h) }))
+    .filter(p => p.value !== null && !isNaN(p.value));
+}
+
+function pearson(xs, ys) {
+  const n = xs.length;
+  if (n < 2) return null;
+  const mx = xs.reduce((a, b) => a + b, 0) / n;
+  const my = ys.reduce((a, b) => a + b, 0) / n;
+  let num = 0, dx2 = 0, dy2 = 0;
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i] - mx, dy = ys[i] - my;
+    num += dx * dy; dx2 += dx * dx; dy2 += dy * dy;
+  }
+  const den = Math.sqrt(dx2 * dy2);
+  if (den === 0) return null;
+  return num / den;
+}
+
+function classifyR(r) {
+  const a = Math.abs(r);
+  const dir = r >= 0 ? 'positiva' : 'negativa';
+  let strength;
+  if (a < 0.3) strength = 'fraca';
+  else if (a < 0.6) strength = 'moderada';
+  else if (a < 0.8) strength = 'forte';
+  else strength = 'muito forte';
+  return `${strength} ${dir}`;
+}
+
+function correlateMetric(id, minPoints) {
+  minPoints = minPoints || 5;
+  const base = metricSeries(id);
+  const baseByDate = new Map(base.map(p => [p.date, p.value]));
+  const out = [];
+  Object.keys(METRICS).forEach(otherId => {
+    if (otherId === id) return;
+    const other = metricSeries(otherId);
+    const xs = [], ys = [];
+    other.forEach(p => {
+      if (baseByDate.has(p.date)) { xs.push(baseByDate.get(p.date)); ys.push(p.value); }
+    });
+    if (xs.length >= minPoints) {
+      const r = pearson(xs, ys);
+      if (r !== null) out.push({ id: otherId, label: METRICS[otherId].label, r, n: xs.length });
+    }
+  });
+  return out.sort((a, b) => Math.abs(b.r) - Math.abs(a.r));
+}
+
+function snapshotHealthHistory(dateKey) {
+  if (!state.healthHistory) state.healthHistory = {};
+  state.healthHistory[dateKey] = { ...state.health };
+}
+
+// ══════════════════════════════════════════
+// DETAIL PAGE — histórico, faixa saudável, indicadores relacionados,
+// correlação estatística real (calculada a partir do healthHistory)
+// ══════════════════════════════════════════
+function getQueryMetric() {
+  const params = new URLSearchParams(location.search);
+  const id = params.get('metric');
+  return (id && METRICS[id]) ? id : 'peso';
+}
+
+function fmtNum(v) {
+  if (v === null || v === undefined || isNaN(v)) return '—';
+  return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
+}
+
+function corrColor(r) {
+  const a = Math.abs(r);
+  if (a < 0.3) return 'var(--txt3)';
+  return r > 0 ? 'var(--acc)' : 'var(--red)';
+}
+
+function rangeBarHtml(current, range, label) {
+  if (current === null) return `<p style="font-size:12px;color:var(--txt3)">${esc(label || '')}</p>`;
+  const [lo, hi] = range;
+  const finiteHi = isFinite(hi) ? hi : lo + Math.max(lo, current, 1) * 0.6;
+  const span = finiteHi - lo || 1;
+  const margin = span * 0.4;
+  const min = lo - margin, max = finiteHi + margin;
+  const clampPct = v => Math.max(0, Math.min(100, ((v - min) / (max - min)) * 100));
+  const pct = clampPct(current);
+  const loPct = clampPct(lo);
+  const hiPct = isFinite(hi) ? clampPct(hi) : 100;
+  const inRange = current >= lo && (!isFinite(hi) || current <= hi);
+  return `
+    <div class="range-bar-wrap">
+      <div class="range-bar">
+        <div class="range-bar-zone" style="left:${loPct}%;width:${Math.max(0, hiPct - loPct)}%"></div>
+        <div class="range-bar-marker" style="left:${pct}%;background:${inRange ? 'var(--acc)' : 'var(--red)'}"></div>
+      </div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:6px">${esc(label)} · ${inRange ? '✅ dentro da faixa saudável' : '⚠️ fora da faixa saudável'}</div>
+    </div>`;
+}
+
+function svgLineChart(series) {
+  const W = 320, H = 140, padL = 30, padR = 10, padT = 14, padB = 22;
+  const values = series.map(p => p.value);
+  let min = Math.min(...values), max = Math.max(...values);
+  if (min === max) { min -= 1; max += 1; }
+  const rangeSpan = max - min;
+  min -= rangeSpan * 0.1; max += rangeSpan * 0.1;
+  const innerW = W - padL - padR, innerH = H - padT - padB;
+  const pts = series.map((p, i) => {
+    const x = padL + (series.length === 1 ? innerW / 2 : (i / (series.length - 1)) * innerW);
+    const y = padT + innerH - ((p.value - min) / (max - min)) * innerH;
+    return [x, y];
+  });
+  const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
+  const areaD = pathD + ` L${pts[pts.length - 1][0].toFixed(1)},${(padT + innerH).toFixed(1)} L${pts[0][0].toFixed(1)},${(padT + innerH).toFixed(1)} Z`;
+  const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#4ade80"/>`).join('');
+  const firstLabel = series[0].date.slice(5);
+  const lastLabel = series[series.length - 1].date.slice(5);
+  return `
+    <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="overflow:visible">
+      <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
+      <line x1="${padL}" y1="${padT + innerH}" x2="${W - padR}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
+      <text x="2" y="${padT + 4}" font-size="9" fill="#6b8f6b">${fmtNum(max)}</text>
+      <text x="2" y="${padT + innerH}" font-size="9" fill="#6b8f6b">${fmtNum(min)}</text>
+      <path d="${areaD}" fill="rgba(74,222,128,.12)" stroke="none"/>
+      <path d="${pathD}" fill="none" stroke="#4ade80" stroke-width="2"/>
+      ${dots}
+      <text x="${padL}" y="${H - 4}" font-size="9" fill="#6b8f6b">${firstLabel}</text>
+      <text x="${W - padR}" y="${H - 4}" font-size="9" fill="#6b8f6b" text-anchor="end">${lastLabel}</text>
+    </svg>`;
+}
+
+function renderDetail() {
+  const id = getQueryMetric();
+  const m = METRICS[id];
+  const container = document.getElementById('detail-content');
+
+  document.getElementById('detail-title').textContent = m.label;
+  document.title = m.label + ' — DB Fit';
+
+  const series = metricSeries(id);
+  const current = series.length ? series[series.length - 1].value : metricValue(id, state.health);
+  const unit = m.unit ? ' ' + m.unit : '';
+
+  const rangeHtml = m.range
+    ? rangeBarHtml(current, m.range, m.rangeLabel)
+    : `<p style="font-size:12px;color:var(--txt3)">${esc(m.rangeLabel || '')}</p>`;
+
+  const chartHtml = series.length >= 2
+    ? svgLineChart(series)
+    : `<div class="empty-state" style="padding:24px 10px">
+         <div class="icon">📈</div>
+         <p>Ainda não há histórico suficiente.<br>Cada vez que atualizares a bioimpedância (ou importares dados) fica um novo ponto aqui.</p>
+       </div>`;
+
+  const values = series.map(p => p.value);
+  const statsHtml = values.length ? `
+    <div class="detail-stats-row">
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values[values.length - 1])}</div><div class="detail-stat-lbl">Atual</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.min(...values))}</div><div class="detail-stat-lbl">Mínimo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.max(...values))}</div><div class="detail-stat-lbl">Máximo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values.reduce((a, b) => a + b, 0) / values.length)}</div><div class="detail-stat-lbl">Média</div></div>
+    </div>` : '';
+
+  const relatedHtml = (m.related || []).map(rid => {
+    const rm = METRICS[rid];
+    if (!rm) return '';
+    const rv = metricValue(rid, state.health);
+    return `<div class="related-item" onclick="location.href='detail.html?metric=${rid}'">
+      <div class="related-name">${esc(rm.label)}</div>
+      <div class="related-val">${rv === null ? '—' : fmtNum(rv)}${rm.unit ? ' ' + rm.unit : ''}</div>
+    </div>`;
+  }).join('');
+
+  const correlations = correlateMetric(id, 5);
+  const corrHtml = correlations.length
+    ? correlations.map(c => `
+        <div class="corr-row">
+          <span class="corr-name">${esc(c.label)}</span>
+          <span class="corr-val" style="color:${corrColor(c.r)}">r = ${c.r.toFixed(2)} <span class="corr-tag">(${classifyR(c.r)}, n=${c.n})</span></span>
+        </div>`).join('')
+    : `<p style="font-size:12px;color:var(--txt3)">Ainda sem dados suficientes para calcular uma correlação estatística real (é preciso um mínimo de 5 registos na mesma data para cada par de indicadores). Continua a atualizar a bioimpedância regularmente — ou importa histórico do Google Fit / Zepp em Configurações.</p>`;
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(m.label)}</div>
+      <div class="detail-current">${current === null ? '—' : fmtNum(current)}<span class="detail-unit">${unit}</span></div>
+      ${rangeHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Histórico</div>
+      ${chartHtml}
+      ${statsHtml}
+    </div>
+    <div class="card">
+      <div class="card-title">ℹ️ O que é</div>
+      <p style="font-size:13px;color:var(--txt2);line-height:1.6">${esc(m.explain)}</p>
+    </div>
+    ${relatedHtml ? `<div class="card"><div class="card-title">🔗 Indicadores relacionados</div>${relatedHtml}</div>` : ''}
+    <div class="card">
+      <div class="card-title">📊 Correlação com outros indicadores</div>
+      <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">Calculada a partir do teu histórico real (coeficiente de correlação de Pearson), não é uma opinião — só aparece um indicador aqui quando há registos suficientes na mesma data para comparar.</p>
+      ${corrHtml}
+    </div>
+  `;
+}
+
+// ══════════════════════════════════════════
+// DETAIL PAGE — boot (does not use core.js's checkToken()/initApp(), since
+// this page only ever renders the single detail view, not the full app)
+// ══════════════════════════════════════════
+async function detailSilentSync() {
+  if (!ghToken || document.visibilityState === 'hidden') return;
+  const ok = await loadFromGitHub({ silent: true, skipIfBusy: true });
+  if (ok) renderDetail();
+}
+
+async function bootDetail() {
+  if (!ghToken) {
+    document.getElementById('detail-content').innerHTML = `
+      <div class="empty-state">
+        <div class="icon">🔒</div>
+        <p>Abre primeiro a app principal (index.html) e configura o teu token GitHub — este ecrã usa os mesmos dados sincronizados.</p>
+      </div>`;
+    return;
+  }
+  await loadFromGitHub();
+  renderDetail();
+  setInterval(detailSilentSync, 45000);
+  document.addEventListener('visibilitychange', detailSilentSync);
+}
+bootDetail();
+
+</script>
+</body>
+</html>
