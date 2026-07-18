@@ -1,0 +1,32 @@
+<!-- TRAINING -->
+<div id="train-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px">
+    <h3>🏋️ Treino</h3>
+    <button class="add-btn" onclick="openPlanModal()">+ Novo treino</button>
+  </div>
+
+  <div class="card">
+    <div class="cal-head">
+      <button class="cal-nav-btn" onclick="calShift(-1)">‹</button>
+      <div class="card-title" id="cal-month-lbl" style="margin:0">Calendário</div>
+      <button class="cal-nav-btn" onclick="calShift(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div id="plans-list"></div>
+  <div id="plans-empty" class="empty-state" style="display:none">
+    <div class="icon">🏋️</div>
+    <p>Ainda sem treinos criados.<br>Toca em "+ Novo treino" para começar.</p>
+  </div>
+
+  <div class="section-hdr">
+    <h3>📋 Sessões de hoje</h3>
+    <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
+  </div>
+  <div id="train-log-list"></div>
+  <div id="train-empty" class="empty-state" style="display:none">
+    <div class="icon">💪</div>
+    <p>Sem treino registado hoje.</p>
+  </div>
+</div>

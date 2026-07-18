@@ -1,0 +1,68 @@
+<!-- SETTINGS -->
+<div id="settings-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px"><h3>⚙️ Configurações</h3></div>
+
+  <!-- AI CHAT -->
+  <div class="card">
+    <div class="card-title">🤖 Assistente IA</div>
+    <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">Pede para adicionar alimentos à dieta ou exercícios a um treino — o assistente faz isso automaticamente.</p>
+    <div id="chat-messages" class="chat-inline-messages">
+      <div class="msg ai">
+        <div class="msg-bubble">Olá Douglas! 💪 Sou o teu assistente de fitness. Posso analisar os teus dados e também adicionar alimentos à dieta ou exercícios a um treino diretamente, se pedires. Como posso ajudar?</div>
+        <div class="msg-time">agora</div>
+      </div>
+    </div>
+    <div id="chat-input-wrap">
+      <textarea id="chat-input" rows="1" placeholder="ex: adiciona 200g de arroz ao almoço"></textarea>
+      <button id="send-btn" onclick="sendMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- METAS -->
+  <div class="card">
+    <div class="card-title">🎯 Metas diárias</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Calorias (kcal)</label><input type="number" class="form-input" id="s-meta-kcal"/></div>
+      <div class="form-group"><label class="form-label">Água (litros)</label><input type="number" class="form-input" id="s-meta-agua" step="0.1"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-input" id="s-meta-prot"/></div>
+      <div class="form-group"><label class="form-label">Carboidratos (g)</label><input type="number" class="form-input" id="s-meta-carb"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Gordura (g)</label><input type="number" class="form-input" id="s-meta-fat"/></div>
+    <button class="btn-primary" onclick="saveGoals()">Guardar metas</button>
+  </div>
+
+  <!-- DADOS CORPORAIS -->
+  <div class="card">
+    <div class="card-title">📏 Dados corporais</div>
+    <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-input" id="s-altura"/></div>
+    <button class="btn-primary" onclick="saveAltura()">Guardar altura</button>
+  </div>
+
+  <!-- GITHUB TOKEN -->
+  <div class="card">
+    <div class="card-title">🔗 Sincronização GitHub</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">
+      Token GitHub: <span id="token-status" style="color:var(--acc)">✅ Configurado</span>
+    </div>
+    <button class="btn-secondary" onclick="resetToken()" style="margin-top:0">🔄 Alterar token GitHub</button>
+    <div style="font-size:11px;color:var(--txt3);margin-top:10px">
+      📡 Dados sincronizados com github.com/dougm-b/dbfit
+    </div>
+  </div>
+
+  <!-- API KEY CLAUDE -->
+  <div class="card">
+    <div class="card-title">🔑 Chave API Claude</div>
+    <p style="font-size:12px;color:var(--txt3);margin-bottom:10px">Necessária para o assistente IA. Obtém em console.anthropic.com</p>
+    <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-..."/>
+    <button class="btn-primary" style="margin-top:10px" onclick="saveApiKey()">Guardar chave</button>
+    <p id="api-key-status" style="font-size:11px;color:var(--acc);margin-top:8px;text-align:center"></p>
+  </div>
+</div>

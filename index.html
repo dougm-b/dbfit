@@ -90,6 +90,96 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;
   display:flex;align-items:center;gap:6px}
 
+/* ── MACRO GRID (dashboard + diet) ── */
+.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.macro-item{text-align:center}
+.macro-val{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
+.macro-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
+
+/* ── SHARED SECTION / LIST-ENTRY PATTERNS (diet + train + calendar day modal) ── */
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
+.section-hdr h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
+  padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+.meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
+  padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
+  cursor:pointer;transition:border-color .2s}
+.meal-entry:active{border-color:var(--acc)}
+.meal-emoji{font-size:22px;flex-shrink:0}
+.meal-info{flex:1;min-width:0}
+.meal-name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-detail{font-size:11px;color:var(--txt3);margin-top:2px}
+.meal-kcal{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc);flex-shrink:0}
+.mg-icon-btn{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
+  width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+/* ── STATUS BADGE ── */
+.stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--acc)}
+.badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
+.badge-red{background:rgba(248,113,113,.15);color:var(--red)}
+
+/* ── MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--g1);border:1px solid var(--g3);border-radius:24px 24px 0 0;
+  width:100%;max-width:480px;padding:24px 20px calc(var(--safe-bot) + 24px);
+  animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
+.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
+  display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
+  width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;color:var(--txt3);margin-bottom:6px;display:block;font-weight:500}
+.form-input{width:100%;background:var(--g2);border:1px solid var(--g3);border-radius:12px;
+  padding:12px 14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;transition:border-color .2s}
+.form-input:focus{border-color:var(--acc)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-primary{width:100%;background:var(--acc);color:#000;border:none;border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
+  transition:opacity .2s;margin-top:4px}
+.btn-primary:active{opacity:.85}
+.btn-secondary{width:100%;background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:14px;
+  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
+
+/* ── SETUP TOKEN ── */
+#token-setup{
+  position:fixed;inset:0;background:var(--g0);z-index:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:30px 24px;text-align:center;
+}
+.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;
+  background:linear-gradient(135deg,var(--acc),var(--acc2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
+.setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:28px;max-width:320px}
+.setup-input{width:100%;max-width:360px;background:var(--g2);border:1px solid var(--g4);border-radius:14px;
+  padding:14px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  outline:none;text-align:center;margin-bottom:12px}
+.setup-input:focus{border-color:var(--acc)}
+.setup-btn{width:100%;max-width:360px;background:var(--acc);color:#000;border:none;border-radius:14px;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+.setup-note{font-size:11px;color:var(--txt3);margin-top:16px;max-width:300px;line-height:1.5}
+#setup-error{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
+.lock-icon{font-size:40px;margin-bottom:16px}
+
+/* ── EMPTY ── */
+.empty-state{text-align:center;padding:40px 20px;color:var(--txt3)}
+.empty-state .icon{font-size:40px;margin-bottom:12px;opacity:.5}
+.empty-state p{font-size:14px}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;top:calc(var(--safe-top) + 60px);left:50%;transform:translateX(-50%) translateY(-10px);
+  background:var(--g3);border:1px solid var(--g4);border-radius:20px;
+  padding:8px 18px;font-size:13px;color:var(--txt);
+  opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
 /* ── DASHBOARD ── */
 .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .stat-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px;text-align:center}
@@ -97,10 +187,6 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .stat-lbl{font-size:11px;color:var(--txt3);margin-top:3px}
-.stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
-.badge-ok{background:rgba(74,222,128,.15);color:var(--acc)}
-.badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
-.badge-red{background:rgba(248,113,113,.15);color:var(--red)}
 .ring-row{display:flex;gap:10px;margin-bottom:12px}
 .ring-card{flex:1;background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px;display:flex;align-items:center;gap:10px}
@@ -112,32 +198,11 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .progress-bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;margin-top:4px}
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease}
 
-/* ── MACRO GRID ── */
-.macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.macro-item{text-align:center}
-.macro-val{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
-.macro-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
-
-/* ── FOOD / DIET ── */
-.section-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
-.section-hdr h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
-.add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
-  padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+/* ── DIET ── */
 .meal-group{margin-bottom:14px}
 .meal-group-hdr{font-size:11px;color:var(--txt3);text-transform:uppercase;
   letter-spacing:.1em;margin-bottom:6px;display:flex;align-items:center;gap:6px;justify-content:space-between}
 .meal-group-hdr .mg-actions{display:flex;gap:6px;align-items:center;text-transform:none;letter-spacing:0}
-.mg-icon-btn{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
-  width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
-  padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
-  cursor:pointer;transition:border-color .2s}
-.meal-entry:active{border-color:var(--acc)}
-.meal-emoji{font-size:22px;flex-shrink:0}
-.meal-info{flex:1;min-width:0}
-.meal-name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.meal-detail{font-size:11px;color:var(--txt3);margin-top:2px}
-.meal-kcal{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc);flex-shrink:0}
 
 /* ── TRAINING ── */
 .workout-card{background:linear-gradient(135deg,var(--g2),var(--g3));
@@ -215,66 +280,6 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 #send-btn:active{transform:scale(.92)}
 #send-btn:disabled{opacity:.4;cursor:not-allowed}
 
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
-  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
-.modal-overlay.open{display:flex}
-.modal{background:var(--g1);border:1px solid var(--g3);border-radius:24px 24px 0 0;
-  width:100%;max-width:480px;padding:24px 20px calc(var(--safe-bot) + 24px);
-  animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
-.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
-  display:flex;justify-content:space-between;align-items:center}
-.modal-close{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
-  width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.form-group{margin-bottom:14px}
-.form-label{font-size:12px;color:var(--txt3);margin-bottom:6px;display:block;font-weight:500}
-.form-input{width:100%;background:var(--g2);border:1px solid var(--g3);border-radius:12px;
-  padding:12px 14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
-  outline:none;transition:border-color .2s}
-.form-input:focus{border-color:var(--acc)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn-primary{width:100%;background:var(--acc);color:#000;border:none;border-radius:14px;
-  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
-  transition:opacity .2s;margin-top:4px}
-.btn-primary:active{opacity:.85}
-.btn-secondary{width:100%;background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:14px;
-  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
-
-/* ── SETUP TOKEN ── */
-#token-setup{
-  position:fixed;inset:0;background:var(--g0);z-index:500;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:30px 24px;text-align:center;
-}
-.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;
-  background:linear-gradient(135deg,var(--acc),var(--acc2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
-.setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:28px;max-width:320px}
-.setup-input{width:100%;max-width:360px;background:var(--g2);border:1px solid var(--g4);border-radius:14px;
-  padding:14px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
-  outline:none;text-align:center;margin-bottom:12px}
-.setup-input:focus{border-color:var(--acc)}
-.setup-btn{width:100%;max-width:360px;background:var(--acc);color:#000;border:none;border-radius:14px;
-  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
-.setup-note{font-size:11px;color:var(--txt3);margin-top:16px;max-width:300px;line-height:1.5}
-#setup-error{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
-.lock-icon{font-size:40px;margin-bottom:16px}
-
-/* ── EMPTY ── */
-.empty-state{text-align:center;padding:40px 20px;color:var(--txt3)}
-.empty-state .icon{font-size:40px;margin-bottom:12px;opacity:.5}
-.empty-state p{font-size:14px}
-
-/* ── TOAST ── */
-#toast{
-  position:fixed;top:calc(var(--safe-top) + 60px);left:50%;transform:translateX(-50%) translateY(-10px);
-  background:var(--g3);border:1px solid var(--g4);border-radius:20px;
-  padding:8px 18px;font-size:13px;color:var(--txt);
-  opacity:0;transition:all .3s;z-index:300;pointer-events:none;white-space:nowrap;
-}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
@@ -300,6 +305,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   <span class="sync-label" id="sync-label">sincronizado</span>
 </div>
 
+
 <div id="app">
   <!-- TOP BAR -->
   <div id="topbar">
@@ -309,266 +315,266 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
   <!-- CONTENT -->
   <div id="content">
-
-    <!-- DASHBOARD -->
-    <div id="dash-screen" class="screen active">
-      <div class="hero-stats">
-        <div class="stat-box">
-          <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
-          <div class="stat-lbl">Peso (kg)</div>
-          <div class="stat-badge badge-warn" id="dash-imc">IMC 36.6</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
-          <div class="stat-lbl">Gordura corporal</div>
-          <div class="stat-badge badge-red">Meta: 18–22%</div>
-        </div>
-      </div>
-      <div class="ring-row">
-        <div class="ring-card">
-          <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
-            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
-            <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
-              stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
-            <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Syne" id="ring-musc-txt">73</text>
-          </svg>
-          <div class="ring-info">
-            <div class="ring-label">Músculo total</div>
-            <div class="ring-val" id="ring-musc">73,3 kg</div>
-            <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
-          </div>
-        </div>
-        <div class="ring-card">
-          <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
-            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(248,113,113,.12)" stroke-width="5"/>
-            <circle cx="22" cy="22" r="18" fill="none" stroke="#f87171" stroke-width="5"
-              stroke-dasharray="113" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 22 22)"/>
-            <text x="22" y="26" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Syne" id="ring-gv-txt">15</text>
-          </svg>
-          <div class="ring-info">
-            <div class="ring-label">Gordura visceral</div>
-            <div class="ring-val" id="ring-gv">Nível 15</div>
-            <div class="ring-sub" style="color:var(--red)">🔴 Meta: &lt;9</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📊 Macros de hoje</div>
-        <div class="macro-grid">
-          <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl" id="m-kcal-lbl">kcal / 2600</div></div>
-          <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl" id="m-prot-lbl">prot / 195g</div></div>
-          <div class="macro-item"><div class="macro-val" id="m-carb" style="color:var(--blue)">0g</div><div class="macro-lbl" id="m-carb-lbl">carb / 290g</div></div>
-          <div class="macro-item"><div class="macro-val" id="m-fat" style="color:#c084fc">0g</div><div class="macro-lbl" id="m-fat-lbl">gord / 75g</div></div>
-        </div>
-        <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
-              <span>Proteína</span><span id="prot-pct">0%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--acc);width:0%"></div></div>
-          </div>
-          <div>
-            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
-              <span>Calorias</span><span id="kcal-pct">0%</span>
-            </div>
-            <div class="progress-bar"><div class="progress-fill" id="kcal-bar" style="background:var(--warn);width:0%"></div></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🏋️ Treino de hoje</div>
-        <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">🎯 Metas diárias</div>
-        <div style="display:flex;flex-direction:column;gap:8px">
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>💧 Água</span><span id="goal-agua-txt" style="color:var(--blue);font-weight:600">3+ litros/dia</span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🥩 Proteína diária</span><span id="goal-prot-txt" style="color:var(--acc);font-weight:600">190–200 g</span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🔥 Calorias</span><span id="goal-kcal-txt" style="color:var(--warn);font-weight:600">2.500–2.700 kcal</span></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🏃 Treinos</span><span id="goal-cardio-txt" style="color:var(--txt2);font-weight:600">3–4x/semana</span></div>
-        </div>
+<!-- DASHBOARD -->
+<div id="dash-screen" class="screen active">
+  <div class="hero-stats">
+    <div class="stat-box">
+      <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
+      <div class="stat-lbl">Peso (kg)</div>
+      <div class="stat-badge badge-warn" id="dash-imc">IMC 36.6</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
+      <div class="stat-lbl">Gordura corporal</div>
+      <div class="stat-badge badge-red">Meta: 18–22%</div>
+    </div>
+  </div>
+  <div class="ring-row">
+    <div class="ring-card">
+      <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
+          stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Syne" id="ring-musc-txt">73</text>
+      </svg>
+      <div class="ring-info">
+        <div class="ring-label">Músculo total</div>
+        <div class="ring-val" id="ring-musc">73,3 kg</div>
+        <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
       </div>
     </div>
-
-    <!-- DIET -->
-    <div id="diet-screen" class="screen">
-      <div class="section-hdr">
-        <h3>🍽️ Diário alimentar</h3>
-        <button class="add-btn" onclick="openFoodModal()">+ Adicionar</button>
-      </div>
-      <div class="card">
-        <div class="card-title">📊 Total de hoje</div>
-        <div class="macro-grid" id="diet-totals"></div>
-      </div>
-      <div id="meal-list"></div>
-      <div id="meal-empty" class="empty-state">
-        <div class="icon">🍽️</div>
-        <p>Ainda sem refeições hoje.<br>Toca em "+ Adicionar" para começar.</p>
+    <div class="ring-card">
+      <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(248,113,113,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#f87171" stroke-width="5"
+          stroke-dasharray="113" stroke-dashoffset="20" stroke-linecap="round" transform="rotate(-90 22 22)"/>
+        <text x="22" y="26" text-anchor="middle" fill="#f87171" font-size="10" font-weight="700" font-family="Syne" id="ring-gv-txt">15</text>
+      </svg>
+      <div class="ring-info">
+        <div class="ring-label">Gordura visceral</div>
+        <div class="ring-val" id="ring-gv">Nível 15</div>
+        <div class="ring-sub" style="color:var(--red)">🔴 Meta: &lt;9</div>
       </div>
     </div>
+  </div>
 
-    <!-- TRAINING -->
-    <div id="train-screen" class="screen">
-      <div class="section-hdr" style="margin-top:4px">
-        <h3>🏋️ Treino</h3>
-        <button class="add-btn" onclick="openPlanModal()">+ Novo treino</button>
-      </div>
-
-      <div class="card">
-        <div class="cal-head">
-          <button class="cal-nav-btn" onclick="calShift(-1)">‹</button>
-          <div class="card-title" id="cal-month-lbl" style="margin:0">Calendário</div>
-          <button class="cal-nav-btn" onclick="calShift(1)">›</button>
+  <div class="card">
+    <div class="card-title">📊 Macros de hoje</div>
+    <div class="macro-grid">
+      <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl" id="m-kcal-lbl">kcal / 2600</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl" id="m-prot-lbl">prot / 195g</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-carb" style="color:var(--blue)">0g</div><div class="macro-lbl" id="m-carb-lbl">carb / 290g</div></div>
+      <div class="macro-item"><div class="macro-val" id="m-fat" style="color:#c084fc">0g</div><div class="macro-lbl" id="m-fat-lbl">gord / 75g</div></div>
+    </div>
+    <div style="margin-top:14px;display:flex;flex-direction:column;gap:6px">
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+          <span>Proteína</span><span id="prot-pct">0%</span>
         </div>
-        <div class="cal-grid" id="cal-grid"></div>
+        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--acc);width:0%"></div></div>
       </div>
-
-      <div id="plans-list"></div>
-      <div id="plans-empty" class="empty-state" style="display:none">
-        <div class="icon">🏋️</div>
-        <p>Ainda sem treinos criados.<br>Toca em "+ Novo treino" para começar.</p>
-      </div>
-
-      <div class="section-hdr">
-        <h3>📋 Sessões de hoje</h3>
-        <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
-      </div>
-      <div id="train-log-list"></div>
-      <div id="train-empty" class="empty-state" style="display:none">
-        <div class="icon">💪</div>
-        <p>Sem treino registado hoje.</p>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+          <span>Calorias</span><span id="kcal-pct">0%</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="kcal-bar" style="background:var(--warn);width:0%"></div></div>
       </div>
     </div>
+  </div>
 
-    <!-- BIOIMPEDÂNCIA -->
-    <div id="health-screen" class="screen">
-      <div class="section-hdr" style="margin-top:4px">
-        <h3>📊 Bioimpedância</h3>
-        <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status" style="color:var(--warn)">IMC 36.6</div></div>
-        <div class="health-box"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-        <div class="health-box"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-        <div class="health-box"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
-        <div class="health-box"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
-        <div class="health-box"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
-      </div>
-      <div class="health-row">
-        <div class="health-box"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc" style="color:var(--red)">— bpm</div><div class="health-status" style="color:var(--txt3)">Repouso</div></div>
-        <div class="health-box"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos" style="color:var(--blue)">0</div><div class="health-status" style="color:var(--txt3)">Meta: 8.000+</div></div>
+  <div class="card">
+    <div class="card-title">🏋️ Treino de hoje</div>
+    <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎯 Metas diárias</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>💧 Água</span><span id="goal-agua-txt" style="color:var(--blue);font-weight:600">3+ litros/dia</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🥩 Proteína diária</span><span id="goal-prot-txt" style="color:var(--acc);font-weight:600">190–200 g</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🔥 Calorias</span><span id="goal-kcal-txt" style="color:var(--warn);font-weight:600">2.500–2.700 kcal</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;font-size:13px"><span>🏃 Treinos</span><span id="goal-cardio-txt" style="color:var(--txt2);font-weight:600">3–4x/semana</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIET -->
+<div id="diet-screen" class="screen">
+  <div class="section-hdr">
+    <h3>🍽️ Diário alimentar</h3>
+    <button class="add-btn" onclick="openFoodModal()">+ Adicionar</button>
+  </div>
+  <div class="card">
+    <div class="card-title">📊 Total de hoje</div>
+    <div class="macro-grid" id="diet-totals"></div>
+  </div>
+  <div id="meal-list"></div>
+  <div id="meal-empty" class="empty-state">
+    <div class="icon">🍽️</div>
+    <p>Ainda sem refeições hoje.<br>Toca em "+ Adicionar" para começar.</p>
+  </div>
+</div>
+
+<!-- TRAINING -->
+<div id="train-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px">
+    <h3>🏋️ Treino</h3>
+    <button class="add-btn" onclick="openPlanModal()">+ Novo treino</button>
+  </div>
+
+  <div class="card">
+    <div class="cal-head">
+      <button class="cal-nav-btn" onclick="calShift(-1)">‹</button>
+      <div class="card-title" id="cal-month-lbl" style="margin:0">Calendário</div>
+      <button class="cal-nav-btn" onclick="calShift(1)">›</button>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+
+  <div id="plans-list"></div>
+  <div id="plans-empty" class="empty-state" style="display:none">
+    <div class="icon">🏋️</div>
+    <p>Ainda sem treinos criados.<br>Toca em "+ Novo treino" para começar.</p>
+  </div>
+
+  <div class="section-hdr">
+    <h3>📋 Sessões de hoje</h3>
+    <button class="add-btn" onclick="openTrainModal()">+ Registar</button>
+  </div>
+  <div id="train-log-list"></div>
+  <div id="train-empty" class="empty-state" style="display:none">
+    <div class="icon">💪</div>
+    <p>Sem treino registado hoje.</p>
+  </div>
+</div>
+
+<!-- BIOIMPEDÂNCIA -->
+<div id="health-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px">
+    <h3>📊 Bioimpedância</h3>
+    <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status" style="color:var(--warn)">IMC 36.6</div></div>
+    <div class="health-box"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+    <div class="health-box"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
+    <div class="health-box"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
+    <div class="health-box"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
+    <div class="health-box"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc" style="color:var(--red)">— bpm</div><div class="health-status" style="color:var(--txt3)">Repouso</div></div>
+    <div class="health-box"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos" style="color:var(--blue)">0</div><div class="health-status" style="color:var(--txt3)">Meta: 8.000+</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div id="settings-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px"><h3>⚙️ Configurações</h3></div>
+
+  <!-- AI CHAT -->
+  <div class="card">
+    <div class="card-title">🤖 Assistente IA</div>
+    <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">Pede para adicionar alimentos à dieta ou exercícios a um treino — o assistente faz isso automaticamente.</p>
+    <div id="chat-messages" class="chat-inline-messages">
+      <div class="msg ai">
+        <div class="msg-bubble">Olá Douglas! 💪 Sou o teu assistente de fitness. Posso analisar os teus dados e também adicionar alimentos à dieta ou exercícios a um treino diretamente, se pedires. Como posso ajudar?</div>
+        <div class="msg-time">agora</div>
       </div>
     </div>
-
-    <!-- SETTINGS -->
-    <div id="settings-screen" class="screen">
-      <div class="section-hdr" style="margin-top:4px"><h3>⚙️ Configurações</h3></div>
-
-      <!-- AI CHAT -->
-      <div class="card">
-        <div class="card-title">🤖 Assistente IA</div>
-        <p style="font-size:11px;color:var(--txt3);margin-bottom:10px">Pede para adicionar alimentos à dieta ou exercícios a um treino — o assistente faz isso automaticamente.</p>
-        <div id="chat-messages" class="chat-inline-messages">
-          <div class="msg ai">
-            <div class="msg-bubble">Olá Douglas! 💪 Sou o teu assistente de fitness. Posso analisar os teus dados e também adicionar alimentos à dieta ou exercícios a um treino diretamente, se pedires. Como posso ajudar?</div>
-            <div class="msg-time">agora</div>
-          </div>
-        </div>
-        <div id="chat-input-wrap">
-          <textarea id="chat-input" rows="1" placeholder="ex: adiciona 200g de arroz ao almoço"></textarea>
-          <button id="send-btn" onclick="sendMessage()">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- METAS -->
-      <div class="card">
-        <div class="card-title">🎯 Metas diárias</div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Calorias (kcal)</label><input type="number" class="form-input" id="s-meta-kcal"/></div>
-          <div class="form-group"><label class="form-label">Água (litros)</label><input type="number" class="form-input" id="s-meta-agua" step="0.1"/></div>
-        </div>
-        <div class="form-row">
-          <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-input" id="s-meta-prot"/></div>
-          <div class="form-group"><label class="form-label">Carboidratos (g)</label><input type="number" class="form-input" id="s-meta-carb"/></div>
-        </div>
-        <div class="form-group"><label class="form-label">Gordura (g)</label><input type="number" class="form-input" id="s-meta-fat"/></div>
-        <button class="btn-primary" onclick="saveGoals()">Guardar metas</button>
-      </div>
-
-      <!-- DADOS CORPORAIS -->
-      <div class="card">
-        <div class="card-title">📏 Dados corporais</div>
-        <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-input" id="s-altura"/></div>
-        <button class="btn-primary" onclick="saveAltura()">Guardar altura</button>
-      </div>
-
-      <!-- GITHUB TOKEN -->
-      <div class="card">
-        <div class="card-title">🔗 Sincronização GitHub</div>
-        <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">
-          Token GitHub: <span id="token-status" style="color:var(--acc)">✅ Configurado</span>
-        </div>
-        <button class="btn-secondary" onclick="resetToken()" style="margin-top:0">🔄 Alterar token GitHub</button>
-        <div style="font-size:11px;color:var(--txt3);margin-top:10px">
-          📡 Dados sincronizados com github.com/dougm-b/dbfit
-        </div>
-      </div>
-
-      <!-- API KEY CLAUDE -->
-      <div class="card">
-        <div class="card-title">🔑 Chave API Claude</div>
-        <p style="font-size:12px;color:var(--txt3);margin-bottom:10px">Necessária para o assistente IA. Obtém em console.anthropic.com</p>
-        <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-..."/>
-        <button class="btn-primary" style="margin-top:10px" onclick="saveApiKey()">Guardar chave</button>
-        <p id="api-key-status" style="font-size:11px;color:var(--acc);margin-top:8px;text-align:center"></p>
-      </div>
+    <div id="chat-input-wrap">
+      <textarea id="chat-input" rows="1" placeholder="ex: adiciona 200g de arroz ao almoço"></textarea>
+      <button id="send-btn" onclick="sendMessage()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
     </div>
+  </div>
+
+  <!-- METAS -->
+  <div class="card">
+    <div class="card-title">🎯 Metas diárias</div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Calorias (kcal)</label><input type="number" class="form-input" id="s-meta-kcal"/></div>
+      <div class="form-group"><label class="form-label">Água (litros)</label><input type="number" class="form-input" id="s-meta-agua" step="0.1"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-input" id="s-meta-prot"/></div>
+      <div class="form-group"><label class="form-label">Carboidratos (g)</label><input type="number" class="form-input" id="s-meta-carb"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Gordura (g)</label><input type="number" class="form-input" id="s-meta-fat"/></div>
+    <button class="btn-primary" onclick="saveGoals()">Guardar metas</button>
+  </div>
+
+  <!-- DADOS CORPORAIS -->
+  <div class="card">
+    <div class="card-title">📏 Dados corporais</div>
+    <div class="form-group"><label class="form-label">Altura (cm)</label><input type="number" class="form-input" id="s-altura"/></div>
+    <button class="btn-primary" onclick="saveAltura()">Guardar altura</button>
+  </div>
+
+  <!-- GITHUB TOKEN -->
+  <div class="card">
+    <div class="card-title">🔗 Sincronização GitHub</div>
+    <div style="font-size:13px;color:var(--txt2);margin-bottom:10px">
+      Token GitHub: <span id="token-status" style="color:var(--acc)">✅ Configurado</span>
+    </div>
+    <button class="btn-secondary" onclick="resetToken()" style="margin-top:0">🔄 Alterar token GitHub</button>
+    <div style="font-size:11px;color:var(--txt3);margin-top:10px">
+      📡 Dados sincronizados com github.com/dougm-b/dbfit
+    </div>
+  </div>
+
+  <!-- API KEY CLAUDE -->
+  <div class="card">
+    <div class="card-title">🔑 Chave API Claude</div>
+    <p style="font-size:12px;color:var(--txt3);margin-bottom:10px">Necessária para o assistente IA. Obtém em console.anthropic.com</p>
+    <input type="password" class="form-input" id="api-key-input" placeholder="sk-ant-..."/>
+    <button class="btn-primary" style="margin-top:10px" onclick="saveApiKey()">Guardar chave</button>
+    <p id="api-key-status" style="font-size:11px;color:var(--acc);margin-top:8px;text-align:center"></p>
+  </div>
+</div>
 
   </div><!-- /content -->
 
-  <!-- NAV -->
-  <nav id="nav">
-    <button class="nav-btn active" onclick="showScreen('dash')" id="nav-dash">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      Dashboard
-    </button>
-    <button class="nav-btn" onclick="showScreen('diet')" id="nav-diet">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
-      Dieta
-    </button>
-    <button class="nav-btn" onclick="showScreen('train')" id="nav-train">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6.5 6.5h11M6.5 17.5h11M3 10h2M19 10h2M3 14h2M19 14h2"/><rect x="5" y="8" width="2" height="8" rx="1"/><rect x="17" y="8" width="2" height="8" rx="1"/></svg>
-      Treino
-    </button>
-    <button class="nav-btn" onclick="showScreen('health')" id="nav-health">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-      Bioimp.
-    </button>
-    <button class="nav-btn" onclick="showScreen('settings')" id="nav-settings">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-      Config
-    </button>
-  </nav>
+<!-- NAV -->
+<nav id="nav">
+  <button class="nav-btn active" onclick="showScreen('dash')" id="nav-dash">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    Dashboard
+  </button>
+  <button class="nav-btn" onclick="showScreen('diet')" id="nav-diet">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+    Dieta
+  </button>
+  <button class="nav-btn" onclick="showScreen('train')" id="nav-train">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6.5 6.5h11M6.5 17.5h11M3 10h2M19 10h2M3 14h2M19 14h2"/><rect x="5" y="8" width="2" height="8" rx="1"/><rect x="17" y="8" width="2" height="8" rx="1"/></svg>
+    Treino
+  </button>
+  <button class="nav-btn" onclick="showScreen('health')" id="nav-health">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    Bioimp.
+  </button>
+  <button class="nav-btn" onclick="showScreen('settings')" id="nav-settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    Config
+  </button>
+</nav>
+
 </div>
 
 <!-- MODAL: ADD FOOD -->
@@ -679,6 +685,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
     <button class="btn-primary" onclick="saveHealth()">Guardar dados</button>
   </div>
 </div>
+
 
 <script>
 // ══════════════════════════════════════════
@@ -987,7 +994,7 @@ function showScreen(id) {
 }
 
 // ══════════════════════════════════════════
-// MODALS
+// MODALS (generic open/close)
 // ══════════════════════════════════════════
 function openFoodModal(prefillMeal) {
   if (prefillMeal) document.getElementById('f-meal').value = prefillMeal;
@@ -1010,6 +1017,70 @@ function showToast(msg, duration = 2500) {
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ══════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════
+function updateDash() {
+  const totals = dayTotals(TODAY);
+  const g = state.settings;
+  document.getElementById('m-kcal').textContent = totals.kcal;
+  document.getElementById('m-prot').textContent = totals.prot + 'g';
+  document.getElementById('m-carb').textContent = totals.carb + 'g';
+  document.getElementById('m-fat').textContent  = totals.fat  + 'g';
+  document.getElementById('m-kcal-lbl').textContent = `kcal / ${g.metaKcal}`;
+  document.getElementById('m-prot-lbl').textContent = `prot / ${g.metaProt}g`;
+  document.getElementById('m-carb-lbl').textContent = `carb / ${g.metaCarb}g`;
+  document.getElementById('m-fat-lbl').textContent  = `gord / ${g.metaFat}g`;
+
+  const protPct = g.metaProt ? Math.min(100, Math.round(totals.prot / g.metaProt * 100)) : 0;
+  const kcalPct = g.metaKcal ? Math.min(100, Math.round(totals.kcal / g.metaKcal * 100)) : 0;
+  document.getElementById('prot-bar').style.width  = protPct + '%';
+  document.getElementById('kcal-bar').style.width  = kcalPct + '%';
+  document.getElementById('prot-pct').textContent  = protPct + '%';
+  document.getElementById('kcal-pct').textContent  = kcalPct + '%';
+
+  const h = state.health;
+  const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
+  if (!isNaN(pesoNum)) {
+    const alturaM = (h.altura || 184) / 100;
+    const imc = (pesoNum / (alturaM * alturaM)).toFixed(1);
+    document.getElementById('dash-peso').innerHTML = Math.floor(pesoNum) + `<span style="font-size:16px">.${String(pesoNum.toFixed(1)).split('.')[1]}</span>`;
+    const cls = classifyIMC(+imc);
+    const badge = document.getElementById('dash-imc');
+    badge.className = 'stat-badge ' + cls.cls;
+    badge.textContent = 'IMC ' + imc;
+  }
+  const gcNum = parseFloat(String(h.gc).replace(',', '.'));
+  if (!isNaN(gcNum)) {
+    document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
+  }
+  const muscNum = parseFloat(String(h.musc).replace(',', '.'));
+  if (!isNaN(muscNum)) {
+    document.getElementById('ring-musc').textContent = h.musc;
+    document.getElementById('ring-musc-txt').textContent = Math.round(muscNum);
+  }
+  const gvNum = parseFloat(h.gv);
+  if (!isNaN(gvNum)) {
+    document.getElementById('ring-gv').textContent = 'Nível ' + h.gv;
+    document.getElementById('ring-gv-txt').textContent = h.gv;
+  }
+
+  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(now.getDay()));
+  const planNames = scheduled.length ? scheduled.map(p => esc(p.name)).join(', ') : 'Sem treino agendado';
+  const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
+  document.getElementById('today-workout-info').innerHTML =
+    `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
+     <span style="color:${done?'var(--acc)':'var(--txt3)'}">
+       ${done ? '✅ Treino registado!' : '⏳ Por registar'}
+     </span>`;
+
+  document.getElementById('goal-agua-txt').textContent = `${g.metaAgua}+ litros/dia`;
+  document.getElementById('goal-prot-txt').textContent = `${Math.round(g.metaProt*0.95)}–${g.metaProt} g`;
+  document.getElementById('goal-kcal-txt').textContent = `${Math.round(g.metaKcal*0.95)}–${Math.round(g.metaKcal*1.05)} kcal`;
+  const totalDays = new Set(state.workoutPlans.flatMap(p => p.frequency || [])).size;
+  document.getElementById('goal-cardio-txt').textContent = `${totalDays}x/semana`;
 }
 
 // ══════════════════════════════════════════
@@ -1450,70 +1521,6 @@ function saveApiKey() {
 }
 
 // ══════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════
-function updateDash() {
-  const totals = dayTotals(TODAY);
-  const g = state.settings;
-  document.getElementById('m-kcal').textContent = totals.kcal;
-  document.getElementById('m-prot').textContent = totals.prot + 'g';
-  document.getElementById('m-carb').textContent = totals.carb + 'g';
-  document.getElementById('m-fat').textContent  = totals.fat  + 'g';
-  document.getElementById('m-kcal-lbl').textContent = `kcal / ${g.metaKcal}`;
-  document.getElementById('m-prot-lbl').textContent = `prot / ${g.metaProt}g`;
-  document.getElementById('m-carb-lbl').textContent = `carb / ${g.metaCarb}g`;
-  document.getElementById('m-fat-lbl').textContent  = `gord / ${g.metaFat}g`;
-
-  const protPct = g.metaProt ? Math.min(100, Math.round(totals.prot / g.metaProt * 100)) : 0;
-  const kcalPct = g.metaKcal ? Math.min(100, Math.round(totals.kcal / g.metaKcal * 100)) : 0;
-  document.getElementById('prot-bar').style.width  = protPct + '%';
-  document.getElementById('kcal-bar').style.width  = kcalPct + '%';
-  document.getElementById('prot-pct').textContent  = protPct + '%';
-  document.getElementById('kcal-pct').textContent  = kcalPct + '%';
-
-  const h = state.health;
-  const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
-  if (!isNaN(pesoNum)) {
-    const alturaM = (h.altura || 184) / 100;
-    const imc = (pesoNum / (alturaM * alturaM)).toFixed(1);
-    document.getElementById('dash-peso').innerHTML = Math.floor(pesoNum) + `<span style="font-size:16px">.${String(pesoNum.toFixed(1)).split('.')[1]}</span>`;
-    const cls = classifyIMC(+imc);
-    const badge = document.getElementById('dash-imc');
-    badge.className = 'stat-badge ' + cls.cls;
-    badge.textContent = 'IMC ' + imc;
-  }
-  const gcNum = parseFloat(String(h.gc).replace(',', '.'));
-  if (!isNaN(gcNum)) {
-    document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
-  }
-  const muscNum = parseFloat(String(h.musc).replace(',', '.'));
-  if (!isNaN(muscNum)) {
-    document.getElementById('ring-musc').textContent = h.musc;
-    document.getElementById('ring-musc-txt').textContent = Math.round(muscNum);
-  }
-  const gvNum = parseFloat(h.gv);
-  if (!isNaN(gvNum)) {
-    document.getElementById('ring-gv').textContent = 'Nível ' + h.gv;
-    document.getElementById('ring-gv-txt').textContent = h.gv;
-  }
-
-  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(now.getDay()));
-  const planNames = scheduled.length ? scheduled.map(p => esc(p.name)).join(', ') : 'Sem treino agendado';
-  const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
-  document.getElementById('today-workout-info').innerHTML =
-    `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
-     <span style="color:${done?'var(--acc)':'var(--txt3)'}">
-       ${done ? '✅ Treino registado!' : '⏳ Por registar'}
-     </span>`;
-
-  document.getElementById('goal-agua-txt').textContent = `${g.metaAgua}+ litros/dia`;
-  document.getElementById('goal-prot-txt').textContent = `${Math.round(g.metaProt*0.95)}–${g.metaProt} g`;
-  document.getElementById('goal-kcal-txt').textContent = `${Math.round(g.metaKcal*0.95)}–${Math.round(g.metaKcal*1.05)} kcal`;
-  const totalDays = new Set(state.workoutPlans.flatMap(p => p.frequency || [])).size;
-  document.getElementById('goal-cardio-txt').textContent = `${totalDays}x/semana`;
-}
-
-// ══════════════════════════════════════════
 // AI CHAT — with tool use (add food / add exercise)
 // ══════════════════════════════════════════
 let chatHistory = [];
@@ -1758,9 +1765,11 @@ document.getElementById('chat-input').addEventListener('keydown', function(e) {
 
 // ══════════════════════════════════════════
 // START
+// (must run last — after every module above has defined its functions)
 // ══════════════════════════════════════════
 setupDate();
 checkToken();
+
 </script>
 </body>
 </html>

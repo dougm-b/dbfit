@@ -1,0 +1,28 @@
+<!-- MODAL: ADD FOOD -->
+<div class="modal-overlay" id="food-modal">
+  <div class="modal">
+    <h3>🍽️ Adicionar alimento <button class="modal-close" onclick="closeModal('food-modal')">×</button></h3>
+    <div class="form-group">
+      <label class="form-label">Refeição</label>
+      <select class="form-input" id="f-meal">
+        <option>☕ Café da manhã</option><option>🥛 Meio da manhã</option>
+        <option>🍽️ Almoço</option><option>🍫 Lanche da tarde</option>
+        <option>⚡ Pré-treino</option><option>🌙 Jantar</option><option>🌛 Ceia</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Alimento</label>
+      <input type="text" class="form-input" id="f-food" placeholder="ex: Peito de frango grelhado"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Quantidade (g/ml)</label><input type="number" class="form-input" id="f-qty" placeholder="180"/></div>
+      <div class="form-group"><label class="form-label">Proteína (g)</label><input type="number" class="form-input" id="f-prot" placeholder="38"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Calorias (kcal)</label><input type="number" class="form-input" id="f-kcal" placeholder="200"/></div>
+      <div class="form-group"><label class="form-label">Carboidratos (g)</label><input type="number" class="form-input" id="f-carb" placeholder="0"/></div>
+    </div>
+    <div class="form-group"><label class="form-label">Gordura (g)</label><input type="number" class="form-input" id="f-fat" placeholder="4"/></div>
+    <button class="btn-primary" onclick="addFood()">Guardar alimento</button>
+  </div>
+</div>
