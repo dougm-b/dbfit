@@ -4,7 +4,7 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="theme-color" content="#0a0a0a"/>
-<title>Indicador — The CHANGE App</title>
+<title>Indicador — Change</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -47,6 +47,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;align-items:center;justify-content:space-between;
   position:relative;z-index:10;flex-shrink:0;
 }
+.logo-row{display:flex;align-items:center;gap:8px}
+#flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -97,6 +99,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .section-hdr h3{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
   padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
+.date-nav{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:14px}
+.date-nav-label{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;min-width:90px;text-align:center}
+.cal-nav-btn:disabled{opacity:.3;cursor:not-allowed}
 .meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
   cursor:pointer;transition:border-color .2s}
@@ -271,6 +276,18 @@ function parseLocalDate(dk){
 const now   = new Date();
 const TODAY = fmtDate(now);
 
+function shiftDate(dateKey, delta){
+  const d = parseLocalDate(dateKey);
+  d.setDate(d.getDate() + delta);
+  return fmtDate(d);
+}
+function dateNavLabel(dateKey){
+  if (dateKey === TODAY) return 'Hoje';
+  if (dateKey === shiftDate(TODAY, -1)) return 'Ontem';
+  const d = parseLocalDate(dateKey);
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
 function esc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -313,6 +330,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
   };
@@ -331,6 +349,10 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.measurements = {
+    defs: (loaded.measurements && loaded.measurements.defs) || [],
+    history: (loaded.measurements && loaded.measurements.history) || {}
+  };
   s.chatHistory  = loaded.chatHistory || [];
 
   // migrate old flat foods -> meals
@@ -603,7 +625,7 @@ function openFoodModal(prefillMeal) {
   document.getElementById('food-modal').classList.add('open');
 }
 function openFoodModalForMeal(mi) {
-  openFoodModal(state.meals[TODAY][mi].name);
+  openFoodModal(state.meals[dietViewDate][mi].name);
 }
 function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
@@ -832,13 +854,115 @@ function snapshotHealthHistory(dateKey) {
 }
 
 // ══════════════════════════════════════════
+// MEDIDAS CORPORAIS — cards totalmente livres definidos pelo utilizador
+// (cintura, peito, braço, etc.), cada um com o seu próprio histórico e
+// gráfico na página de detalhe (?measurement=<id>)
+// ══════════════════════════════════════════
+function nextMeasurementId() {
+  const ids = state.measurements.defs.map(d => d.id);
+  let n = 1;
+  while (ids.includes('m' + n)) n++;
+  return 'm' + n;
+}
+
+function measurementLatestValue(id) {
+  const dates = Object.keys(state.measurements.history)
+    .filter(d => state.measurements.history[d][id] !== undefined)
+    .sort();
+  if (!dates.length) return null;
+  return state.measurements.history[dates[dates.length - 1]][id];
+}
+
+function measurementSeries(id) {
+  return Object.entries(state.measurements.history)
+    .filter(([, day]) => day[id] !== undefined)
+    .map(([date, day]) => ({ date, value: day[id] }))
+    .sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+}
+
+function renderMeasurements() {
+  const defs = state.measurements.defs;
+  const list = document.getElementById('measurements-list');
+  const empty = document.getElementById('measurements-empty');
+  if (!defs.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  list.innerHTML = defs.map(d => {
+    const v = measurementLatestValue(d.id);
+    return `
+    <div class="health-box" onclick="goToMeasurement('${d.id}')">
+      <div class="health-lbl">${esc(d.name)}</div>
+      <div class="health-val">${v === null || v === undefined ? '—' : fmtMeasureVal(v)}<span style="font-size:13px;color:var(--txt3)"> ${esc(d.unit || '')}</span></div>
+      <div class="health-status" style="color:var(--txt3)">toca para ver histórico</div>
+    </div>`;
+  }).join('');
+}
+
+function fmtMeasureVal(v) {
+  return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
+}
+
+function openMeasurementModal() {
+  const sel = document.getElementById('ms-type');
+  sel.innerHTML = state.measurements.defs.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')
+    + `<option value="__new__">+ Nova medida…</option>`;
+  sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
+  document.getElementById('ms-value').value = '';
+  document.getElementById('ms-new-name').value = '';
+  document.getElementById('ms-new-unit').value = '';
+  toggleMeasurementNewFields();
+  document.getElementById('measurement-modal').classList.add('open');
+}
+
+function toggleMeasurementNewFields() {
+  const isNew = document.getElementById('ms-type').value === '__new__';
+  document.getElementById('ms-new-fields').style.display = isNew ? 'block' : 'none';
+}
+
+async function saveMeasurement() {
+  const sel = document.getElementById('ms-type');
+  const value = +document.getElementById('ms-value').value;
+  if (!value && value !== 0) { showToast('⚠️ Indica um valor'); return; }
+
+  let id = sel.value;
+  if (id === '__new__') {
+    const name = document.getElementById('ms-new-name').value.trim();
+    if (!name) { showToast('⚠️ Indica o nome da medida'); return; }
+    const unit = document.getElementById('ms-new-unit').value.trim();
+    id = nextMeasurementId();
+    state.measurements.defs.push({ id, name, unit });
+  }
+
+  if (!state.measurements.history[TODAY]) state.measurements.history[TODAY] = {};
+  state.measurements.history[TODAY][id] = value;
+
+  closeModal('measurement-modal');
+  renderMeasurements();
+  await pushToGitHub();
+  showToast('✅ Medida guardada!');
+}
+
+async function deleteMeasurementDef(id) {
+  if (!confirm('Remover esta medida e todo o seu histórico?')) return;
+  state.measurements.defs = state.measurements.defs.filter(d => d.id !== id);
+  Object.values(state.measurements.history).forEach(day => { delete day[id]; });
+  renderMeasurements();
+  await pushToGitHub();
+}
+
+function goToMeasurement(id) {
+  location.href = 'detail.html?measurement=' + encodeURIComponent(id);
+}
+
+// ══════════════════════════════════════════
 // DETAIL PAGE — histórico, faixa saudável, indicadores relacionados,
 // correlação estatística real (calculada a partir do healthHistory)
 // ══════════════════════════════════════════
-function getQueryMetric() {
+function getQueryParams() {
   const params = new URLSearchParams(location.search);
-  const id = params.get('metric');
-  return (id && METRICS[id]) ? id : 'peso';
+  const measurementId = params.get('measurement');
+  if (measurementId) return { mode: 'measurement', id: measurementId };
+  const metricId = params.get('metric');
+  return { mode: 'metric', id: (metricId && METRICS[metricId]) ? metricId : 'peso' };
 }
 
 function fmtNum(v) {
@@ -913,12 +1037,64 @@ function svgLineChart(series) {
 }
 
 function renderDetail() {
-  const id = getQueryMetric();
+  const q = getQueryParams();
+  if (q.mode === 'measurement') { renderMeasurementDetail(q.id); return; }
+  renderMetricDetail(q.id);
+}
+
+function renderMeasurementDetail(id) {
+  const def = state.measurements.defs.find(d => d.id === id);
+  const container = document.getElementById('detail-content');
+  if (!def) {
+    document.getElementById('detail-title').textContent = 'Medida';
+    container.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>Medida não encontrada.</p></div>`;
+    return;
+  }
+  document.getElementById('detail-title').textContent = def.name;
+  document.title = def.name + ' — Change';
+
+  const series = measurementSeries(id);
+  const current = series.length ? series[series.length - 1].value : null;
+  const unit = def.unit ? ' ' + def.unit : '';
+
+  const chartHtml = series.length >= 2
+    ? svgLineChart(series)
+    : `<div class="empty-state" style="padding:24px 10px">
+         <div class="icon">📈</div>
+         <p>Ainda não há histórico suficiente.<br>Cada vez que registares esta medida fica um novo ponto aqui.</p>
+       </div>`;
+
+  const values = series.map(p => p.value);
+  const statsHtml = values.length ? `
+    <div class="detail-stats-row">
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values[values.length - 1])}</div><div class="detail-stat-lbl">Atual</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.min(...values))}</div><div class="detail-stat-lbl">Mínimo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(Math.max(...values))}</div><div class="detail-stat-lbl">Máximo</div></div>
+      <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values.reduce((a, b) => a + b, 0) / values.length)}</div><div class="detail-stat-lbl">Média</div></div>
+    </div>` : '';
+
+  container.innerHTML = `
+    <div class="card">
+      <div class="card-title">${esc(def.name)}</div>
+      <div class="detail-current">${current === null ? '—' : fmtNum(current)}<span class="detail-unit">${unit}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Histórico</div>
+      ${chartHtml}
+      ${statsHtml}
+    </div>
+    <div class="card">
+      <button class="btn-secondary" onclick="deleteMeasurementDef('${id}'); location.href='index.html'">🗑 Remover esta medida</button>
+    </div>
+  `;
+}
+
+function renderMetricDetail(id) {
   const m = METRICS[id];
   const container = document.getElementById('detail-content');
 
   document.getElementById('detail-title').textContent = m.label;
-  document.title = m.label + ' — The CHANGE App';
+  document.title = m.label + ' — Change';
 
   const series = metricSeries(id);
   const current = series.length ? series[series.length - 1].value : metricValue(id, state.health);

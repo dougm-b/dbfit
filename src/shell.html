@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-<meta name="apple-mobile-web-app-title" content="The CHANGE App"/>
-<title>The CHANGE App — Douglas Barros</title>
+<meta name="apple-mobile-web-app-title" content="Change"/>
+<title>Change — Douglas Barros</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
@@ -27,7 +27,12 @@
 <div id="app">
   <!-- TOP BAR -->
   <div id="topbar">
-    <div class="logo">The CHANGE App<span>Douglas Barros</span></div>
+    <div class="logo-row">
+      <svg id="flame-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.176 7.547 7.547 0 01-1.705-1.715.75.75 0 00-1.152-.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z"/>
+      </svg>
+      <div class="logo">Change<span>Douglas Barros</span></div>
+    </div>
     <div class="date-chip" id="date-chip"></div>
   </div>
 
@@ -48,14 +53,17 @@
 <!--INCLUDE:partials/modals/day-modal.html-->
 <!--INCLUDE:partials/modals/train-modal.html-->
 <!--INCLUDE:partials/modals/health-modal.html-->
+<!--INCLUDE:partials/modals/measurement-modal.html-->
 
 <script>
 <!--INCLUDE:js/core.js-->
 <!--INCLUDE:js/metrics.js-->
+<!--INCLUDE:js/score.js-->
 <!--INCLUDE:js/dashboard.js-->
 <!--INCLUDE:js/diet.js-->
 <!--INCLUDE:js/train.js-->
 <!--INCLUDE:js/health.js-->
+<!--INCLUDE:js/measurements.js-->
 <!--INCLUDE:js/settings.js-->
 <!--INCLUDE:js/import.js-->
 <!--INCLUDE:js/chat.js-->

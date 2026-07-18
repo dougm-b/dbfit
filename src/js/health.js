@@ -35,6 +35,7 @@ function renderHealth() {
     st.style.color = cls.color;
   }
   if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
+  renderMeasurements();
 }
 
 async function saveHealth() {

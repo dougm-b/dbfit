@@ -21,6 +21,18 @@ function parseLocalDate(dk){
 const now   = new Date();
 const TODAY = fmtDate(now);
 
+function shiftDate(dateKey, delta){
+  const d = parseLocalDate(dateKey);
+  d.setDate(d.getDate() + delta);
+  return fmtDate(d);
+}
+function dateNavLabel(dateKey){
+  if (dateKey === TODAY) return 'Hoje';
+  if (dateKey === shiftDate(TODAY, -1)) return 'Ontem';
+  const d = parseLocalDate(dateKey);
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
 function esc(s){
   return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
@@ -63,6 +75,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
   };
@@ -81,6 +94,10 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.measurements = {
+    defs: (loaded.measurements && loaded.measurements.defs) || [],
+    history: (loaded.measurements && loaded.measurements.history) || {}
+  };
   s.chatHistory  = loaded.chatHistory || [];
 
   // migrate old flat foods -> meals
@@ -353,7 +370,7 @@ function openFoodModal(prefillMeal) {
   document.getElementById('food-modal').classList.add('open');
 }
 function openFoodModalForMeal(mi) {
-  openFoodModal(state.meals[TODAY][mi].name);
+  openFoodModal(state.meals[dietViewDate][mi].name);
 }
 function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
