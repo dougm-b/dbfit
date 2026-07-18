@@ -9,21 +9,21 @@
     <div class="stat-box">
       <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
       <div class="stat-lbl">Gordura corporal</div>
-      <div class="stat-badge badge-red">Meta: 18–22%</div>
+      <div class="stat-badge badge-red" id="dash-gc-badge">Meta: 18–22%</div>
     </div>
   </div>
   <div class="ring-row">
     <div class="ring-card">
       <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
-        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(212,212,216,.12)" stroke-width="5"/>
-        <circle cx="22" cy="22" r="18" fill="none" stroke="#d4d4d8" stroke-width="5"
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
           stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
-        <text x="22" y="26" text-anchor="middle" fill="#d4d4d8" font-size="10" font-weight="700" font-family="Onest" id="ring-musc-txt">73</text>
+        <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Onest" id="ring-musc-txt">73</text>
       </svg>
       <div class="ring-info">
         <div class="ring-label">Músculo total</div>
         <div class="ring-val" id="ring-musc">73,3 kg</div>
-        <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
+        <div class="ring-sub" style="color:var(--good)">✅ Excelente</div>
       </div>
     </div>
     <div class="ring-card">
@@ -54,7 +54,7 @@
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
           <span>Proteína</span><span id="prot-pct">0%</span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--acc);width:0%"></div></div>
+        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--good);width:0%"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
@@ -68,6 +68,14 @@
   <div class="card">
     <div class="card-title">🏋️ Treino de hoje</div>
     <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚶 Passos hoje</div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="stat-val" id="dash-passos" style="font-size:26px">0</div>
+      <div class="stat-badge badge-red" id="dash-passos-badge">Meta: 8.000+</div>
+    </div>
   </div>
 
   <div class="card">

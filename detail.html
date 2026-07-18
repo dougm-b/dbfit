@@ -11,7 +11,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -111,7 +111,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 /* ── STATUS BADGE ── */
 .stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
-.badge-ok{background:rgba(212,212,216,.15);color:var(--acc)}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--good)}
+.badge-caution{background:rgba(250,204,21,.15);color:var(--caution)}
 .badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
 .badge-red{background:rgba(248,113,113,.15);color:var(--red)}
 
@@ -358,10 +359,10 @@ function migrateState(loaded){
 }
 
 function classifyIMC(imc){
-  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-warn' };
-  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok' };
-  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn' };
-  return { label:'Obesidade', cls:'badge-red' };
+  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-caution', color:'var(--caution)' };
+  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok', color:'var(--good)' };
+  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn', color:'var(--warn)' };
+  return { label:'Obesidade', cls:'badge-red', color:'var(--red)' };
 }
 
 function nextPlanId(){
@@ -745,6 +746,40 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
+// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
+// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
+// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
+// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = m.range;
+  if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
+  const span = (isFinite(hi) ? hi - lo : lo) || 1;
+  const dist = value < lo ? (lo - value) : (value - hi);
+  const distPct = dist / span;
+  if (distPct < 0.2) return { color: 'var(--caution)', cls: 'badge-caution', emoji: '🟡' };
+  if (distPct < 0.5) return { color: 'var(--warn)', cls: 'badge-warn', emoji: '🟠' };
+  return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
+}
+
+// Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
+// de um indicador na Bioimpedância ou no Dashboard.
+function applyMetricStatus(metricId, valueElId, statusElId) {
+  const valueEl = document.getElementById(valueElId);
+  if (!valueEl) return;
+  const m = METRICS[metricId];
+  const val = metricValue(metricId, state.health);
+  const status = classifyMetricValue(metricId, val);
+  if (!status) return;
+  valueEl.style.color = status.color;
+  const statusEl = statusElId && document.getElementById(statusElId);
+  if (statusEl && m.rangeLabel) {
+    statusEl.textContent = `${status.emoji} ${m.rangeLabel}`;
+    statusEl.style.color = status.color;
+  }
+}
+
 function pearson(xs, ys) {
   const n = xs.length;
   if (n < 2) return null;
@@ -817,7 +852,7 @@ function corrColor(r) {
   return r > 0 ? 'var(--acc)' : 'var(--red)';
 }
 
-function rangeBarHtml(current, range, label) {
+function rangeBarHtml(metricId, current, range, label) {
   if (current === null) return `<p style="font-size:12px;color:var(--txt3)">${esc(label || '')}</p>`;
   const [lo, hi] = range;
   const finiteHi = isFinite(hi) ? hi : lo + Math.max(lo, current, 1) * 0.6;
@@ -828,14 +863,20 @@ function rangeBarHtml(current, range, label) {
   const pct = clampPct(current);
   const loPct = clampPct(lo);
   const hiPct = isFinite(hi) ? clampPct(hi) : 100;
-  const inRange = current >= lo && (!isFinite(hi) || current <= hi);
+  const status = classifyMetricValue(metricId, current);
+  const markerColor = status ? status.color : 'var(--good)';
+  const statusText = status && status.cls === 'badge-ok' ? 'dentro da faixa saudável'
+    : status && status.cls === 'badge-caution' ? 'perto da faixa saudável'
+    : status && status.cls === 'badge-warn' ? 'fora da faixa saudável'
+    : 'muito fora da faixa saudável';
+  const emoji = status ? status.emoji : '✅';
   return `
     <div class="range-bar-wrap">
       <div class="range-bar">
         <div class="range-bar-zone" style="left:${loPct}%;width:${Math.max(0, hiPct - loPct)}%"></div>
-        <div class="range-bar-marker" style="left:${pct}%;background:${inRange ? 'var(--acc)' : 'var(--red)'}"></div>
+        <div class="range-bar-marker" style="left:${pct}%;background:${markerColor}"></div>
       </div>
-      <div style="font-size:11px;color:var(--txt3);margin-top:6px">${esc(label)} · ${inRange ? '✅ dentro da faixa saudável' : '⚠️ fora da faixa saudável'}</div>
+      <div style="font-size:11px;color:${markerColor};margin-top:6px">${esc(label)} · ${emoji} ${statusText}</div>
     </div>`;
 }
 
@@ -884,7 +925,7 @@ function renderDetail() {
   const unit = m.unit ? ' ' + m.unit : '';
 
   const rangeHtml = m.range
-    ? rangeBarHtml(current, m.range, m.rangeLabel)
+    ? rangeBarHtml(id, current, m.range, m.rangeLabel)
     : `<p style="font-size:12px;color:var(--txt3)">${esc(m.rangeLabel || '')}</p>`;
 
   const chartHtml = series.length >= 2

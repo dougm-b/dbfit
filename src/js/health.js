@@ -16,6 +16,15 @@ function renderHealth() {
   document.getElementById('h-fc').textContent    = h.fc ? h.fc + ' bpm' : '— bpm';
   document.getElementById('h-passos').textContent = (h.passos || 0).toLocaleString('pt-PT');
 
+  // Cor de cada indicador de acordo com a intensidade do desvio face à faixa saudável
+  applyMetricStatus('gc', 'h-gc', 'h-gc-status');
+  applyMetricStatus('gv', 'h-gv', 'h-gv-status');
+  applyMetricStatus('prot', 'h-prot', 'h-prot-status');
+  applyMetricStatus('agua', 'h-agua', 'h-agua-status');
+  applyMetricStatus('ossea', 'h-ossea', 'h-ossea-status');
+  applyMetricStatus('fc', 'h-fc', 'h-fc-status');
+  applyMetricStatus('passos', 'h-passos', 'h-passos-status');
+
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   const alturaM = (h.altura || 184) / 100;
   if (!isNaN(pesoNum)) {
@@ -23,7 +32,7 @@ function renderHealth() {
     const cls = classifyIMC(+imc);
     const st = document.getElementById('h-peso-status');
     st.textContent = `IMC ${imc} · ${cls.label}`;
-    st.style.color = cls.cls === 'badge-ok' ? 'var(--acc)' : cls.cls === 'badge-red' ? 'var(--red)' : 'var(--warn)';
+    st.style.color = cls.color;
   }
   if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
 }

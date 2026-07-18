@@ -109,10 +109,10 @@ function migrateState(loaded){
 }
 
 function classifyIMC(imc){
-  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-warn' };
-  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok' };
-  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn' };
-  return { label:'Obesidade', cls:'badge-red' };
+  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-caution', color:'var(--caution)' };
+  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok', color:'var(--good)' };
+  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn', color:'var(--warn)' };
+  return { label:'Obesidade', cls:'badge-red', color:'var(--red)' };
 }
 
 function nextPlanId(){

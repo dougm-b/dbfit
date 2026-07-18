@@ -19,7 +19,7 @@ function corrColor(r) {
   return r > 0 ? 'var(--acc)' : 'var(--red)';
 }
 
-function rangeBarHtml(current, range, label) {
+function rangeBarHtml(metricId, current, range, label) {
   if (current === null) return `<p style="font-size:12px;color:var(--txt3)">${esc(label || '')}</p>`;
   const [lo, hi] = range;
   const finiteHi = isFinite(hi) ? hi : lo + Math.max(lo, current, 1) * 0.6;
@@ -30,14 +30,20 @@ function rangeBarHtml(current, range, label) {
   const pct = clampPct(current);
   const loPct = clampPct(lo);
   const hiPct = isFinite(hi) ? clampPct(hi) : 100;
-  const inRange = current >= lo && (!isFinite(hi) || current <= hi);
+  const status = classifyMetricValue(metricId, current);
+  const markerColor = status ? status.color : 'var(--good)';
+  const statusText = status && status.cls === 'badge-ok' ? 'dentro da faixa saudável'
+    : status && status.cls === 'badge-caution' ? 'perto da faixa saudável'
+    : status && status.cls === 'badge-warn' ? 'fora da faixa saudável'
+    : 'muito fora da faixa saudável';
+  const emoji = status ? status.emoji : '✅';
   return `
     <div class="range-bar-wrap">
       <div class="range-bar">
         <div class="range-bar-zone" style="left:${loPct}%;width:${Math.max(0, hiPct - loPct)}%"></div>
-        <div class="range-bar-marker" style="left:${pct}%;background:${inRange ? 'var(--acc)' : 'var(--red)'}"></div>
+        <div class="range-bar-marker" style="left:${pct}%;background:${markerColor}"></div>
       </div>
-      <div style="font-size:11px;color:var(--txt3);margin-top:6px">${esc(label)} · ${inRange ? '✅ dentro da faixa saudável' : '⚠️ fora da faixa saudável'}</div>
+      <div style="font-size:11px;color:${markerColor};margin-top:6px">${esc(label)} · ${emoji} ${statusText}</div>
     </div>`;
 }
 
@@ -86,7 +92,7 @@ function renderDetail() {
   const unit = m.unit ? ' ' + m.unit : '';
 
   const rangeHtml = m.range
-    ? rangeBarHtml(current, m.range, m.rangeLabel)
+    ? rangeBarHtml(id, current, m.range, m.rangeLabel)
     : `<p style="font-size:12px;color:var(--txt3)">${esc(m.rangeLabel || '')}</p>`;
 
   const chartHtml = series.length >= 2

@@ -24,7 +24,7 @@
   border:1px solid var(--card-b);cursor:pointer;position:relative}
 .cal-cell.other-month{opacity:.35}
 .cal-cell.has-plan::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--blue)}
-.cal-cell.done{background:rgba(212,212,216,.15);border-color:rgba(212,212,216,.35);color:var(--acc)}
+.cal-cell.done{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.35);color:var(--good)}
 .cal-cell.today{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 
 /* ── PLAN BUILDER ── */

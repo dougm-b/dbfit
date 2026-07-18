@@ -123,6 +123,40 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
+// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
+// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
+// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
+// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = m.range;
+  if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
+  const span = (isFinite(hi) ? hi - lo : lo) || 1;
+  const dist = value < lo ? (lo - value) : (value - hi);
+  const distPct = dist / span;
+  if (distPct < 0.2) return { color: 'var(--caution)', cls: 'badge-caution', emoji: '🟡' };
+  if (distPct < 0.5) return { color: 'var(--warn)', cls: 'badge-warn', emoji: '🟠' };
+  return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
+}
+
+// Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
+// de um indicador na Bioimpedância ou no Dashboard.
+function applyMetricStatus(metricId, valueElId, statusElId) {
+  const valueEl = document.getElementById(valueElId);
+  if (!valueEl) return;
+  const m = METRICS[metricId];
+  const val = metricValue(metricId, state.health);
+  const status = classifyMetricValue(metricId, val);
+  if (!status) return;
+  valueEl.style.color = status.color;
+  const statusEl = statusElId && document.getElementById(statusElId);
+  if (statusEl && m.rangeLabel) {
+    statusEl.textContent = `${status.emoji} ${m.rangeLabel}`;
+    statusEl.style.color = status.color;
+  }
+}
+
 function pearson(xs, ys) {
   const n = xs.length;
   if (n < 2) return null;

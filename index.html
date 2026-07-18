@@ -15,7 +15,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -115,7 +115,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 /* ── STATUS BADGE ── */
 .stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
-.badge-ok{background:rgba(212,212,216,.15);color:var(--acc)}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--good)}
+.badge-caution{background:rgba(250,204,21,.15);color:var(--caution)}
 .badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
 .badge-red{background:rgba(248,113,113,.15);color:var(--red)}
 
@@ -230,7 +231,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   border:1px solid var(--card-b);cursor:pointer;position:relative}
 .cal-cell.other-month{opacity:.35}
 .cal-cell.has-plan::after{content:'';position:absolute;bottom:3px;width:4px;height:4px;border-radius:50%;background:var(--blue)}
-.cal-cell.done{background:rgba(212,212,216,.15);border-color:rgba(212,212,216,.35);color:var(--acc)}
+.cal-cell.done{background:rgba(74,222,128,.15);border-color:rgba(74,222,128,.35);color:var(--good)}
 .cal-cell.today{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
 
 /* ── PLAN BUILDER ── */
@@ -334,21 +335,21 @@ input[type="file"].form-input::file-selector-button{
     <div class="stat-box">
       <div class="stat-val" id="dash-gc">37<span style="font-size:16px">%</span></div>
       <div class="stat-lbl">Gordura corporal</div>
-      <div class="stat-badge badge-red">Meta: 18–22%</div>
+      <div class="stat-badge badge-red" id="dash-gc-badge">Meta: 18–22%</div>
     </div>
   </div>
   <div class="ring-row">
     <div class="ring-card">
       <svg class="ring-svg" width="44" height="44" viewBox="0 0 44 44">
-        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(212,212,216,.12)" stroke-width="5"/>
-        <circle cx="22" cy="22" r="18" fill="none" stroke="#d4d4d8" stroke-width="5"
+        <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(74,222,128,.12)" stroke-width="5"/>
+        <circle cx="22" cy="22" r="18" fill="none" stroke="#4ade80" stroke-width="5"
           stroke-dasharray="113" stroke-dashoffset="35" stroke-linecap="round" transform="rotate(-90 22 22)"/>
-        <text x="22" y="26" text-anchor="middle" fill="#d4d4d8" font-size="10" font-weight="700" font-family="Onest" id="ring-musc-txt">73</text>
+        <text x="22" y="26" text-anchor="middle" fill="#4ade80" font-size="10" font-weight="700" font-family="Onest" id="ring-musc-txt">73</text>
       </svg>
       <div class="ring-info">
         <div class="ring-label">Músculo total</div>
         <div class="ring-val" id="ring-musc">73,3 kg</div>
-        <div class="ring-sub" style="color:var(--acc)">✅ Excelente</div>
+        <div class="ring-sub" style="color:var(--good)">✅ Excelente</div>
       </div>
     </div>
     <div class="ring-card">
@@ -379,7 +380,7 @@ input[type="file"].form-input::file-selector-button{
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
           <span>Proteína</span><span id="prot-pct">0%</span>
         </div>
-        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--acc);width:0%"></div></div>
+        <div class="progress-bar"><div class="progress-fill" id="prot-bar" style="background:var(--good);width:0%"></div></div>
       </div>
       <div>
         <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
@@ -393,6 +394,14 @@ input[type="file"].form-input::file-selector-button{
   <div class="card">
     <div class="card-title">🏋️ Treino de hoje</div>
     <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🚶 Passos hoje</div>
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div class="stat-val" id="dash-passos" style="font-size:26px">0</div>
+      <div class="stat-badge badge-red" id="dash-passos-badge">Meta: 8.000+</div>
+    </div>
   </div>
 
   <div class="card">
@@ -464,28 +473,28 @@ input[type="file"].form-input::file-selector-button{
   </div>
   <p style="font-size:11px;color:var(--txt3);margin:-6px 0 12px">🔄 Sincroniza automaticamente entre dispositivos · toca num indicador para ver histórico e gráfico</p>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('peso')"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status" style="color:var(--warn)">IMC 36.6</div></div>
-    <div class="health-box" onclick="goToMetric('gc')"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc" style="color:var(--red)">37,0%</div><div class="health-status" style="color:var(--txt3)">Meta: 18–22%</div></div>
+    <div class="health-box" onclick="goToMetric('peso')"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status">IMC 36.6</div></div>
+    <div class="health-box" onclick="goToMetric('gc')"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc">37,0%</div><div class="health-status" id="h-gc-status">Meta: 18–22%</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('musc')"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--acc)">73,3 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-    <div class="health-box" onclick="goToMetric('gv')"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv" style="color:var(--red)">15</div><div class="health-status" style="color:var(--txt3)">Meta: &lt;9</div></div>
+    <div class="health-box" onclick="goToMetric('musc')"><div class="health-lbl">Músculo total</div><div class="health-val" id="h-musc" style="color:var(--good)">73,3 kg</div><div class="health-status" style="color:var(--good)">✅ Excelente</div></div>
+    <div class="health-box" onclick="goToMetric('gv')"><div class="health-lbl">Gordura visceral</div><div class="health-val" id="h-gv">15</div><div class="health-status" id="h-gv-status">Meta: &lt;9</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('me')"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--acc)">43,0 kg</div><div class="health-status" style="color:var(--acc)">✅ Excelente</div></div>
-    <div class="health-box" onclick="goToMetric('prot')"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot" style="color:var(--warn)">11,4%</div><div class="health-status" style="color:var(--txt3)">Meta: 16–18%</div></div>
+    <div class="health-box" onclick="goToMetric('me')"><div class="health-lbl">Músculo esquelético</div><div class="health-val" id="h-me" style="color:var(--good)">43,0 kg</div><div class="health-status" style="color:var(--good)">✅ Excelente</div></div>
+    <div class="health-box" onclick="goToMetric('prot')"><div class="health-lbl">Proteína corporal</div><div class="health-val" id="h-prot">11,4%</div><div class="health-status" id="h-prot-status">Meta: 16–18%</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('agua')"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua" style="color:var(--blue)">44,9%</div><div class="health-status" style="color:var(--acc)">✅ Normal</div></div>
-    <div class="health-box" onclick="goToMetric('met')"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--warn)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
+    <div class="health-box" onclick="goToMetric('agua')"><div class="health-lbl">Água corporal</div><div class="health-val" id="h-agua">44,9%</div><div class="health-status" id="h-agua-status">Meta: 45–60%</div></div>
+    <div class="health-box" onclick="goToMetric('met')"><div class="health-lbl">Metabolismo basal</div><div class="health-val" id="h-met" style="color:var(--txt)">2.309</div><div class="health-status" style="color:var(--txt3)">kcal/dia</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('idade')"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--acc)">21 anos</div><div class="health-status" style="color:var(--acc)">✅ 8 anos abaixo</div></div>
-    <div class="health-box" onclick="goToMetric('ossea')"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" style="color:var(--txt3)">Normal</div></div>
+    <div class="health-box" onclick="goToMetric('idade')"><div class="health-lbl">Idade corporal</div><div class="health-val" id="h-idade" style="color:var(--good)">21 anos</div><div class="health-status" style="color:var(--good)">✅ 8 anos abaixo</div></div>
+    <div class="health-box" onclick="goToMetric('ossea')"><div class="health-lbl">Massa óssea</div><div class="health-val" id="h-ossea">4,0 kg</div><div class="health-status" id="h-ossea-status">Meta: 2,5–4,5 kg</div></div>
   </div>
   <div class="health-row">
-    <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc" style="color:var(--red)">— bpm</div><div class="health-status" style="color:var(--txt3)">Repouso</div></div>
-    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos" style="color:var(--blue)">0</div><div class="health-status" style="color:var(--txt3)">Meta: 8.000+</div></div>
+    <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc">— bpm</div><div class="health-status" id="h-fc-status">Repouso</div></div>
+    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
   </div>
 </div>
 
@@ -822,10 +831,10 @@ function migrateState(loaded){
 }
 
 function classifyIMC(imc){
-  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-warn' };
-  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok' };
-  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn' };
-  return { label:'Obesidade', cls:'badge-red' };
+  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-caution', color:'var(--caution)' };
+  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok', color:'var(--good)' };
+  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn', color:'var(--warn)' };
+  return { label:'Obesidade', cls:'badge-red', color:'var(--red)' };
 }
 
 function nextPlanId(){
@@ -1209,6 +1218,40 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
+// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
+// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
+// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
+// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = m.range;
+  if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
+  const span = (isFinite(hi) ? hi - lo : lo) || 1;
+  const dist = value < lo ? (lo - value) : (value - hi);
+  const distPct = dist / span;
+  if (distPct < 0.2) return { color: 'var(--caution)', cls: 'badge-caution', emoji: '🟡' };
+  if (distPct < 0.5) return { color: 'var(--warn)', cls: 'badge-warn', emoji: '🟠' };
+  return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
+}
+
+// Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
+// de um indicador na Bioimpedância ou no Dashboard.
+function applyMetricStatus(metricId, valueElId, statusElId) {
+  const valueEl = document.getElementById(valueElId);
+  if (!valueEl) return;
+  const m = METRICS[metricId];
+  const val = metricValue(metricId, state.health);
+  const status = classifyMetricValue(metricId, val);
+  if (!status) return;
+  valueEl.style.color = status.color;
+  const statusEl = statusElId && document.getElementById(statusElId);
+  if (statusEl && m.rangeLabel) {
+    statusEl.textContent = `${status.emoji} ${m.rangeLabel}`;
+    statusEl.style.color = status.color;
+  }
+}
+
 function pearson(xs, ys) {
   const n = xs.length;
   if (n < 2) return null;
@@ -1296,6 +1339,12 @@ function updateDash() {
   const gcNum = parseFloat(String(h.gc).replace(',', '.'));
   if (!isNaN(gcNum)) {
     document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
+    const gcStatus = classifyMetricValue('gc', gcNum);
+    const gcBadge = document.getElementById('dash-gc-badge');
+    if (gcStatus && gcBadge) {
+      gcBadge.className = 'stat-badge ' + gcStatus.cls;
+      gcBadge.textContent = `${gcStatus.emoji} Meta: 18–22%`;
+    }
   }
   const muscNum = parseFloat(String(h.musc).replace(',', '.'));
   if (!isNaN(muscNum)) {
@@ -1313,9 +1362,18 @@ function updateDash() {
   const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
   document.getElementById('today-workout-info').innerHTML =
     `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
-     <span style="color:${done?'var(--acc)':'var(--txt3)'}">
+     <span style="color:${done?'var(--good)':'var(--txt3)'}">
        ${done ? '✅ Treino registado!' : '⏳ Por registar'}
      </span>`;
+
+  const passos = h.passos || 0;
+  document.getElementById('dash-passos').textContent = passos.toLocaleString('pt-PT');
+  const passosStatus = classifyMetricValue('passos', passos);
+  const passosBadge = document.getElementById('dash-passos-badge');
+  if (passosStatus && passosBadge) {
+    passosBadge.className = 'stat-badge ' + passosStatus.cls;
+    passosBadge.textContent = `${passosStatus.emoji} Meta: 8.000+`;
+  }
 
   document.getElementById('goal-agua-txt').textContent = `${g.metaAgua}+ litros/dia`;
   document.getElementById('goal-prot-txt').textContent = `${Math.round(g.metaProt*0.95)}–${g.metaProt} g`;
@@ -1674,6 +1732,15 @@ function renderHealth() {
   document.getElementById('h-fc').textContent    = h.fc ? h.fc + ' bpm' : '— bpm';
   document.getElementById('h-passos').textContent = (h.passos || 0).toLocaleString('pt-PT');
 
+  // Cor de cada indicador de acordo com a intensidade do desvio face à faixa saudável
+  applyMetricStatus('gc', 'h-gc', 'h-gc-status');
+  applyMetricStatus('gv', 'h-gv', 'h-gv-status');
+  applyMetricStatus('prot', 'h-prot', 'h-prot-status');
+  applyMetricStatus('agua', 'h-agua', 'h-agua-status');
+  applyMetricStatus('ossea', 'h-ossea', 'h-ossea-status');
+  applyMetricStatus('fc', 'h-fc', 'h-fc-status');
+  applyMetricStatus('passos', 'h-passos', 'h-passos-status');
+
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   const alturaM = (h.altura || 184) / 100;
   if (!isNaN(pesoNum)) {
@@ -1681,7 +1748,7 @@ function renderHealth() {
     const cls = classifyIMC(+imc);
     const st = document.getElementById('h-peso-status');
     st.textContent = `IMC ${imc} · ${cls.label}`;
-    st.style.color = cls.cls === 'badge-ok' ? 'var(--acc)' : cls.cls === 'badge-red' ? 'var(--red)' : 'var(--warn)';
+    st.style.color = cls.color;
   }
   if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
 }

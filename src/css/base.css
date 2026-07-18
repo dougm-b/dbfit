@@ -1,7 +1,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -101,7 +101,8 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 /* ── STATUS BADGE ── */
 .stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
-.badge-ok{background:rgba(212,212,216,.15);color:var(--acc)}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--good)}
+.badge-caution{background:rgba(250,204,21,.15);color:var(--caution)}
 .badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
 .badge-red{background:rgba(248,113,113,.15);color:var(--red)}
 
