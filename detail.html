@@ -3,23 +3,23 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
-<meta name="theme-color" content="#0a0f0a"/>
-<title>Indicador — DB Fit</title>
+<meta name="theme-color" content="#0a0a0a"/>
+<title>Indicador — The CHANGE App</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 <style>
 :root {
-  --g0: #0a0f0a; --g1: #111811; --g2: #162016; --g3: #1e2e1e; --g4: #2a3f2a;
-  --acc: #4ade80; --acc2: #86efac; --acc3: #bbf7d0;
-  --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
-  --txt: #e8f5e9; --txt2: #a7c4a7; --txt3: #6b8f6b;
+  --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
+  --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bot: env(safe-area-inset-bottom, 0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font-family:'DM Sans',sans-serif}
+html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
 
 /* ── SYNC INDICATOR ── */
 #sync-bar{
@@ -47,7 +47,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;align-items:center;justify-content:space-between;
   position:relative;z-index:10;flex-shrink:0;
 }
-.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;
+.logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .logo span{font-weight:400;font-size:13px;display:block;color:var(--txt3);-webkit-text-fill-color:var(--txt3);margin-top:-2px}
@@ -68,7 +68,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .nav-btn{
   display:flex;flex-direction:column;align-items:center;gap:4px;
   background:none;border:none;cursor:pointer;
-  color:var(--txt3);font-family:'DM Sans',sans-serif;font-size:10px;
+  color:var(--txt3);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:10px;
   transition:color .2s;padding:8px 12px;border-radius:12px;
 }
 .nav-btn.active{color:var(--acc)}
@@ -82,21 +82,21 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 /* ── CARDS ── */
 .card{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r);padding:16px;margin-bottom:12px}
-.card-title{font-family:'Syne',sans-serif;font-weight:700;font-size:13px;
+.card-title{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:13px;
   color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;
   display:flex;align-items:center;gap:6px}
 
 /* ── MACRO GRID (dashboard + diet) ── */
 .macro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .macro-item{text-align:center}
-.macro-val{font-family:'Syne',sans-serif;font-weight:700;font-size:16px}
+.macro-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:16px}
 .macro-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
 
 /* ── SHARED SECTION / LIST-ENTRY PATTERNS (diet + train + calendar day modal) ── */
 .section-hdr{display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px}
-.section-hdr h3{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.section-hdr h3{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .add-btn{background:var(--acc);color:#000;border:none;border-radius:20px;
-  padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
+  padding:6px 14px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
 .meal-entry{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);
   padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;
   cursor:pointer;transition:border-color .2s}
@@ -105,13 +105,14 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .meal-info{flex:1;min-width:0}
 .meal-name{font-weight:500;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .meal-detail{font-size:11px;color:var(--txt3);margin-top:2px}
-.meal-kcal{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc);flex-shrink:0}
+.meal-kcal{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;color:var(--acc);flex-shrink:0}
 .mg-icon-btn{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
   width:22px;height:22px;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 
 /* ── STATUS BADGE ── */
 .stat-badge{display:inline-block;font-size:10px;padding:2px 8px;border-radius:10px;margin-top:4px}
-.badge-ok{background:rgba(74,222,128,.15);color:var(--acc)}
+.badge-ok{background:rgba(74,222,128,.15);color:var(--good)}
+.badge-caution{background:rgba(250,204,21,.15);color:var(--caution)}
 .badge-warn{background:rgba(251,146,60,.15);color:var(--warn)}
 .badge-red{background:rgba(248,113,113,.15);color:var(--red)}
 
@@ -123,23 +124,23 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   width:100%;max-width:480px;padding:24px 20px calc(var(--safe-bot) + 24px);
   animation:slideUp .3s ease;max-height:90vh;overflow-y:auto}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:none}}
-.modal h3{font-family:'Syne',sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
+.modal h3{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:17px;margin-bottom:18px;
   display:flex;justify-content:space-between;align-items:center}
 .modal-close{background:var(--g3);border:none;color:var(--txt2);border-radius:50%;
   width:30px;height:30px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .form-group{margin-bottom:14px}
 .form-label{font-size:12px;color:var(--txt3);margin-bottom:6px;display:block;font-weight:500}
 .form-input{width:100%;background:var(--g2);border:1px solid var(--g3);border-radius:12px;
-  padding:12px 14px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  padding:12px 14px;color:var(--txt);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;
   outline:none;transition:border-color .2s}
 .form-input:focus{border-color:var(--acc)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .btn-primary{width:100%;background:var(--acc);color:#000;border:none;border-radius:14px;
-  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif;
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;
   transition:opacity .2s;margin-top:4px}
 .btn-primary:active{opacity:.85}
 .btn-secondary{width:100%;background:var(--g3);color:var(--txt2);border:1px solid var(--g4);border-radius:14px;
-  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Syne',sans-serif;margin-top:8px}
+  padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;margin-top:8px}
 
 /* ── SETUP TOKEN ── */
 #token-setup{
@@ -147,17 +148,17 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:30px 24px;text-align:center;
 }
-.setup-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:52px;
+.setup-logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:34px;line-height:1.15;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.setup-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
+.setup-title{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px;margin-bottom:8px}
 .setup-sub{font-size:13px;color:var(--txt3);line-height:1.6;margin-bottom:28px;max-width:320px}
 .setup-input{width:100%;max-width:360px;background:var(--g2);border:1px solid var(--g4);border-radius:14px;
-  padding:14px 16px;color:var(--txt);font-family:'DM Sans',sans-serif;font-size:14px;
+  padding:14px 16px;color:var(--txt);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:14px;
   outline:none;text-align:center;margin-bottom:12px}
 .setup-input:focus{border-color:var(--acc)}
 .setup-btn{width:100%;max-width:360px;background:var(--acc);color:#000;border:none;border-radius:14px;
-  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Syne',sans-serif}
+  padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
 .setup-note{font-size:11px;color:var(--txt3);margin-top:16px;max-width:300px;line-height:1.5}
 #setup-error{font-size:12px;color:var(--red);margin-top:8px;min-height:18px}
 .lock-icon{font-size:40px;margin-bottom:16px}
@@ -181,7 +182,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .health-box{background:var(--card);border:1px solid var(--card-b);border-radius:var(--r2);padding:14px;cursor:pointer;transition:border-color .2s}
 .health-box:active{border-color:var(--acc)}
 .health-lbl{font-size:11px;color:var(--txt3);margin-bottom:6px}
-.health-val{font-family:'Syne',sans-serif;font-weight:700;font-size:20px}
+.health-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px}
 .health-status{font-size:11px;margin-top:4px}
 
 /* ── DETAIL PAGE ── */
@@ -194,36 +195,36 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   width:34px;height:34px;font-size:18px;cursor:pointer;display:flex;align-items:center;
   justify-content:center;flex-shrink:0;text-decoration:none;
 }
-#detail-title{font-family:'Syne',sans-serif;font-weight:800;font-size:19px}
+#detail-title{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:19px}
 #detail-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
   padding:0 16px 40px;scroll-behavior:smooth}
 #detail-content::-webkit-scrollbar{display:none}
 
-.detail-current{font-family:'Syne',sans-serif;font-weight:800;font-size:38px;color:var(--txt);margin:4px 0 12px}
+.detail-current{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:38px;color:var(--txt);margin:4px 0 12px}
 .detail-unit{font-size:16px;color:var(--txt3);margin-left:4px}
 
 .range-bar-wrap{margin-top:4px}
 .range-bar{position:relative;height:8px;background:rgba(255,255,255,.08);border-radius:4px}
-.range-bar-zone{position:absolute;top:0;height:100%;background:rgba(74,222,128,.35);border-radius:4px}
+.range-bar-zone{position:absolute;top:0;height:100%;background:rgba(212,212,216,.35);border-radius:4px}
 .range-bar-marker{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;transform:translateX(-2px)}
 
 .detail-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
 .detail-stat{text-align:center}
-.detail-stat-val{font-family:'Syne',sans-serif;font-weight:700;font-size:15px}
+.detail-stat-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:15px}
 .detail-stat-lbl{font-size:10px;color:var(--txt3);margin-top:2px}
 
 .related-item{display:flex;justify-content:space-between;align-items:center;
   padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);cursor:pointer}
 .related-item:last-child{border-bottom:none}
 .related-name{font-size:13px;color:var(--txt2)}
-.related-val{font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--acc)}
+.related-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px;color:var(--acc)}
 
 .corr-row{display:flex;justify-content:space-between;align-items:center;
   padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px}
 .corr-row:last-child{border-bottom:none}
 .corr-name{color:var(--txt2)}
-.corr-val{font-family:'Syne',sans-serif;font-weight:700;font-size:12px}
-.corr-tag{font-family:'DM Sans',sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
+.corr-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px}
+.corr-tag{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
 
 </style>
 </head>
@@ -358,10 +359,10 @@ function migrateState(loaded){
 }
 
 function classifyIMC(imc){
-  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-warn' };
-  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok' };
-  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn' };
-  return { label:'Obesidade', cls:'badge-red' };
+  if (imc < 18.5) return { label:'Abaixo do peso', cls:'badge-caution', color:'var(--caution)' };
+  if (imc < 25)   return { label:'Peso normal', cls:'badge-ok', color:'var(--good)' };
+  if (imc < 30)   return { label:'Sobrepeso', cls:'badge-warn', color:'var(--warn)' };
+  return { label:'Obesidade', cls:'badge-red', color:'var(--red)' };
 }
 
 function nextPlanId(){
@@ -745,6 +746,40 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
+// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
+// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
+// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
+// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = m.range;
+  if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
+  const span = (isFinite(hi) ? hi - lo : lo) || 1;
+  const dist = value < lo ? (lo - value) : (value - hi);
+  const distPct = dist / span;
+  if (distPct < 0.2) return { color: 'var(--caution)', cls: 'badge-caution', emoji: '🟡' };
+  if (distPct < 0.5) return { color: 'var(--warn)', cls: 'badge-warn', emoji: '🟠' };
+  return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
+}
+
+// Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
+// de um indicador na Bioimpedância ou no Dashboard.
+function applyMetricStatus(metricId, valueElId, statusElId) {
+  const valueEl = document.getElementById(valueElId);
+  if (!valueEl) return;
+  const m = METRICS[metricId];
+  const val = metricValue(metricId, state.health);
+  const status = classifyMetricValue(metricId, val);
+  if (!status) return;
+  valueEl.style.color = status.color;
+  const statusEl = statusElId && document.getElementById(statusElId);
+  if (statusEl && m.rangeLabel) {
+    statusEl.textContent = `${status.emoji} ${m.rangeLabel}`;
+    statusEl.style.color = status.color;
+  }
+}
+
 function pearson(xs, ys) {
   const n = xs.length;
   if (n < 2) return null;
@@ -817,7 +852,7 @@ function corrColor(r) {
   return r > 0 ? 'var(--acc)' : 'var(--red)';
 }
 
-function rangeBarHtml(current, range, label) {
+function rangeBarHtml(metricId, current, range, label) {
   if (current === null) return `<p style="font-size:12px;color:var(--txt3)">${esc(label || '')}</p>`;
   const [lo, hi] = range;
   const finiteHi = isFinite(hi) ? hi : lo + Math.max(lo, current, 1) * 0.6;
@@ -828,14 +863,20 @@ function rangeBarHtml(current, range, label) {
   const pct = clampPct(current);
   const loPct = clampPct(lo);
   const hiPct = isFinite(hi) ? clampPct(hi) : 100;
-  const inRange = current >= lo && (!isFinite(hi) || current <= hi);
+  const status = classifyMetricValue(metricId, current);
+  const markerColor = status ? status.color : 'var(--good)';
+  const statusText = status && status.cls === 'badge-ok' ? 'dentro da faixa saudável'
+    : status && status.cls === 'badge-caution' ? 'perto da faixa saudável'
+    : status && status.cls === 'badge-warn' ? 'fora da faixa saudável'
+    : 'muito fora da faixa saudável';
+  const emoji = status ? status.emoji : '✅';
   return `
     <div class="range-bar-wrap">
       <div class="range-bar">
         <div class="range-bar-zone" style="left:${loPct}%;width:${Math.max(0, hiPct - loPct)}%"></div>
-        <div class="range-bar-marker" style="left:${pct}%;background:${inRange ? 'var(--acc)' : 'var(--red)'}"></div>
+        <div class="range-bar-marker" style="left:${pct}%;background:${markerColor}"></div>
       </div>
-      <div style="font-size:11px;color:var(--txt3);margin-top:6px">${esc(label)} · ${inRange ? '✅ dentro da faixa saudável' : '⚠️ fora da faixa saudável'}</div>
+      <div style="font-size:11px;color:${markerColor};margin-top:6px">${esc(label)} · ${emoji} ${statusText}</div>
     </div>`;
 }
 
@@ -854,20 +895,20 @@ function svgLineChart(series) {
   });
   const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
   const areaD = pathD + ` L${pts[pts.length - 1][0].toFixed(1)},${(padT + innerH).toFixed(1)} L${pts[0][0].toFixed(1)},${(padT + innerH).toFixed(1)} Z`;
-  const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#4ade80"/>`).join('');
+  const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#d4d4d8"/>`).join('');
   const firstLabel = series[0].date.slice(5);
   const lastLabel = series[series.length - 1].date.slice(5);
   return `
     <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="overflow:visible">
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
       <line x1="${padL}" y1="${padT + innerH}" x2="${W - padR}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
-      <text x="2" y="${padT + 4}" font-size="9" fill="#6b8f6b">${fmtNum(max)}</text>
-      <text x="2" y="${padT + innerH}" font-size="9" fill="#6b8f6b">${fmtNum(min)}</text>
-      <path d="${areaD}" fill="rgba(74,222,128,.12)" stroke="none"/>
-      <path d="${pathD}" fill="none" stroke="#4ade80" stroke-width="2"/>
+      <text x="2" y="${padT + 4}" font-size="9" fill="#757575">${fmtNum(max)}</text>
+      <text x="2" y="${padT + innerH}" font-size="9" fill="#757575">${fmtNum(min)}</text>
+      <path d="${areaD}" fill="rgba(212,212,216,.12)" stroke="none"/>
+      <path d="${pathD}" fill="none" stroke="#d4d4d8" stroke-width="2"/>
       ${dots}
-      <text x="${padL}" y="${H - 4}" font-size="9" fill="#6b8f6b">${firstLabel}</text>
-      <text x="${W - padR}" y="${H - 4}" font-size="9" fill="#6b8f6b" text-anchor="end">${lastLabel}</text>
+      <text x="${padL}" y="${H - 4}" font-size="9" fill="#757575">${firstLabel}</text>
+      <text x="${W - padR}" y="${H - 4}" font-size="9" fill="#757575" text-anchor="end">${lastLabel}</text>
     </svg>`;
 }
 
@@ -877,14 +918,14 @@ function renderDetail() {
   const container = document.getElementById('detail-content');
 
   document.getElementById('detail-title').textContent = m.label;
-  document.title = m.label + ' — DB Fit';
+  document.title = m.label + ' — The CHANGE App';
 
   const series = metricSeries(id);
   const current = series.length ? series[series.length - 1].value : metricValue(id, state.health);
   const unit = m.unit ? ' ' + m.unit : '';
 
   const rangeHtml = m.range
-    ? rangeBarHtml(current, m.range, m.rangeLabel)
+    ? rangeBarHtml(id, current, m.range, m.rangeLabel)
     : `<p style="font-size:12px;color:var(--txt3)">${esc(m.rangeLabel || '')}</p>`;
 
   const chartHtml = series.length >= 2

@@ -34,6 +34,12 @@ function updateDash() {
   const gcNum = parseFloat(String(h.gc).replace(',', '.'));
   if (!isNaN(gcNum)) {
     document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
+    const gcStatus = classifyMetricValue('gc', gcNum);
+    const gcBadge = document.getElementById('dash-gc-badge');
+    if (gcStatus && gcBadge) {
+      gcBadge.className = 'stat-badge ' + gcStatus.cls;
+      gcBadge.textContent = `${gcStatus.emoji} Meta: 18–22%`;
+    }
   }
   const muscNum = parseFloat(String(h.musc).replace(',', '.'));
   if (!isNaN(muscNum)) {
@@ -51,9 +57,18 @@ function updateDash() {
   const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
   document.getElementById('today-workout-info').innerHTML =
     `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
-     <span style="color:${done?'var(--acc)':'var(--txt3)'}">
+     <span style="color:${done?'var(--good)':'var(--txt3)'}">
        ${done ? '✅ Treino registado!' : '⏳ Por registar'}
      </span>`;
+
+  const passos = h.passos || 0;
+  document.getElementById('dash-passos').textContent = passos.toLocaleString('pt-PT');
+  const passosStatus = classifyMetricValue('passos', passos);
+  const passosBadge = document.getElementById('dash-passos-badge');
+  if (passosStatus && passosBadge) {
+    passosBadge.className = 'stat-badge ' + passosStatus.cls;
+    passosBadge.textContent = `${passosStatus.emoji} Meta: 8.000+`;
+  }
 
   document.getElementById('goal-agua-txt').textContent = `${g.metaAgua}+ litros/dia`;
   document.getElementById('goal-prot-txt').textContent = `${Math.round(g.metaProt*0.95)}–${g.metaProt} g`;

@@ -19,7 +19,7 @@ function corrColor(r) {
   return r > 0 ? 'var(--acc)' : 'var(--red)';
 }
 
-function rangeBarHtml(current, range, label) {
+function rangeBarHtml(metricId, current, range, label) {
   if (current === null) return `<p style="font-size:12px;color:var(--txt3)">${esc(label || '')}</p>`;
   const [lo, hi] = range;
   const finiteHi = isFinite(hi) ? hi : lo + Math.max(lo, current, 1) * 0.6;
@@ -30,14 +30,20 @@ function rangeBarHtml(current, range, label) {
   const pct = clampPct(current);
   const loPct = clampPct(lo);
   const hiPct = isFinite(hi) ? clampPct(hi) : 100;
-  const inRange = current >= lo && (!isFinite(hi) || current <= hi);
+  const status = classifyMetricValue(metricId, current);
+  const markerColor = status ? status.color : 'var(--good)';
+  const statusText = status && status.cls === 'badge-ok' ? 'dentro da faixa saudável'
+    : status && status.cls === 'badge-caution' ? 'perto da faixa saudável'
+    : status && status.cls === 'badge-warn' ? 'fora da faixa saudável'
+    : 'muito fora da faixa saudável';
+  const emoji = status ? status.emoji : '✅';
   return `
     <div class="range-bar-wrap">
       <div class="range-bar">
         <div class="range-bar-zone" style="left:${loPct}%;width:${Math.max(0, hiPct - loPct)}%"></div>
-        <div class="range-bar-marker" style="left:${pct}%;background:${inRange ? 'var(--acc)' : 'var(--red)'}"></div>
+        <div class="range-bar-marker" style="left:${pct}%;background:${markerColor}"></div>
       </div>
-      <div style="font-size:11px;color:var(--txt3);margin-top:6px">${esc(label)} · ${inRange ? '✅ dentro da faixa saudável' : '⚠️ fora da faixa saudável'}</div>
+      <div style="font-size:11px;color:${markerColor};margin-top:6px">${esc(label)} · ${emoji} ${statusText}</div>
     </div>`;
 }
 
@@ -56,20 +62,20 @@ function svgLineChart(series) {
   });
   const pathD = pts.map((p, i) => (i === 0 ? 'M' : 'L') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join(' ');
   const areaD = pathD + ` L${pts[pts.length - 1][0].toFixed(1)},${(padT + innerH).toFixed(1)} L${pts[0][0].toFixed(1)},${(padT + innerH).toFixed(1)} Z`;
-  const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#4ade80"/>`).join('');
+  const dots = pts.map(p => `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#d4d4d8"/>`).join('');
   const firstLabel = series[0].date.slice(5);
   const lastLabel = series[series.length - 1].date.slice(5);
   return `
     <svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" style="overflow:visible">
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
       <line x1="${padL}" y1="${padT + innerH}" x2="${W - padR}" y2="${padT + innerH}" stroke="rgba(255,255,255,.08)"/>
-      <text x="2" y="${padT + 4}" font-size="9" fill="#6b8f6b">${fmtNum(max)}</text>
-      <text x="2" y="${padT + innerH}" font-size="9" fill="#6b8f6b">${fmtNum(min)}</text>
-      <path d="${areaD}" fill="rgba(74,222,128,.12)" stroke="none"/>
-      <path d="${pathD}" fill="none" stroke="#4ade80" stroke-width="2"/>
+      <text x="2" y="${padT + 4}" font-size="9" fill="#757575">${fmtNum(max)}</text>
+      <text x="2" y="${padT + innerH}" font-size="9" fill="#757575">${fmtNum(min)}</text>
+      <path d="${areaD}" fill="rgba(212,212,216,.12)" stroke="none"/>
+      <path d="${pathD}" fill="none" stroke="#d4d4d8" stroke-width="2"/>
       ${dots}
-      <text x="${padL}" y="${H - 4}" font-size="9" fill="#6b8f6b">${firstLabel}</text>
-      <text x="${W - padR}" y="${H - 4}" font-size="9" fill="#6b8f6b" text-anchor="end">${lastLabel}</text>
+      <text x="${padL}" y="${H - 4}" font-size="9" fill="#757575">${firstLabel}</text>
+      <text x="${W - padR}" y="${H - 4}" font-size="9" fill="#757575" text-anchor="end">${lastLabel}</text>
     </svg>`;
 }
 
@@ -79,14 +85,14 @@ function renderDetail() {
   const container = document.getElementById('detail-content');
 
   document.getElementById('detail-title').textContent = m.label;
-  document.title = m.label + ' — DB Fit';
+  document.title = m.label + ' — The CHANGE App';
 
   const series = metricSeries(id);
   const current = series.length ? series[series.length - 1].value : metricValue(id, state.health);
   const unit = m.unit ? ' ' + m.unit : '';
 
   const rangeHtml = m.range
-    ? rangeBarHtml(current, m.range, m.rangeLabel)
+    ? rangeBarHtml(id, current, m.range, m.rangeLabel)
     : `<p style="font-size:12px;color:var(--txt3)">${esc(m.rangeLabel || '')}</p>`;
 
   const chartHtml = series.length >= 2
