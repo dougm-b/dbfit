@@ -116,6 +116,12 @@ function renderSleep() {
 
   const h = Math.floor(rec.duration), m = Math.round((rec.duration - h) * 60);
   document.getElementById('sleep-duration').textContent = `${h}h${String(m).padStart(2,'0')}`;
+  // Cada registo é a noite que TERMINOU na manhã desta data (começou na
+  // véspera, salvo se só adormeceste depois da meia-noite) — e é essa noite
+  // que conta para o desempenho deste dia.
+  const nightFrom = (!rec.start || rec.start >= '12:00') ? dateNavLabel(shiftDate(sleepViewDate, -1)) : dateNavLabel(sleepViewDate);
+  document.getElementById('sleep-night-lbl').textContent =
+    `Noite de ${nightFrom.toLowerCase()} → acordar ${dateNavLabel(sleepViewDate).toLowerCase()} · conta para o desempenho deste dia`;
   const status = classifyByRange(rec.duration, SLEEP_RANGE);
   const badge = document.getElementById('sleep-duration-badge');
   if (status) {

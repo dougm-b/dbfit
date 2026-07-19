@@ -35,7 +35,8 @@ function renderMeasurements() {
   list.innerHTML = defs.map(d => {
     const v = measurementLatestValue(d.id);
     return `
-    <div class="health-box" onclick="goToMeasurement('${d.id}')">
+    <div class="health-box" onclick="goToMeasurement('${d.id}')" style="position:relative">
+      <button class="tile-add-btn" onclick="event.stopPropagation(); openMeasurementModal('${d.id}')" title="Registar ${esc(d.name)}">+</button>
       <div class="health-lbl">${esc(d.name)}</div>
       <div class="health-val">${v === null || v === undefined ? '—' : fmtMeasureVal(v)}<span style="font-size:13px;color:var(--txt3)"> ${esc(d.unit || '')}</span></div>
       <div class="health-status" style="color:var(--txt3)">toca para ver histórico</div>
@@ -47,11 +48,12 @@ function fmtMeasureVal(v) {
   return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
 }
 
-function openMeasurementModal() {
+function openMeasurementModal(preselectId) {
   const sel = document.getElementById('ms-type');
   sel.innerHTML = state.measurements.defs.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')
     + `<option value="__new__">+ Nova medida…</option>`;
-  sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
+  if (preselectId && state.measurements.defs.some(d => d.id === preselectId)) sel.value = preselectId;
+  else sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
   document.getElementById('ms-value').value = '';
   document.getElementById('ms-new-name').value = '';
   document.getElementById('ms-new-unit').value = '';

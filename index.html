@@ -283,6 +283,11 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .health-lbl{font-size:11px;color:var(--txt3);margin-bottom:6px}
 .health-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px}
 .health-status{font-size:11px;margin-top:4px}
+.tile-add-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;
+  background:var(--g3);border:1px solid var(--g4);color:var(--acc);font-size:15px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
+.tile-add-btn:active{background:var(--acc);color:#000}
 
 /* ── CHAT (inline, inside Settings) ── */
 .chat-inline-messages{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:12px;padding:2px;margin-bottom:10px}
@@ -609,6 +614,7 @@ input[type="file"].form-input::file-selector-button{
         <div class="stat-val" id="sleep-duration" style="font-size:30px">— h</div>
         <div class="stat-badge" id="sleep-duration-badge">Meta: 7–9h</div>
       </div>
+      <p id="sleep-night-lbl" style="font-size:11px;color:var(--txt3);margin-top:8px"></p>
     </div>
     <div class="card" id="sleep-chart-card" style="display:none">
       <div class="card-title">🌙 A noite, hora a hora</div>
@@ -1665,11 +1671,13 @@ function computeDailyScore(date) {
   const done = (state.workoutLogs[date] || []).length > 0;
   parts.push({ score: done ? 100 : (scheduled ? 20 : 65), weight: 20, label: 'Treino' });
 
-  // 4. Sono: horas dormidas face à faixa recomendada (7–9h)
+  // 4. Sono: horas dormidas face à faixa recomendada (7–9h). O registo de
+  // cada data é a noite que TERMINOU nessa manhã (começou na véspera) — é
+  // esse sono que impacta o desempenho deste dia.
   const sleepRec = state.sleepHistory[date];
   if (sleepRec && sleepRec.duration) {
     const sleepStatus = classifyByRange(sleepRec.duration, SLEEP_RANGE);
-    if (sleepStatus) parts.push({ score: BIO_TIER_SCORE[sleepStatus.cls], weight: 15, label: 'Sono' });
+    if (sleepStatus) parts.push({ score: BIO_TIER_SCORE[sleepStatus.cls], weight: 15, label: 'Sono (noite anterior)' });
   }
 
   // 5. Evolução: gordura corporal vs. ~7 dias antes desta data (a descer = bom)
@@ -1686,6 +1694,13 @@ function computeDailyScore(date) {
   if (!parts.length) return { score: null, tier: 'green', color: 'var(--good)', label: 'Sem dados', breakdown: [] };
 
   const totalWeight = parts.reduce((a, p) => a + p.weight, 0);
+  // Peso efetivo de cada componente neste dia: quando falta um indicador
+  // (ex: sem dados de sono), o peso dos restantes é redistribuído para que a
+  // soma mostrada seja sempre 100%.
+  parts.forEach(p => { p.effWeight = Math.round(p.weight / totalWeight * 100); });
+  const residual = 100 - parts.reduce((a, p) => a + p.effWeight, 0);
+  if (residual) parts.reduce((a, b) => (b.effWeight > a.effWeight ? b : a)).effWeight += residual;
+
   const score = Math.round(parts.reduce((a, p) => a + p.score * p.weight, 0) / totalWeight);
   const t = scoreTierFor(score);
   return { score, tier: t.tier, color: t.color, label: t.label, breakdown: parts };
@@ -1750,19 +1765,23 @@ function openScoreBreakdown() {
     empty.style.display = 'block';
   } else {
     empty.style.display = 'none';
+    const ALL_LABELS = ['Bioimpedância', 'Alimentação', 'Treino', 'Sono (noite anterior)', 'Evolução'];
+    const present = perf.breakdown.map(p => p.label);
+    const missing = ALL_LABELS.filter(l => !present.includes(l));
     list.innerHTML = perf.breakdown.map(part => {
       const score = Math.round(part.score);
       const tier = scoreTierFor(score);
       return `
         <div class="breakdown-row">
           <div class="breakdown-hdr">
-            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.weight}%)</span></span>
+            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.effWeight}%)</span></span>
             <span class="b-score" style="color:${tier.color}">${score}</span>
           </div>
           <div class="progress-bar breakdown-bar"><div class="progress-fill" style="width:${score}%;background:${tier.color}"></div></div>
         </div>
       `;
-    }).join('');
+    }).join('') + (missing.length ? `
+      <p style="font-size:11px;color:var(--txt3);margin-top:4px">Sem dados de ${missing.map(l => l.toLowerCase()).join(', ')} neste dia — o peso foi redistribuído pelos restantes indicadores (soma sempre 100%).</p>` : '');
   }
   document.getElementById('score-breakdown-modal').classList.add('open');
 }
@@ -2469,6 +2488,12 @@ function renderSleep() {
 
   const h = Math.floor(rec.duration), m = Math.round((rec.duration - h) * 60);
   document.getElementById('sleep-duration').textContent = `${h}h${String(m).padStart(2,'0')}`;
+  // Cada registo é a noite que TERMINOU na manhã desta data (começou na
+  // véspera, salvo se só adormeceste depois da meia-noite) — e é essa noite
+  // que conta para o desempenho deste dia.
+  const nightFrom = (!rec.start || rec.start >= '12:00') ? dateNavLabel(shiftDate(sleepViewDate, -1)) : dateNavLabel(sleepViewDate);
+  document.getElementById('sleep-night-lbl').textContent =
+    `Noite de ${nightFrom.toLowerCase()} → acordar ${dateNavLabel(sleepViewDate).toLowerCase()} · conta para o desempenho deste dia`;
   const status = classifyByRange(rec.duration, SLEEP_RANGE);
   const badge = document.getElementById('sleep-duration-badge');
   if (status) {
@@ -2573,7 +2598,8 @@ function renderMeasurements() {
   list.innerHTML = defs.map(d => {
     const v = measurementLatestValue(d.id);
     return `
-    <div class="health-box" onclick="goToMeasurement('${d.id}')">
+    <div class="health-box" onclick="goToMeasurement('${d.id}')" style="position:relative">
+      <button class="tile-add-btn" onclick="event.stopPropagation(); openMeasurementModal('${d.id}')" title="Registar ${esc(d.name)}">+</button>
       <div class="health-lbl">${esc(d.name)}</div>
       <div class="health-val">${v === null || v === undefined ? '—' : fmtMeasureVal(v)}<span style="font-size:13px;color:var(--txt3)"> ${esc(d.unit || '')}</span></div>
       <div class="health-status" style="color:var(--txt3)">toca para ver histórico</div>
@@ -2585,11 +2611,12 @@ function fmtMeasureVal(v) {
   return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
 }
 
-function openMeasurementModal() {
+function openMeasurementModal(preselectId) {
   const sel = document.getElementById('ms-type');
   sel.innerHTML = state.measurements.defs.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')
     + `<option value="__new__">+ Nova medida…</option>`;
-  sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
+  if (preselectId && state.measurements.defs.some(d => d.id === preselectId)) sel.value = preselectId;
+  else sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
   document.getElementById('ms-value').value = '';
   document.getElementById('ms-new-name').value = '';
   document.getElementById('ms-new-unit').value = '';

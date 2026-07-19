@@ -55,11 +55,13 @@ function computeDailyScore(date) {
   const done = (state.workoutLogs[date] || []).length > 0;
   parts.push({ score: done ? 100 : (scheduled ? 20 : 65), weight: 20, label: 'Treino' });
 
-  // 4. Sono: horas dormidas face à faixa recomendada (7–9h)
+  // 4. Sono: horas dormidas face à faixa recomendada (7–9h). O registo de
+  // cada data é a noite que TERMINOU nessa manhã (começou na véspera) — é
+  // esse sono que impacta o desempenho deste dia.
   const sleepRec = state.sleepHistory[date];
   if (sleepRec && sleepRec.duration) {
     const sleepStatus = classifyByRange(sleepRec.duration, SLEEP_RANGE);
-    if (sleepStatus) parts.push({ score: BIO_TIER_SCORE[sleepStatus.cls], weight: 15, label: 'Sono' });
+    if (sleepStatus) parts.push({ score: BIO_TIER_SCORE[sleepStatus.cls], weight: 15, label: 'Sono (noite anterior)' });
   }
 
   // 5. Evolução: gordura corporal vs. ~7 dias antes desta data (a descer = bom)
@@ -76,6 +78,13 @@ function computeDailyScore(date) {
   if (!parts.length) return { score: null, tier: 'green', color: 'var(--good)', label: 'Sem dados', breakdown: [] };
 
   const totalWeight = parts.reduce((a, p) => a + p.weight, 0);
+  // Peso efetivo de cada componente neste dia: quando falta um indicador
+  // (ex: sem dados de sono), o peso dos restantes é redistribuído para que a
+  // soma mostrada seja sempre 100%.
+  parts.forEach(p => { p.effWeight = Math.round(p.weight / totalWeight * 100); });
+  const residual = 100 - parts.reduce((a, p) => a + p.effWeight, 0);
+  if (residual) parts.reduce((a, b) => (b.effWeight > a.effWeight ? b : a)).effWeight += residual;
+
   const score = Math.round(parts.reduce((a, p) => a + p.score * p.weight, 0) / totalWeight);
   const t = scoreTierFor(score);
   return { score, tier: t.tier, color: t.color, label: t.label, breakdown: parts };
