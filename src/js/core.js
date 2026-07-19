@@ -332,6 +332,10 @@ async function initApp() {
   renderCalendar();
   setupDate();
   startAutoSync();
+  restoreReturnScreen();
+  // Quando o browser restaura a app do cache de histórico (voltar da página
+  // de detalhe), atualiza os dados — podem ter sido alterados lá.
+  window.addEventListener('pageshow', e => { if (e.persisted) silentSync(); });
 }
 
 // ══════════════════════════════════════════
@@ -349,6 +353,21 @@ function setupDate() {
 // ══════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════
+// Ao sair para a página de detalhe, memoriza a aba atual para que o "voltar"
+// regresse a ela (e não sempre ao Dashboard) mesmo quando o browser recarrega
+// a app em vez de a restaurar do cache de histórico.
+function rememberReturnScreen() {
+  const active = document.querySelector('.screen.active');
+  if (active) sessionStorage.setItem('dbfit_return_screen', active.id.replace('-screen', ''));
+}
+
+function restoreReturnScreen() {
+  const ret = sessionStorage.getItem('dbfit_return_screen');
+  if (!ret) return;
+  sessionStorage.removeItem('dbfit_return_screen');
+  if (document.getElementById(ret + '-screen')) showScreen(ret);
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));

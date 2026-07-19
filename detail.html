@@ -249,7 +249,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 
 <div id="app">
   <div id="detail-topbar">
-    <a id="detail-back" href="index.html">‹</a>
+    <a id="detail-back" href="index.html" onclick="event.preventDefault(); goBackFromDetail()">‹</a>
     <div id="detail-title">Indicador</div>
   </div>
   <div id="detail-content"></div>
@@ -590,6 +590,10 @@ async function initApp() {
   renderCalendar();
   setupDate();
   startAutoSync();
+  restoreReturnScreen();
+  // Quando o browser restaura a app do cache de histórico (voltar da página
+  // de detalhe), atualiza os dados — podem ter sido alterados lá.
+  window.addEventListener('pageshow', e => { if (e.persisted) silentSync(); });
 }
 
 // ══════════════════════════════════════════
@@ -607,6 +611,21 @@ function setupDate() {
 // ══════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════
+// Ao sair para a página de detalhe, memoriza a aba atual para que o "voltar"
+// regresse a ela (e não sempre ao Dashboard) mesmo quando o browser recarrega
+// a app em vez de a restaurar do cache de histórico.
+function rememberReturnScreen() {
+  const active = document.querySelector('.screen.active');
+  if (active) sessionStorage.setItem('dbfit_return_screen', active.id.replace('-screen', ''));
+}
+
+function restoreReturnScreen() {
+  const ret = sessionStorage.getItem('dbfit_return_screen');
+  if (!ret) return;
+  sessionStorage.removeItem('dbfit_return_screen');
+  if (document.getElementById(ret + '-screen')) showScreen(ret);
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
@@ -932,6 +951,7 @@ function renderMeasurements() {
   const defs = state.measurements.defs;
   const list = document.getElementById('measurements-list');
   const empty = document.getElementById('measurements-empty');
+  if (!list || !empty) return; // página sem a secção de medidas (ex: detail.html)
   if (!defs.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   list.innerHTML = defs.map(d => {
@@ -990,14 +1010,16 @@ async function saveMeasurement() {
 }
 
 async function deleteMeasurementDef(id) {
-  if (!confirm('Remover esta medida e todo o seu histórico?')) return;
+  if (!confirm('Remover esta medida e todo o seu histórico?')) return false;
   state.measurements.defs = state.measurements.defs.filter(d => d.id !== id);
   Object.values(state.measurements.history).forEach(day => { delete day[id]; });
   renderMeasurements();
   await pushToGitHub();
+  return true;
 }
 
 function goToMeasurement(id) {
+  rememberReturnScreen();
   location.href = 'detail.html?measurement=' + encodeURIComponent(id);
 }
 
@@ -1132,9 +1154,24 @@ function renderMeasurementDetail(id) {
       ${statsHtml}
     </div>
     <div class="card">
-      <button class="btn-secondary" onclick="deleteMeasurementDef('${id}'); location.href='index.html'">🗑 Remover esta medida</button>
+      <button class="btn-secondary" onclick="removeMeasurementAndBack('${id}')">🗑 Remover esta medida</button>
     </div>
   `;
+}
+
+// Espera que a remoção seja mesmo guardada (e não navega se o utilizador
+// cancelar a confirmação) antes de voltar ao ecrã anterior.
+async function removeMeasurementAndBack(id) {
+  const removed = await deleteMeasurementDef(id);
+  if (removed) goBackFromDetail();
+}
+
+// "Voltar" regressa à página de onde se veio (ex: aba Bioimpedância), não
+// forçosamente ao Dashboard. Sem histórico (link aberto diretamente), cai no
+// index.html — que por sua vez restaura a última aba memorizada.
+function goBackFromDetail() {
+  if (history.length > 1 && document.referrer) history.back();
+  else location.href = 'index.html';
 }
 
 function renderMetricDetail(id) {

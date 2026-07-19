@@ -126,5 +126,6 @@ async function saveHealth() {
 }
 
 function goToMetric(id) {
+  rememberReturnScreen();
   location.href = 'detail.html?metric=' + encodeURIComponent(id);
 }

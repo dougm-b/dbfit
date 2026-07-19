@@ -129,9 +129,24 @@ function renderMeasurementDetail(id) {
       ${statsHtml}
     </div>
     <div class="card">
-      <button class="btn-secondary" onclick="deleteMeasurementDef('${id}'); location.href='index.html'">🗑 Remover esta medida</button>
+      <button class="btn-secondary" onclick="removeMeasurementAndBack('${id}')">🗑 Remover esta medida</button>
     </div>
   `;
+}
+
+// Espera que a remoção seja mesmo guardada (e não navega se o utilizador
+// cancelar a confirmação) antes de voltar ao ecrã anterior.
+async function removeMeasurementAndBack(id) {
+  const removed = await deleteMeasurementDef(id);
+  if (removed) goBackFromDetail();
+}
+
+// "Voltar" regressa à página de onde se veio (ex: aba Bioimpedância), não
+// forçosamente ao Dashboard. Sem histórico (link aberto diretamente), cai no
+// index.html — que por sua vez restaura a última aba memorizada.
+function goBackFromDetail() {
+  if (history.length > 1 && document.referrer) history.back();
+  else location.href = 'index.html';
 }
 
 function renderMetricDetail(id) {
