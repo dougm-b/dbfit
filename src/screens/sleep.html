@@ -18,6 +18,19 @@
         <div class="stat-badge" id="sleep-duration-badge">Meta: 7–9h</div>
       </div>
     </div>
+    <div class="card" id="sleep-chart-card" style="display:none">
+      <div class="card-title">🌙 A noite, hora a hora</div>
+      <div id="sleep-hypnogram"></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-top:4px">
+        <span id="sleep-start-lbl">—</span><span id="sleep-end-lbl">—</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--txt3);margin-top:8px">
+        <span><span style="color:var(--warn)">■</span> Acordado</span>
+        <span><span style="color:#c084fc">■</span> REM</span>
+        <span><span style="color:var(--blue)">■</span> Leve</span>
+        <span><span style="color:var(--acc)">■</span> Profundo</span>
+      </div>
+    </div>
     <div class="card">
       <div class="card-title">📈 Fases do sono</div>
       <div style="display:flex;flex-direction:column;gap:10px">
@@ -46,6 +59,13 @@
           <div class="progress-bar"><div class="progress-fill" id="sleep-awake-bar" style="background:var(--warn);width:0%"></div></div>
         </div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧠 Leitura do sono</div>
+      <div id="sleep-impact" style="font-size:13px;color:var(--txt2);line-height:1.6"></div>
+      <div style="font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px;color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin:14px 0 6px">Possíveis motivos</div>
+      <div id="sleep-causes" style="font-size:13px;color:var(--txt2);line-height:1.6"></div>
+      <p style="font-size:10px;color:var(--txt3);margin-top:10px">Leitura heurística com base nos padrões da noite — não substitui aconselhamento médico.</p>
     </div>
   </div>
   <div id="sleep-empty" class="empty-state" style="display:none">
