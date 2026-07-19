@@ -75,6 +75,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    sleepHistory: {},
     measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
@@ -94,6 +95,7 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.sleepHistory = loaded.sleepHistory || {};
   s.measurements = {
     defs: (loaded.measurements && loaded.measurements.defs) || [],
     history: (loaded.measurements && loaded.measurements.history) || {}
@@ -267,6 +269,7 @@ async function silentSync() {
   if (activeId === 'diet')     renderDiet();
   if (activeId === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (activeId === 'health')   renderHealth();
+  if (activeId === 'sleep')    renderSleep();
   if (activeId === 'settings') renderSettings();
 }
 
@@ -356,6 +359,7 @@ function showScreen(id) {
   if (id === 'diet')     renderDiet();
   if (id === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (id === 'health')   renderHealth();
+  if (id === 'sleep')    renderSleep();
   if (id === 'dash')     updateDash();
   if (id === 'settings') renderSettings();
   document.getElementById('content').scrollTop = 0;
@@ -372,7 +376,6 @@ function openFoodModal(prefillMeal) {
 function openFoodModalForMeal(mi) {
   openFoodModal(state.meals[dietViewDate][mi].name);
 }
-function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });

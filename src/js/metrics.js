@@ -123,14 +123,12 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
-// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
-// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
-// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
-// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
-function classifyMetricValue(id, value) {
-  const m = METRICS[id];
-  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
-  const [lo, hi] = m.range;
+// Classifica um valor face a uma faixa [lo,hi], em 4 níveis de intensidade —
+// verde (dentro da faixa), amarelo (perto), laranja (fora), vermelho (muito
+// fora). Usado tanto pelos indicadores de bioimpedância como pelo sono.
+function classifyByRange(value, range) {
+  if (!range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = range;
   if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
   const span = (isFinite(hi) ? hi - lo : lo) || 1;
   const dist = value < lo ? (lo - value) : (value - hi);
@@ -140,13 +138,29 @@ function classifyMetricValue(id, value) {
   return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
 }
 
+// Indicadores sem faixa definida (ex: músculo total, "quanto maior melhor")
+// devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m) return null;
+  return classifyByRange(value, m.range);
+}
+
+// Devolve o "instantâneo" de bioimpedância de uma data: hoje é o espelho
+// atual (state.health), qualquer outra data é o que ficou gravado nesse dia
+// (pode estar incompleto, ou nem existir).
+function healthObjForDate(date) {
+  if (date === TODAY) return state.health;
+  return state.healthHistory[date] || {};
+}
+
 // Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
 // de um indicador na Bioimpedância ou no Dashboard.
-function applyMetricStatus(metricId, valueElId, statusElId) {
+function applyMetricStatus(metricId, valueElId, statusElId, h) {
   const valueEl = document.getElementById(valueElId);
   if (!valueEl) return;
   const m = METRICS[metricId];
-  const val = metricValue(metricId, state.health);
+  const val = metricValue(metricId, h || state.health);
   const status = classifyMetricValue(metricId, val);
   if (!status) return;
   valueEl.style.color = status.color;

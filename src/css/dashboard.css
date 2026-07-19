@@ -17,7 +17,25 @@
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease,background-color .4s}
 
 /* ── SCORE CARD ── */
+.score-card{cursor:pointer;transition:border-color .2s}
+.score-card:active{border-color:var(--acc)}
 .score-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
 .score-num{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:36px}
 .score-label{font-size:13px;color:var(--txt2);font-weight:600}
 .score-bar{height:8px}
+
+/* ── WEEK STRIP ── */
+.week-strip{display:flex;justify-content:space-between;gap:6px;margin-bottom:12px}
+.week-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.week-day-dot{width:22px;height:22px;border-radius:50%;background:var(--g3);
+  display:flex;align-items:center;justify-content:center;font-size:11px}
+.week-day-dot.filled{box-shadow:0 0 8px var(--card-b)}
+.week-day-lbl{font-size:10px;color:var(--txt3)}
+.week-day-lbl.today{color:var(--acc);font-weight:700}
+
+/* ── SCORE BREAKDOWN MODAL ── */
+.breakdown-row{margin-bottom:14px}
+.breakdown-hdr{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.breakdown-hdr .b-label{font-weight:600;color:var(--txt)}
+.breakdown-hdr .b-score{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700}
+.breakdown-bar{height:7px}

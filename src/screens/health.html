@@ -5,6 +5,11 @@
     <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
   </div>
   <p style="font-size:11px;color:var(--txt3);margin:-6px 0 12px">🔄 Sincroniza automaticamente entre dispositivos · toca num indicador para ver histórico e gráfico</p>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="healthShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="health-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="health-next-btn" onclick="healthShiftDay(1)">›</button>
+  </div>
   <div class="health-row">
     <div class="health-box" onclick="goToMetric('peso')"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status">IMC 36.6</div></div>
     <div class="health-box" onclick="goToMetric('gc')"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc">37,0%</div><div class="health-status" id="h-gc-status">Meta: 18–22%</div></div>
@@ -27,7 +32,7 @@
   </div>
   <div class="health-row">
     <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc">— bpm</div><div class="health-status" id="h-fc-status">Repouso</div></div>
-    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
+    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
   </div>
 
   <div class="section-hdr">

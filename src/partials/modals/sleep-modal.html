@@ -1,0 +1,16 @@
+<!-- MODAL: SLEEP UPDATE -->
+<div class="modal-overlay" id="sleep-modal">
+  <div class="modal">
+    <h3>😴 Registar sono <button class="modal-close" onclick="closeModal('sleep-modal')">×</button></h3>
+    <div class="form-group"><label class="form-label">Horas dormidas</label><input type="number" class="form-input" id="s-duration-i" step="0.1" placeholder="7.5"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Sono leve (min)</label><input type="number" class="form-input" id="s-light-i" placeholder="210"/></div>
+      <div class="form-group"><label class="form-label">Sono profundo (min)</label><input type="number" class="form-input" id="s-deep-i" placeholder="70"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Sono REM (min)</label><input type="number" class="form-input" id="s-rem-i" placeholder="90"/></div>
+      <div class="form-group"><label class="form-label">Acordado (min)</label><input type="number" class="form-input" id="s-awake-i" placeholder="10"/></div>
+    </div>
+    <button class="btn-primary" onclick="saveSleep()">Guardar sono</button>
+  </div>
+</div>

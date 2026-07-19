@@ -1,13 +1,81 @@
 // ══════════════════════════════════════════
 // DASHBOARD
 // ══════════════════════════════════════════
-function updateDash() {
-  const totals = dayTotals(TODAY);
-  const g = state.settings;
+let dashViewDate = TODAY;
 
-  const perf = computeDailyScore();
+function dashShiftDay(delta) {
+  const next = shiftDate(dashViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  dashViewDate = next;
+  updateDash();
+}
+
+function updateFlameIcon(perf) {
   const flame = document.getElementById('flame-icon');
-  if (flame) flame.style.color = perf.color;
+  if (!flame) return;
+  flame.classList.remove('flame-pulse', 'flame-gold');
+  if (perf.score === null) { flame.style.color = 'var(--good)'; return; }
+  flame.style.color = perf.score >= 100 ? 'var(--gold)' : perf.color;
+  if (perf.score >= 100) flame.classList.add('flame-gold');
+  if (perf.score >= 80) flame.classList.add('flame-pulse');
+}
+
+function renderWeekStrip() {
+  const strip = document.getElementById('week-strip');
+  if (!strip) return;
+  const items = [];
+  for (let i = 6; i >= 0; i--) {
+    const dk = shiftDate(TODAY, -i);
+    const d = parseLocalDate(dk);
+    const perf = computeDailyScore(dk);
+    const color = perf.score === null ? 'var(--g4)' : (perf.score >= 100 ? 'var(--gold)' : perf.color);
+    const filled = perf.score !== null;
+    items.push(`
+      <div class="week-day">
+        <div class="week-day-dot${filled ? ' filled' : ''}" style="background:${color}${filled ? `;box-shadow:0 0 8px ${color}55` : ''}"></div>
+        <div class="week-day-lbl${dk === TODAY ? ' today' : ''}">${days[d.getDay()]}</div>
+      </div>
+    `);
+  }
+  strip.innerHTML = items.join('');
+}
+
+function openScoreBreakdown() {
+  const perf = computeDailyScore(dashViewDate);
+  document.getElementById('score-breakdown-date').textContent = dateNavLabel(dashViewDate);
+  const list = document.getElementById('score-breakdown-list');
+  const empty = document.getElementById('score-breakdown-empty');
+  if (!perf.breakdown.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = perf.breakdown.map(part => {
+      const score = Math.round(part.score);
+      const tier = scoreTierFor(score);
+      return `
+        <div class="breakdown-row">
+          <div class="breakdown-hdr">
+            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.weight}%)</span></span>
+            <span class="b-score" style="color:${tier.color}">${score}</span>
+          </div>
+          <div class="progress-bar breakdown-bar"><div class="progress-fill" style="width:${score}%;background:${tier.color}"></div></div>
+        </div>
+      `;
+    }).join('');
+  }
+  document.getElementById('score-breakdown-modal').classList.add('open');
+}
+
+function updateDash() {
+  document.getElementById('dash-date-label').textContent = dateNavLabel(dashViewDate);
+  document.getElementById('dash-next-btn').disabled = dashViewDate >= TODAY;
+
+  const totals = dayTotals(dashViewDate);
+  const g = state.settings;
+  const h = healthObjForDate(dashViewDate);
+
+  const perf = computeDailyScore(dashViewDate);
   const scoreNum = document.getElementById('score-num');
   const scoreLabel = document.getElementById('score-label');
   const scoreBar = document.getElementById('score-bar');
@@ -19,6 +87,11 @@ function updateDash() {
     scoreBar.style.width = (perf.score || 0) + '%';
     scoreBar.style.background = perf.color;
   }
+  // O ícone de chama no topo reflete sempre o dia real de hoje, independente
+  // da data que está a ser navegada no dashboard.
+  updateFlameIcon(dashViewDate === TODAY ? perf : computeDailyScore(TODAY));
+  renderWeekStrip();
+
   document.getElementById('m-kcal').textContent = totals.kcal;
   document.getElementById('m-prot').textContent = totals.prot + 'g';
   document.getElementById('m-carb').textContent = totals.carb + 'g';
@@ -35,41 +108,44 @@ function updateDash() {
   document.getElementById('prot-pct').textContent  = protPct + '%';
   document.getElementById('kcal-pct').textContent  = kcalPct + '%';
 
-  const h = state.health;
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   if (!isNaN(pesoNum)) {
-    const alturaM = (h.altura || 184) / 100;
+    const alturaM = (h.altura || state.health.altura || 184) / 100;
     const imc = (pesoNum / (alturaM * alturaM)).toFixed(1);
     document.getElementById('dash-peso').innerHTML = Math.floor(pesoNum) + `<span style="font-size:16px">.${String(pesoNum.toFixed(1)).split('.')[1]}</span>`;
     const cls = classifyIMC(+imc);
     const badge = document.getElementById('dash-imc');
     badge.className = 'stat-badge ' + cls.cls;
     badge.textContent = 'IMC ' + imc;
+  } else {
+    document.getElementById('dash-peso').textContent = '—';
+    document.getElementById('dash-imc').textContent = 'Sem dados';
+    document.getElementById('dash-imc').className = 'stat-badge';
   }
   const gcNum = parseFloat(String(h.gc).replace(',', '.'));
+  const gcBadge = document.getElementById('dash-gc-badge');
   if (!isNaN(gcNum)) {
     document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
     const gcStatus = classifyMetricValue('gc', gcNum);
-    const gcBadge = document.getElementById('dash-gc-badge');
     if (gcStatus && gcBadge) {
       gcBadge.className = 'stat-badge ' + gcStatus.cls;
       gcBadge.textContent = `${gcStatus.emoji} Meta: 18–22%`;
     }
+  } else {
+    document.getElementById('dash-gc').textContent = '—';
+    if (gcBadge) { gcBadge.className = 'stat-badge'; gcBadge.textContent = 'Sem dados'; }
   }
   const muscNum = parseFloat(String(h.musc).replace(',', '.'));
-  if (!isNaN(muscNum)) {
-    document.getElementById('ring-musc').textContent = h.musc;
-    document.getElementById('ring-musc-txt').textContent = Math.round(muscNum);
-  }
+  document.getElementById('ring-musc').textContent = !isNaN(muscNum) ? h.musc : '—';
+  document.getElementById('ring-musc-txt').textContent = !isNaN(muscNum) ? Math.round(muscNum) : '—';
   const gvNum = parseFloat(h.gv);
-  if (!isNaN(gvNum)) {
-    document.getElementById('ring-gv').textContent = 'Nível ' + h.gv;
-    document.getElementById('ring-gv-txt').textContent = h.gv;
-  }
+  document.getElementById('ring-gv').textContent = !isNaN(gvNum) ? 'Nível ' + h.gv : '—';
+  document.getElementById('ring-gv-txt').textContent = !isNaN(gvNum) ? h.gv : '—';
 
-  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(now.getDay()));
+  const weekday = parseLocalDate(dashViewDate).getDay();
+  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(weekday));
   const planNames = scheduled.length ? scheduled.map(p => esc(p.name)).join(', ') : 'Sem treino agendado';
-  const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
+  const done = state.workoutLogs[dashViewDate] && state.workoutLogs[dashViewDate].length > 0;
   document.getElementById('today-workout-info').innerHTML =
     `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
      <span style="color:${done?'var(--good)':'var(--txt3)'}">
