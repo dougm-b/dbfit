@@ -11,7 +11,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa; --gold: #fbbf24;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -49,6 +49,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 }
 .logo-row{display:flex;align-items:center;gap:8px}
 #flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
+#flame-icon.flame-pulse{animation:flamePulse 1.1s ease-in-out infinite}
+#flame-icon.flame-gold{color:var(--gold);filter:drop-shadow(0 0 6px var(--gold))}
+@keyframes flamePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.12)}}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -71,7 +74,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;flex-direction:column;align-items:center;gap:4px;
   background:none;border:none;cursor:pointer;
   color:var(--txt3);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:10px;
-  transition:color .2s;padding:8px 12px;border-radius:12px;
+  transition:color .2s;padding:8px 8px;border-radius:12px;
 }
 .nav-btn.active{color:var(--acc)}
 .nav-btn svg{width:22px;height:22px;stroke-width:1.8}
@@ -330,6 +333,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    sleepHistory: {},
     measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
@@ -349,6 +353,7 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.sleepHistory = loaded.sleepHistory || {};
   s.measurements = {
     defs: (loaded.measurements && loaded.measurements.defs) || [],
     history: (loaded.measurements && loaded.measurements.history) || {}
@@ -522,6 +527,7 @@ async function silentSync() {
   if (activeId === 'diet')     renderDiet();
   if (activeId === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (activeId === 'health')   renderHealth();
+  if (activeId === 'sleep')    renderSleep();
   if (activeId === 'settings') renderSettings();
 }
 
@@ -611,6 +617,7 @@ function showScreen(id) {
   if (id === 'diet')     renderDiet();
   if (id === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (id === 'health')   renderHealth();
+  if (id === 'sleep')    renderSleep();
   if (id === 'dash')     updateDash();
   if (id === 'settings') renderSettings();
   document.getElementById('content').scrollTop = 0;
@@ -627,7 +634,6 @@ function openFoodModal(prefillMeal) {
 function openFoodModalForMeal(mi) {
   openFoodModal(state.meals[dietViewDate][mi].name);
 }
-function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
@@ -768,14 +774,12 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
-// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
-// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
-// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
-// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
-function classifyMetricValue(id, value) {
-  const m = METRICS[id];
-  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
-  const [lo, hi] = m.range;
+// Classifica um valor face a uma faixa [lo,hi], em 4 níveis de intensidade —
+// verde (dentro da faixa), amarelo (perto), laranja (fora), vermelho (muito
+// fora). Usado tanto pelos indicadores de bioimpedância como pelo sono.
+function classifyByRange(value, range) {
+  if (!range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = range;
   if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
   const span = (isFinite(hi) ? hi - lo : lo) || 1;
   const dist = value < lo ? (lo - value) : (value - hi);
@@ -785,13 +789,29 @@ function classifyMetricValue(id, value) {
   return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
 }
 
+// Indicadores sem faixa definida (ex: músculo total, "quanto maior melhor")
+// devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m) return null;
+  return classifyByRange(value, m.range);
+}
+
+// Devolve o "instantâneo" de bioimpedância de uma data: hoje é o espelho
+// atual (state.health), qualquer outra data é o que ficou gravado nesse dia
+// (pode estar incompleto, ou nem existir).
+function healthObjForDate(date) {
+  if (date === TODAY) return state.health;
+  return state.healthHistory[date] || {};
+}
+
 // Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
 // de um indicador na Bioimpedância ou no Dashboard.
-function applyMetricStatus(metricId, valueElId, statusElId) {
+function applyMetricStatus(metricId, valueElId, statusElId, h) {
   const valueEl = document.getElementById(valueElId);
   if (!valueEl) return;
   const m = METRICS[metricId];
-  const val = metricValue(metricId, state.health);
+  const val = metricValue(metricId, h || state.health);
   const status = classifyMetricValue(metricId, val);
   if (!status) return;
   valueEl.style.color = status.color;

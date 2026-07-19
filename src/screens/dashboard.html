@@ -1,14 +1,20 @@
 <!-- DASHBOARD -->
 <div id="dash-screen" class="screen active">
-  <div class="card score-card">
-    <div class="card-title">🔥 Desempenho de hoje</div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="dashShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="dash-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="dash-next-btn" onclick="dashShiftDay(1)">›</button>
+  </div>
+  <div class="card score-card" onclick="openScoreBreakdown()">
+    <div class="card-title">🔥 Desempenho do dia</div>
     <div class="score-row">
       <div class="score-num" id="score-num">—</div>
       <div class="score-label" id="score-label">A calcular...</div>
     </div>
     <div class="progress-bar score-bar"><div class="progress-fill" id="score-bar" style="width:0%"></div></div>
-    <p style="font-size:11px;color:var(--txt3);margin-top:8px">Cruza bioimpedância, alimentação, treino e evolução face aos últimos dias.</p>
+    <p style="font-size:11px;color:var(--txt3);margin-top:8px">Cruza bioimpedância, alimentação, treino, sono e evolução face aos últimos dias. Toca para ver o detalhe.</p>
   </div>
+  <div class="week-strip" id="week-strip"></div>
   <div class="hero-stats">
     <div class="stat-box">
       <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
@@ -51,7 +57,7 @@
   </div>
 
   <div class="card">
-    <div class="card-title">📊 Macros de hoje</div>
+    <div class="card-title">📊 Macros do dia</div>
     <div class="macro-grid">
       <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl" id="m-kcal-lbl">kcal / 2600</div></div>
       <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl" id="m-prot-lbl">prot / 195g</div></div>
@@ -75,12 +81,12 @@
   </div>
 
   <div class="card">
-    <div class="card-title">🏋️ Treino de hoje</div>
+    <div class="card-title">🏋️ Treino do dia</div>
     <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
   </div>
 
   <div class="card">
-    <div class="card-title">🚶 Passos hoje</div>
+    <div class="card-title">🚶 Passos do dia</div>
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div class="stat-val" id="dash-passos" style="font-size:26px">0</div>
       <div class="stat-badge badge-red" id="dash-passos-badge">Meta: 8.000+</div>

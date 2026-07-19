@@ -1,0 +1,55 @@
+<!-- SLEEP -->
+<div id="sleep-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px">
+    <h3>😴 Sono</h3>
+    <button class="add-btn" onclick="openSleepModal()">+ Registar</button>
+  </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="sleepShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="sleep-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="sleep-next-btn" onclick="sleepShiftDay(1)">›</button>
+  </div>
+
+  <div id="sleep-content">
+    <div class="card">
+      <div class="card-title">🛌 Duração total</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="stat-val" id="sleep-duration" style="font-size:30px">— h</div>
+        <div class="stat-badge" id="sleep-duration-badge">Meta: 7–9h</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Fases do sono</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>💤 Leve</span><span id="sleep-light-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-light-bar" style="background:var(--blue);width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>🌑 Profundo</span><span id="sleep-deep-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-deep-bar" style="background:var(--acc);width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>👁️ REM</span><span id="sleep-rem-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-rem-bar" style="background:#c084fc;width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>⏰ Acordado</span><span id="sleep-awake-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-awake-bar" style="background:var(--warn);width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="sleep-empty" class="empty-state" style="display:none">
+    <div class="icon">😴</div>
+    <p>Sem dados de sono neste dia.<br>Toca em "+ Registar" para adicionar manualmente.</p>
+  </div>
+</div>

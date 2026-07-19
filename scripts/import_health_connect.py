@@ -61,6 +61,46 @@ def steps_per_day(conn):
     return out
 
 
+SLEEP_STAGE_KEYS = {1: 'awake', 4: 'light', 5: 'deep', 6: 'rem'}
+
+
+def sleep_per_day(conn):
+    """Returns {iso_date: {duration, light, deep, rem, awake}}, summing all
+    sleep sessions that wake up (local_date) on the same day, with stage
+    minute totals pulled from sleep_stages_table keyed by parent_key."""
+    cur = conn.cursor()
+    cur.execute("SELECT row_id, start_time, end_time, local_date FROM sleep_session_record_table")
+    sessions = cur.fetchall()
+    if not sessions:
+        return {}
+
+    cur.execute("SELECT parent_key, stage_start_time, stage_end_time, stage_type FROM sleep_stages_table")
+    stage_minutes_by_session = {}
+    for parent_key, s_start, s_end, s_type in cur.fetchall():
+        key = SLEEP_STAGE_KEYS.get(s_type)
+        if key is None:
+            continue
+        minutes = (s_end - s_start) / 60000
+        bucket = stage_minutes_by_session.setdefault(parent_key, {})
+        bucket[key] = bucket.get(key, 0) + minutes
+
+    out = {}
+    for row_id, start_time, end_time, local_date in sessions:
+        date = epoch_day_to_iso(local_date)
+        hours = (end_time - start_time) / 3600000
+        rec = out.setdefault(date, {'duration': 0, 'light': 0, 'deep': 0, 'rem': 0, 'awake': 0})
+        rec['duration'] += hours
+        stage_minutes = stage_minutes_by_session.get(row_id, {})
+        for key in ('light', 'deep', 'rem', 'awake'):
+            rec[key] += stage_minutes.get(key, 0)
+
+    for rec in out.values():
+        rec['duration'] = round(rec['duration'], 2)
+        for key in ('light', 'deep', 'rem', 'awake'):
+            rec[key] = round(rec[key])
+    return out
+
+
 def fmt_kg(grams):
     return f"{grams/1000:.1f}".replace('.', ',') + ' kg'
 
@@ -84,6 +124,7 @@ def extract(db_path):
     bmr_watts = latest_per_day(conn, 'basal_metabolic_rate_record_table', 'basal_metabolic_rate')  # watts
     resting_hr = latest_per_day(conn, 'resting_heart_rate_record_table', 'beats_per_minute')  # bpm
     steps = steps_per_day(conn)
+    sleep = sleep_per_day(conn)
 
     conn.close()
 
@@ -111,7 +152,7 @@ def extract(db_path):
             rec['passos'] = steps[date]
         if rec:
             records[date] = rec
-    return records
+    return records, sleep
 
 
 def merge_into_db_json(records, dry_run=False):
@@ -154,6 +195,28 @@ def merge_into_db_json(records, dry_run=False):
     return changed_dates, latest_date
 
 
+def merge_sleep_into_db_json(sleep_records, dry_run=False):
+    with open(DB_JSON_PATH, 'r', encoding='utf-8') as f:
+        state = json.load(f)
+
+    if 'sleepHistory' not in state:
+        state['sleepHistory'] = {}
+
+    changed_dates = []
+    for date in sorted(sleep_records):
+        rec = sleep_records[date]
+        if state['sleepHistory'].get(date) != rec:
+            changed_dates.append(date)
+        state['sleepHistory'][date] = rec
+
+    if not dry_run:
+        with open(DB_JSON_PATH, 'w', encoding='utf-8') as f:
+            json.dump(state, f, ensure_ascii=False, indent=2)
+            f.write('\n')
+
+    return changed_dates
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -172,13 +235,18 @@ def main():
             print('No .db file found inside zip'); sys.exit(1)
         db_path = str(candidates[0])
 
-    records = extract(db_path)
-    print(f"Extracted {len(records)} daily records from {db_path}")
+    records, sleep_records = extract(db_path)
+    print(f"Extracted {len(records)} daily bioimpedância records and {len(sleep_records)} daily sleep records from {db_path}")
     changed_dates, latest_date = merge_into_db_json(records, dry_run=dry_run)
     print(f"{'Would update' if dry_run else 'Updated'} {len(changed_dates)} date(s) in healthHistory")
     if changed_dates:
         print(f"  range: {changed_dates[0]} .. {changed_dates[-1]}")
     print(f"Latest date now mirrored into state.health: {latest_date}")
+
+    sleep_changed = merge_sleep_into_db_json(sleep_records, dry_run=dry_run)
+    print(f"{'Would update' if dry_run else 'Updated'} {len(sleep_changed)} date(s) in sleepHistory")
+    if sleep_changed:
+        print(f"  range: {sleep_changed[0]} .. {sleep_changed[-1]}")
 
     if tmpdir:
         import shutil

@@ -1,7 +1,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa; --gold: #fbbf24;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -39,6 +39,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 }
 .logo-row{display:flex;align-items:center;gap:8px}
 #flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
+#flame-icon.flame-pulse{animation:flamePulse 1.1s ease-in-out infinite}
+#flame-icon.flame-gold{color:var(--gold);filter:drop-shadow(0 0 6px var(--gold))}
+@keyframes flamePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.12)}}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -61,7 +64,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;flex-direction:column;align-items:center;gap:4px;
   background:none;border:none;cursor:pointer;
   color:var(--txt3);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:10px;
-  transition:color .2s;padding:8px 12px;border-radius:12px;
+  transition:color .2s;padding:8px 8px;border-radius:12px;
 }
 .nav-btn.active{color:var(--acc)}
 .nav-btn svg{width:22px;height:22px;stroke-width:1.8}

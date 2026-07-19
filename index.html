@@ -15,7 +15,7 @@
 :root {
   --g0: #0a0a0a; --g1: #121212; --g2: #1a1a1a; --g3: #242424; --g4: #333333;
   --acc: #d4d4d8; --acc2: #e4e4e7; --acc3: #f4f4f5;
-  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa;
+  --good: #4ade80; --caution: #facc15; --warn: #fb923c; --red: #f87171; --blue: #60a5fa; --gold: #fbbf24;
   --txt: #ededed; --txt2: #a8a8a8; --txt3: #757575;
   --card: rgba(255,255,255,0.04); --card-b: rgba(255,255,255,0.08);
   --r: 16px; --r2: 12px;
@@ -53,6 +53,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 }
 .logo-row{display:flex;align-items:center;gap:8px}
 #flame-icon{flex-shrink:0;color:var(--good);transition:color .4s}
+#flame-icon.flame-pulse{animation:flamePulse 1.1s ease-in-out infinite}
+#flame-icon.flame-gold{color:var(--gold);filter:drop-shadow(0 0 6px var(--gold))}
+@keyframes flamePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.55;transform:scale(1.12)}}
 .logo{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:22px;
   background:linear-gradient(135deg,var(--acc),var(--acc2));
   -webkit-background-clip:text;-webkit-text-fill-color:transparent}
@@ -75,7 +78,7 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
   display:flex;flex-direction:column;align-items:center;gap:4px;
   background:none;border:none;cursor:pointer;
   color:var(--txt3);font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-size:10px;
-  transition:color .2s;padding:8px 12px;border-radius:12px;
+  transition:color .2s;padding:8px 8px;border-radius:12px;
 }
 .nav-btn.active{color:var(--acc)}
 .nav-btn svg{width:22px;height:22px;stroke-width:1.8}
@@ -205,10 +208,28 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .progress-fill{height:100%;border-radius:3px;transition:width .5s ease,background-color .4s}
 
 /* ── SCORE CARD ── */
+.score-card{cursor:pointer;transition:border-color .2s}
+.score-card:active{border-color:var(--acc)}
 .score-row{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
 .score-num{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:800;font-size:36px}
 .score-label{font-size:13px;color:var(--txt2);font-weight:600}
 .score-bar{height:8px}
+
+/* ── WEEK STRIP ── */
+.week-strip{display:flex;justify-content:space-between;gap:6px;margin-bottom:12px}
+.week-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.week-day-dot{width:22px;height:22px;border-radius:50%;background:var(--g3);
+  display:flex;align-items:center;justify-content:center;font-size:11px}
+.week-day-dot.filled{box-shadow:0 0 8px var(--card-b)}
+.week-day-lbl{font-size:10px;color:var(--txt3)}
+.week-day-lbl.today{color:var(--acc);font-weight:700}
+
+/* ── SCORE BREAKDOWN MODAL ── */
+.breakdown-row{margin-bottom:14px}
+.breakdown-hdr{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px}
+.breakdown-hdr .b-label{font-weight:600;color:var(--txt)}
+.breakdown-hdr .b-score{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700}
+.breakdown-bar{height:7px}
 
 /* ── DIET ── */
 .meal-group{margin-bottom:14px}
@@ -342,15 +363,21 @@ input[type="file"].form-input::file-selector-button{
   <div id="content">
 <!-- DASHBOARD -->
 <div id="dash-screen" class="screen active">
-  <div class="card score-card">
-    <div class="card-title">🔥 Desempenho de hoje</div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="dashShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="dash-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="dash-next-btn" onclick="dashShiftDay(1)">›</button>
+  </div>
+  <div class="card score-card" onclick="openScoreBreakdown()">
+    <div class="card-title">🔥 Desempenho do dia</div>
     <div class="score-row">
       <div class="score-num" id="score-num">—</div>
       <div class="score-label" id="score-label">A calcular...</div>
     </div>
     <div class="progress-bar score-bar"><div class="progress-fill" id="score-bar" style="width:0%"></div></div>
-    <p style="font-size:11px;color:var(--txt3);margin-top:8px">Cruza bioimpedância, alimentação, treino e evolução face aos últimos dias.</p>
+    <p style="font-size:11px;color:var(--txt3);margin-top:8px">Cruza bioimpedância, alimentação, treino, sono e evolução face aos últimos dias. Toca para ver o detalhe.</p>
   </div>
+  <div class="week-strip" id="week-strip"></div>
   <div class="hero-stats">
     <div class="stat-box">
       <div class="stat-val" id="dash-peso">122<span style="font-size:16px">.5</span></div>
@@ -393,7 +420,7 @@ input[type="file"].form-input::file-selector-button{
   </div>
 
   <div class="card">
-    <div class="card-title">📊 Macros de hoje</div>
+    <div class="card-title">📊 Macros do dia</div>
     <div class="macro-grid">
       <div class="macro-item"><div class="macro-val" id="m-kcal" style="color:var(--warn)">0</div><div class="macro-lbl" id="m-kcal-lbl">kcal / 2600</div></div>
       <div class="macro-item"><div class="macro-val" id="m-prot" style="color:var(--acc)">0g</div><div class="macro-lbl" id="m-prot-lbl">prot / 195g</div></div>
@@ -417,12 +444,12 @@ input[type="file"].form-input::file-selector-button{
   </div>
 
   <div class="card">
-    <div class="card-title">🏋️ Treino de hoje</div>
+    <div class="card-title">🏋️ Treino do dia</div>
     <div id="today-workout-info" style="font-size:13px;color:var(--txt2)">A carregar...</div>
   </div>
 
   <div class="card">
-    <div class="card-title">🚶 Passos hoje</div>
+    <div class="card-title">🚶 Passos do dia</div>
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div class="stat-val" id="dash-passos" style="font-size:26px">0</div>
       <div class="stat-badge badge-red" id="dash-passos-badge">Meta: 8.000+</div>
@@ -507,6 +534,11 @@ input[type="file"].form-input::file-selector-button{
     <button class="add-btn" onclick="openHealthModal()">+ Atualizar</button>
   </div>
   <p style="font-size:11px;color:var(--txt3);margin:-6px 0 12px">🔄 Sincroniza automaticamente entre dispositivos · toca num indicador para ver histórico e gráfico</p>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="healthShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="health-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="health-next-btn" onclick="healthShiftDay(1)">›</button>
+  </div>
   <div class="health-row">
     <div class="health-box" onclick="goToMetric('peso')"><div class="health-lbl">Peso</div><div class="health-val" id="h-peso">122,5 kg</div><div class="health-status" id="h-peso-status">IMC 36.6</div></div>
     <div class="health-box" onclick="goToMetric('gc')"><div class="health-lbl">Gordura corporal</div><div class="health-val" id="h-gc">37,0%</div><div class="health-status" id="h-gc-status">Meta: 18–22%</div></div>
@@ -529,7 +561,7 @@ input[type="file"].form-input::file-selector-button{
   </div>
   <div class="health-row">
     <div class="health-box" onclick="goToMetric('fc')"><div class="health-lbl">Frequência cardíaca</div><div class="health-val" id="h-fc">— bpm</div><div class="health-status" id="h-fc-status">Repouso</div></div>
-    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos hoje</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
+    <div class="health-box" onclick="goToMetric('passos')"><div class="health-lbl">Passos</div><div class="health-val" id="h-passos">0</div><div class="health-status" id="h-passos-status">Meta: 8.000+</div></div>
   </div>
 
   <div class="section-hdr">
@@ -540,6 +572,62 @@ input[type="file"].form-input::file-selector-button{
   <div id="measurements-empty" class="empty-state">
     <div class="icon">📏</div>
     <p>Sem medidas registadas ainda.<br>Toca em "+ Adicionar" para criar a primeira (ex: cintura, peito, braço).</p>
+  </div>
+</div>
+
+<!-- SLEEP -->
+<div id="sleep-screen" class="screen">
+  <div class="section-hdr" style="margin-top:4px">
+    <h3>😴 Sono</h3>
+    <button class="add-btn" onclick="openSleepModal()">+ Registar</button>
+  </div>
+  <div class="date-nav">
+    <button class="cal-nav-btn" onclick="sleepShiftDay(-1)">‹</button>
+    <div class="date-nav-label" id="sleep-date-label">Hoje</div>
+    <button class="cal-nav-btn" id="sleep-next-btn" onclick="sleepShiftDay(1)">›</button>
+  </div>
+
+  <div id="sleep-content">
+    <div class="card">
+      <div class="card-title">🛌 Duração total</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="stat-val" id="sleep-duration" style="font-size:30px">— h</div>
+        <div class="stat-badge" id="sleep-duration-badge">Meta: 7–9h</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📈 Fases do sono</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>💤 Leve</span><span id="sleep-light-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-light-bar" style="background:var(--blue);width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>🌑 Profundo</span><span id="sleep-deep-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-deep-bar" style="background:var(--acc);width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>👁️ REM</span><span id="sleep-rem-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-rem-bar" style="background:#c084fc;width:0%"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-bottom:3px">
+            <span>⏰ Acordado</span><span id="sleep-awake-txt">—</span>
+          </div>
+          <div class="progress-bar"><div class="progress-fill" id="sleep-awake-bar" style="background:var(--warn);width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="sleep-empty" class="empty-state" style="display:none">
+    <div class="icon">😴</div>
+    <p>Sem dados de sono neste dia.<br>Toca em "+ Registar" para adicionar manualmente.</p>
   </div>
 </div>
 
@@ -645,6 +733,10 @@ input[type="file"].form-input::file-selector-button{
   <button class="nav-btn" onclick="showScreen('health')" id="nav-health">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     Bioimp.
+  </button>
+  <button class="nav-btn" onclick="showScreen('sleep')" id="nav-sleep">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    Sono
   </button>
   <button class="nav-btn" onclick="showScreen('settings')" id="nav-settings">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
@@ -763,6 +855,23 @@ input[type="file"].form-input::file-selector-button{
   </div>
 </div>
 
+<!-- MODAL: SLEEP UPDATE -->
+<div class="modal-overlay" id="sleep-modal">
+  <div class="modal">
+    <h3>😴 Registar sono <button class="modal-close" onclick="closeModal('sleep-modal')">×</button></h3>
+    <div class="form-group"><label class="form-label">Horas dormidas</label><input type="number" class="form-input" id="s-duration-i" step="0.1" placeholder="7.5"/></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Sono leve (min)</label><input type="number" class="form-input" id="s-light-i" placeholder="210"/></div>
+      <div class="form-group"><label class="form-label">Sono profundo (min)</label><input type="number" class="form-input" id="s-deep-i" placeholder="70"/></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Sono REM (min)</label><input type="number" class="form-input" id="s-rem-i" placeholder="90"/></div>
+      <div class="form-group"><label class="form-label">Acordado (min)</label><input type="number" class="form-input" id="s-awake-i" placeholder="10"/></div>
+    </div>
+    <button class="btn-primary" onclick="saveSleep()">Guardar sono</button>
+  </div>
+</div>
+
 <!-- MODAL: BODY MEASUREMENT -->
 <div class="modal-overlay" id="measurement-modal">
   <div class="modal">
@@ -786,6 +895,15 @@ input[type="file"].form-input::file-selector-button{
       <input type="number" step="0.1" class="form-input" id="ms-value" placeholder="ex: 98"/>
     </div>
     <button class="btn-primary" onclick="saveMeasurement()">Guardar medida</button>
+  </div>
+</div>
+
+<!-- MODAL: SCORE BREAKDOWN -->
+<div class="modal-overlay" id="score-breakdown-modal">
+  <div class="modal">
+    <h3>🔥 Desempenho — <span id="score-breakdown-date">Hoje</span> <button class="modal-close" onclick="closeModal('score-breakdown-modal')">×</button></h3>
+    <div id="score-breakdown-list"></div>
+    <p id="score-breakdown-empty" style="font-size:13px;color:var(--txt3);display:none">Ainda sem dados suficientes neste dia para calcular um desempenho.</p>
   </div>
 </div>
 
@@ -868,6 +986,7 @@ function defaultState(){
       idade:'21 anos', ossea:'4,0 kg', fc:72, passos:0
     },
     healthHistory: {},
+    sleepHistory: {},
     measurements: { defs: [], history: {} },
     settings: { metaKcal:2600, metaProt:195, metaCarb:290, metaFat:75, metaAgua:3 },
     chatHistory: []
@@ -887,6 +1006,7 @@ function migrateState(loaded){
   s.workoutLogs  = loaded.workoutLogs || {};
   s.meals        = loaded.meals || {};
   s.healthHistory = loaded.healthHistory || {};
+  s.sleepHistory = loaded.sleepHistory || {};
   s.measurements = {
     defs: (loaded.measurements && loaded.measurements.defs) || [],
     history: (loaded.measurements && loaded.measurements.history) || {}
@@ -1060,6 +1180,7 @@ async function silentSync() {
   if (activeId === 'diet')     renderDiet();
   if (activeId === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (activeId === 'health')   renderHealth();
+  if (activeId === 'sleep')    renderSleep();
   if (activeId === 'settings') renderSettings();
 }
 
@@ -1149,6 +1270,7 @@ function showScreen(id) {
   if (id === 'diet')     renderDiet();
   if (id === 'train')  { renderPlans(); renderCalendar(); renderTraining(); }
   if (id === 'health')   renderHealth();
+  if (id === 'sleep')    renderSleep();
   if (id === 'dash')     updateDash();
   if (id === 'settings') renderSettings();
   document.getElementById('content').scrollTop = 0;
@@ -1165,7 +1287,6 @@ function openFoodModal(prefillMeal) {
 function openFoodModalForMeal(mi) {
   openFoodModal(state.meals[dietViewDate][mi].name);
 }
-function openHealthModal() { document.getElementById('health-modal').classList.add('open'); }
 function closeModal(id)    { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(m => {
   m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
@@ -1306,14 +1427,12 @@ function metricSeries(id) {
     .filter(p => p.value !== null && !isNaN(p.value));
 }
 
-// Classifica um valor face à faixa saudável do indicador, em 4 níveis de
-// intensidade — verde (dentro da faixa), amarelo (perto), laranja (fora),
-// vermelho (muito fora). Indicadores sem faixa definida (ex: músculo total,
-// "quanto maior melhor") devolvem null e ficam com a cor neutra por omissão.
-function classifyMetricValue(id, value) {
-  const m = METRICS[id];
-  if (!m || !m.range || value === null || value === undefined || isNaN(value)) return null;
-  const [lo, hi] = m.range;
+// Classifica um valor face a uma faixa [lo,hi], em 4 níveis de intensidade —
+// verde (dentro da faixa), amarelo (perto), laranja (fora), vermelho (muito
+// fora). Usado tanto pelos indicadores de bioimpedância como pelo sono.
+function classifyByRange(value, range) {
+  if (!range || value === null || value === undefined || isNaN(value)) return null;
+  const [lo, hi] = range;
   if (value >= lo && (!isFinite(hi) || value <= hi)) return { color: 'var(--good)', cls: 'badge-ok', emoji: '✅' };
   const span = (isFinite(hi) ? hi - lo : lo) || 1;
   const dist = value < lo ? (lo - value) : (value - hi);
@@ -1323,13 +1442,29 @@ function classifyMetricValue(id, value) {
   return { color: 'var(--red)', cls: 'badge-red', emoji: '🔴' };
 }
 
+// Indicadores sem faixa definida (ex: músculo total, "quanto maior melhor")
+// devolvem null e ficam com a cor neutra por omissão.
+function classifyMetricValue(id, value) {
+  const m = METRICS[id];
+  if (!m) return null;
+  return classifyByRange(value, m.range);
+}
+
+// Devolve o "instantâneo" de bioimpedância de uma data: hoje é o espelho
+// atual (state.health), qualquer outra data é o que ficou gravado nesse dia
+// (pode estar incompleto, ou nem existir).
+function healthObjForDate(date) {
+  if (date === TODAY) return state.health;
+  return state.healthHistory[date] || {};
+}
+
 // Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
 // de um indicador na Bioimpedância ou no Dashboard.
-function applyMetricStatus(metricId, valueElId, statusElId) {
+function applyMetricStatus(metricId, valueElId, statusElId, h) {
   const valueEl = document.getElementById(valueElId);
   if (!valueEl) return;
   const m = METRICS[metricId];
-  const val = metricValue(metricId, state.health);
+  const val = metricValue(metricId, h || state.health);
   const status = classifyMetricValue(metricId, val);
   if (!status) return;
   valueEl.style.color = status.color;
@@ -1392,13 +1527,14 @@ function snapshotHealthHistory(dateKey) {
 }
 
 // ══════════════════════════════════════════
-// NOTA DE DESEMPENHO DIÁRIO — cruza bioimpedância, alimentação, treino e
-// evolução face aos dias anteriores num único valor 0–100. Usado pela
-// barra de progresso do Dashboard e pela cor do ícone de chama no topo.
+// NOTA DE DESEMPENHO DIÁRIO — cruza bioimpedância, alimentação, treino,
+// sono e evolução face aos dias anteriores num único valor 0–100. Usado
+// pela barra de progresso do Dashboard, pelo detalhe por categoria, e pela
+// cor/animação do ícone de chama no topo.
 //
-// Pesos (ajustáveis): bioimpedância 30%, alimentação 25%, treino 25%,
-// evolução 20%. Uma componente sem dados disponíveis é ignorada e o peso
-// das restantes é redistribuído (não penaliza por falta de registo).
+// Pesos (ajustáveis): bioimpedância 25%, alimentação 20%, treino 20%,
+// sono 15%, evolução 20%. Uma componente sem dados disponíveis é ignorada
+// e o peso das restantes é redistribuído (não penaliza por falta de registo).
 // ══════════════════════════════════════════
 const SCORE_TIERS = [
   { min: 90, tier: 'blue',   color: 'var(--blue)',   label: 'Excecional' },
@@ -1407,49 +1543,62 @@ const SCORE_TIERS = [
   { min: 35, tier: 'orange', color: 'var(--warn)',   label: 'Precisa de atenção' },
   { min: 0,  tier: 'red',    color: 'var(--red)',    label: 'Fraco' }
 ];
+const SLEEP_RANGE = [7, 9]; // horas
 
 function scoreTierFor(score) {
+  if (score >= 100) return { min: 100, tier: 'gold', color: 'var(--gold)', label: 'Perfeito' };
   return SCORE_TIERS.find(t => score >= t.min) || SCORE_TIERS[SCORE_TIERS.length - 1];
 }
 
 function avgOf(arr) { return arr.reduce((a, b) => a + b, 0) / arr.length; }
 
-function computeDailyScore() {
+const BIO_TIER_SCORE = { 'badge-ok': 100, 'badge-caution': 70, 'badge-warn': 40, 'badge-red': 10 };
+
+function computeDailyScore(date) {
+  date = date || TODAY;
   const parts = [];
+  const h = healthObjForDate(date);
 
   // 1. Bioimpedância: média dos níveis de intensidade dos indicadores com faixa definida
   const bioIds = ['gc', 'gv', 'prot', 'agua', 'fc', 'passos'];
-  const bioTierScore = { 'badge-ok': 100, 'badge-caution': 70, 'badge-warn': 40, 'badge-red': 10 };
   const bioScores = bioIds
-    .map(id => classifyMetricValue(id, metricValue(id, state.health)))
+    .map(id => classifyMetricValue(id, metricValue(id, h)))
     .filter(Boolean)
-    .map(s => bioTierScore[s.cls]);
-  if (bioScores.length) parts.push({ score: avgOf(bioScores), weight: 30 });
+    .map(s => BIO_TIER_SCORE[s.cls]);
+  if (bioScores.length) parts.push({ score: avgOf(bioScores), weight: 25, label: 'Bioimpedância' });
 
-  // 2. Alimentação: proximidade às metas de calorias e proteína de hoje
-  const totals = dayTotals(TODAY);
+  // 2. Alimentação: proximidade às metas de calorias e proteína do dia
+  const totals = dayTotals(date);
   const g = state.settings;
   if (totals.kcal > 0) {
     const kcalDevPct = Math.abs(totals.kcal - g.metaKcal) / g.metaKcal;
     const kcalScore = Math.max(0, 100 - kcalDevPct * 150);
     const protScore = Math.min(100, (totals.prot / g.metaProt) * 100);
-    parts.push({ score: (kcalScore + protScore) / 2, weight: 25 });
+    parts.push({ score: (kcalScore + protScore) / 2, weight: 20, label: 'Alimentação' });
   }
 
-  // 3. Treino: sessão registada hoje (bónus se treinou num dia sem plano agendado)
-  const scheduled = state.workoutPlans.some(p => (p.frequency || []).includes(now.getDay()));
-  const done = (state.workoutLogs[TODAY] || []).length > 0;
-  parts.push({ score: done ? 100 : (scheduled ? 20 : 65), weight: 25 });
+  // 3. Treino: sessão registada nesse dia (bónus se treinou num dia sem plano agendado)
+  const weekday = parseLocalDate(date).getDay();
+  const scheduled = state.workoutPlans.some(p => (p.frequency || []).includes(weekday));
+  const done = (state.workoutLogs[date] || []).length > 0;
+  parts.push({ score: done ? 100 : (scheduled ? 20 : 65), weight: 20, label: 'Treino' });
 
-  // 4. Evolução: gordura corporal vs. ~7 dias atrás (a descer = bom, para este objetivo)
-  const gcSeries = metricSeries('gc');
+  // 4. Sono: horas dormidas face à faixa recomendada (7–9h)
+  const sleepRec = state.sleepHistory[date];
+  if (sleepRec && sleepRec.duration) {
+    const sleepStatus = classifyByRange(sleepRec.duration, SLEEP_RANGE);
+    if (sleepStatus) parts.push({ score: BIO_TIER_SCORE[sleepStatus.cls], weight: 15, label: 'Sono' });
+  }
+
+  // 5. Evolução: gordura corporal vs. ~7 dias antes desta data (a descer = bom)
+  const gcSeries = metricSeries('gc').filter(p => p.date <= date);
   if (gcSeries.length >= 2) {
     const last = gcSeries[gcSeries.length - 1];
     const weekAgoDate = shiftDate(last.date, -7);
     const ref = [...gcSeries].reverse().find(p => p.date <= weekAgoDate) || gcSeries[0];
     const delta = last.value - ref.value; // negativo = melhorou
     const trendScore = Math.max(0, Math.min(100, 50 - delta * 40));
-    parts.push({ score: trendScore, weight: 20 });
+    parts.push({ score: trendScore, weight: 20, label: 'Evolução' });
   }
 
   if (!parts.length) return { score: null, tier: 'green', color: 'var(--good)', label: 'Sem dados', breakdown: [] };
@@ -1463,13 +1612,81 @@ function computeDailyScore() {
 // ══════════════════════════════════════════
 // DASHBOARD
 // ══════════════════════════════════════════
-function updateDash() {
-  const totals = dayTotals(TODAY);
-  const g = state.settings;
+let dashViewDate = TODAY;
 
-  const perf = computeDailyScore();
+function dashShiftDay(delta) {
+  const next = shiftDate(dashViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  dashViewDate = next;
+  updateDash();
+}
+
+function updateFlameIcon(perf) {
   const flame = document.getElementById('flame-icon');
-  if (flame) flame.style.color = perf.color;
+  if (!flame) return;
+  flame.classList.remove('flame-pulse', 'flame-gold');
+  if (perf.score === null) { flame.style.color = 'var(--good)'; return; }
+  flame.style.color = perf.score >= 100 ? 'var(--gold)' : perf.color;
+  if (perf.score >= 100) flame.classList.add('flame-gold');
+  if (perf.score >= 80) flame.classList.add('flame-pulse');
+}
+
+function renderWeekStrip() {
+  const strip = document.getElementById('week-strip');
+  if (!strip) return;
+  const items = [];
+  for (let i = 6; i >= 0; i--) {
+    const dk = shiftDate(TODAY, -i);
+    const d = parseLocalDate(dk);
+    const perf = computeDailyScore(dk);
+    const color = perf.score === null ? 'var(--g4)' : (perf.score >= 100 ? 'var(--gold)' : perf.color);
+    const filled = perf.score !== null;
+    items.push(`
+      <div class="week-day">
+        <div class="week-day-dot${filled ? ' filled' : ''}" style="background:${color}${filled ? `;box-shadow:0 0 8px ${color}55` : ''}"></div>
+        <div class="week-day-lbl${dk === TODAY ? ' today' : ''}">${days[d.getDay()]}</div>
+      </div>
+    `);
+  }
+  strip.innerHTML = items.join('');
+}
+
+function openScoreBreakdown() {
+  const perf = computeDailyScore(dashViewDate);
+  document.getElementById('score-breakdown-date').textContent = dateNavLabel(dashViewDate);
+  const list = document.getElementById('score-breakdown-list');
+  const empty = document.getElementById('score-breakdown-empty');
+  if (!perf.breakdown.length) {
+    list.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    list.innerHTML = perf.breakdown.map(part => {
+      const score = Math.round(part.score);
+      const tier = scoreTierFor(score);
+      return `
+        <div class="breakdown-row">
+          <div class="breakdown-hdr">
+            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.weight}%)</span></span>
+            <span class="b-score" style="color:${tier.color}">${score}</span>
+          </div>
+          <div class="progress-bar breakdown-bar"><div class="progress-fill" style="width:${score}%;background:${tier.color}"></div></div>
+        </div>
+      `;
+    }).join('');
+  }
+  document.getElementById('score-breakdown-modal').classList.add('open');
+}
+
+function updateDash() {
+  document.getElementById('dash-date-label').textContent = dateNavLabel(dashViewDate);
+  document.getElementById('dash-next-btn').disabled = dashViewDate >= TODAY;
+
+  const totals = dayTotals(dashViewDate);
+  const g = state.settings;
+  const h = healthObjForDate(dashViewDate);
+
+  const perf = computeDailyScore(dashViewDate);
   const scoreNum = document.getElementById('score-num');
   const scoreLabel = document.getElementById('score-label');
   const scoreBar = document.getElementById('score-bar');
@@ -1481,6 +1698,11 @@ function updateDash() {
     scoreBar.style.width = (perf.score || 0) + '%';
     scoreBar.style.background = perf.color;
   }
+  // O ícone de chama no topo reflete sempre o dia real de hoje, independente
+  // da data que está a ser navegada no dashboard.
+  updateFlameIcon(dashViewDate === TODAY ? perf : computeDailyScore(TODAY));
+  renderWeekStrip();
+
   document.getElementById('m-kcal').textContent = totals.kcal;
   document.getElementById('m-prot').textContent = totals.prot + 'g';
   document.getElementById('m-carb').textContent = totals.carb + 'g';
@@ -1497,41 +1719,44 @@ function updateDash() {
   document.getElementById('prot-pct').textContent  = protPct + '%';
   document.getElementById('kcal-pct').textContent  = kcalPct + '%';
 
-  const h = state.health;
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   if (!isNaN(pesoNum)) {
-    const alturaM = (h.altura || 184) / 100;
+    const alturaM = (h.altura || state.health.altura || 184) / 100;
     const imc = (pesoNum / (alturaM * alturaM)).toFixed(1);
     document.getElementById('dash-peso').innerHTML = Math.floor(pesoNum) + `<span style="font-size:16px">.${String(pesoNum.toFixed(1)).split('.')[1]}</span>`;
     const cls = classifyIMC(+imc);
     const badge = document.getElementById('dash-imc');
     badge.className = 'stat-badge ' + cls.cls;
     badge.textContent = 'IMC ' + imc;
+  } else {
+    document.getElementById('dash-peso').textContent = '—';
+    document.getElementById('dash-imc').textContent = 'Sem dados';
+    document.getElementById('dash-imc').className = 'stat-badge';
   }
   const gcNum = parseFloat(String(h.gc).replace(',', '.'));
+  const gcBadge = document.getElementById('dash-gc-badge');
   if (!isNaN(gcNum)) {
     document.getElementById('dash-gc').innerHTML = Math.floor(gcNum) + `<span style="font-size:16px">%</span>`;
     const gcStatus = classifyMetricValue('gc', gcNum);
-    const gcBadge = document.getElementById('dash-gc-badge');
     if (gcStatus && gcBadge) {
       gcBadge.className = 'stat-badge ' + gcStatus.cls;
       gcBadge.textContent = `${gcStatus.emoji} Meta: 18–22%`;
     }
+  } else {
+    document.getElementById('dash-gc').textContent = '—';
+    if (gcBadge) { gcBadge.className = 'stat-badge'; gcBadge.textContent = 'Sem dados'; }
   }
   const muscNum = parseFloat(String(h.musc).replace(',', '.'));
-  if (!isNaN(muscNum)) {
-    document.getElementById('ring-musc').textContent = h.musc;
-    document.getElementById('ring-musc-txt').textContent = Math.round(muscNum);
-  }
+  document.getElementById('ring-musc').textContent = !isNaN(muscNum) ? h.musc : '—';
+  document.getElementById('ring-musc-txt').textContent = !isNaN(muscNum) ? Math.round(muscNum) : '—';
   const gvNum = parseFloat(h.gv);
-  if (!isNaN(gvNum)) {
-    document.getElementById('ring-gv').textContent = 'Nível ' + h.gv;
-    document.getElementById('ring-gv-txt').textContent = h.gv;
-  }
+  document.getElementById('ring-gv').textContent = !isNaN(gvNum) ? 'Nível ' + h.gv : '—';
+  document.getElementById('ring-gv-txt').textContent = !isNaN(gvNum) ? h.gv : '—';
 
-  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(now.getDay()));
+  const weekday = parseLocalDate(dashViewDate).getDay();
+  const scheduled = state.workoutPlans.filter(p => (p.frequency||[]).includes(weekday));
   const planNames = scheduled.length ? scheduled.map(p => esc(p.name)).join(', ') : 'Sem treino agendado';
-  const done = state.workoutLogs[TODAY] && state.workoutLogs[TODAY].length > 0;
+  const done = state.workoutLogs[dashViewDate] && state.workoutLogs[dashViewDate].length > 0;
   document.getElementById('today-workout-info').innerHTML =
     `<span style="color:var(--acc2);font-weight:600">${planNames}</span><br>
      <span style="color:${done?'var(--good)':'var(--txt3)'}">
@@ -1908,41 +2133,78 @@ async function deleteTrainingAt(dk, idx) {
 // ══════════════════════════════════════════
 // BIOIMPEDÂNCIA
 // ══════════════════════════════════════════
-function renderHealth() {
-  const h = state.health;
-  document.getElementById('h-peso').textContent  = h.peso;
-  document.getElementById('h-gc').textContent    = h.gc;
-  document.getElementById('h-musc').textContent  = h.musc;
-  document.getElementById('h-gv').textContent    = h.gv;
-  document.getElementById('h-me').textContent    = h.me;
-  document.getElementById('h-prot').textContent  = h.prot;
-  document.getElementById('h-agua').textContent  = h.agua;
-  document.getElementById('h-met').textContent   = h.met;
-  document.getElementById('h-idade').textContent = h.idade || '21 anos';
-  document.getElementById('h-ossea').textContent = h.ossea || '4,0 kg';
-  document.getElementById('h-fc').textContent    = h.fc ? h.fc + ' bpm' : '— bpm';
-  document.getElementById('h-passos').textContent = (h.passos || 0).toLocaleString('pt-PT');
+let healthViewDate = TODAY;
 
-  // Cor de cada indicador de acordo com a intensidade do desvio face à faixa saudável
-  applyMetricStatus('gc', 'h-gc', 'h-gc-status');
-  applyMetricStatus('gv', 'h-gv', 'h-gv-status');
-  applyMetricStatus('prot', 'h-prot', 'h-prot-status');
-  applyMetricStatus('agua', 'h-agua', 'h-agua-status');
-  applyMetricStatus('ossea', 'h-ossea', 'h-ossea-status');
-  applyMetricStatus('fc', 'h-fc', 'h-fc-status');
-  applyMetricStatus('passos', 'h-passos', 'h-passos-status');
+function healthShiftDay(delta) {
+  const next = shiftDate(healthViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  healthViewDate = next;
+  renderHealth();
+}
+
+function setHealthField(valueId, statusId, h, key, format, defaultColor) {
+  const valueEl = document.getElementById(valueId);
+  const statusEl = statusId && document.getElementById(statusId);
+  const raw = h[key];
+  if (raw === undefined || raw === null || raw === '') {
+    valueEl.textContent = '—';
+    valueEl.style.color = 'var(--txt3)';
+    if (statusEl) { statusEl.textContent = 'Sem dados neste dia'; statusEl.style.color = 'var(--txt3)'; }
+    return false;
+  }
+  valueEl.textContent = format ? format(raw) : raw;
+  valueEl.style.color = defaultColor || '';
+  return true;
+}
+
+function renderHealth() {
+  document.getElementById('health-date-label').textContent = dateNavLabel(healthViewDate);
+  document.getElementById('health-next-btn').disabled = healthViewDate >= TODAY;
+
+  const h = healthObjForDate(healthViewDate);
+
+  setHealthField('h-peso', null, h, 'peso');
+  if (setHealthField('h-gc', 'h-gc-status', h, 'gc')) applyMetricStatus('gc', 'h-gc', 'h-gc-status', h);
+  setHealthField('h-musc', null, h, 'musc', null, 'var(--good)');
+  if (setHealthField('h-gv', 'h-gv-status', h, 'gv')) applyMetricStatus('gv', 'h-gv', 'h-gv-status', h);
+  setHealthField('h-me', null, h, 'me', null, 'var(--good)');
+  if (setHealthField('h-prot', 'h-prot-status', h, 'prot')) applyMetricStatus('prot', 'h-prot', 'h-prot-status', h);
+  if (setHealthField('h-agua', 'h-agua-status', h, 'agua')) applyMetricStatus('agua', 'h-agua', 'h-agua-status', h);
+  setHealthField('h-met', null, h, 'met', null, 'var(--txt)');
+  setHealthField('h-idade', null, h, 'idade', null, 'var(--good)');
+  if (setHealthField('h-ossea', 'h-ossea-status', h, 'ossea')) applyMetricStatus('ossea', 'h-ossea', 'h-ossea-status', h);
+  if (setHealthField('h-fc', 'h-fc-status', h, 'fc', v => v + ' bpm')) applyMetricStatus('fc', 'h-fc', 'h-fc-status', h);
+  if (setHealthField('h-passos', 'h-passos-status', h, 'passos', v => (v || 0).toLocaleString('pt-PT'))) {
+    applyMetricStatus('passos', 'h-passos', 'h-passos-status', h);
+  }
 
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
-  const alturaM = (h.altura || 184) / 100;
+  const alturaM = (h.altura || state.health.altura || 184) / 100;
+  const pesoSt = document.getElementById('h-peso-status');
   if (!isNaN(pesoNum)) {
     const imc = (pesoNum / (alturaM * alturaM)).toFixed(1);
     const cls = classifyIMC(+imc);
-    const st = document.getElementById('h-peso-status');
-    st.textContent = `IMC ${imc} · ${cls.label}`;
-    st.style.color = cls.color;
+    pesoSt.textContent = `IMC ${imc} · ${cls.label}`;
+    pesoSt.style.color = cls.color;
+  } else {
+    pesoSt.textContent = 'Sem dados neste dia';
+    pesoSt.style.color = 'var(--txt3)';
   }
+
   if (apiKey) document.getElementById('api-key-input').value = apiKey.slice(0,8) + '...';
   renderMeasurements();
+}
+
+function openHealthModal() {
+  const h = healthObjForDate(healthViewDate);
+  const fields = { peso:'h-peso-i', gc:'h-gc-i', musc:'h-musc-i', gv:'h-gv-i', me:'h-me-i', prot:'h-prot-i', agua:'h-agua-i', met:'h-met-i', fc:'h-fc-i', passos:'h-passos-i' };
+  Object.entries(fields).forEach(([key, id]) => {
+    const raw = h[key];
+    const input = document.getElementById(id);
+    if (raw === undefined || raw === null || raw === '') { input.value = ''; return; }
+    input.value = parseFloat(String(raw).replace(',', '.'));
+  });
+  document.getElementById('health-modal').classList.add('open');
 }
 
 async function saveHealth() {
@@ -1958,17 +2220,22 @@ async function saveHealth() {
     fc:   document.getElementById('h-fc-i').value,
     passos: document.getElementById('h-passos-i').value,
   };
-  if (fields.peso) state.health.peso = fields.peso + ' kg';
-  if (fields.gc)   state.health.gc   = fields.gc + '%';
-  if (fields.musc) state.health.musc = fields.musc + ' kg';
-  if (fields.gv)   state.health.gv   = fields.gv;
-  if (fields.me)   state.health.me   = fields.me + ' kg';
-  if (fields.prot) state.health.prot = fields.prot + '%';
-  if (fields.agua) state.health.agua = fields.agua + '%';
-  if (fields.met)  state.health.met  = fields.met;
-  if (fields.fc)      state.health.fc = +fields.fc;
-  if (fields.passos)  state.health.passos = +fields.passos;
-  snapshotHealthHistory(TODAY);
+  const isToday = healthViewDate === TODAY;
+  if (!isToday && !state.healthHistory[healthViewDate]) state.healthHistory[healthViewDate] = {};
+  const target = isToday ? state.health : state.healthHistory[healthViewDate];
+
+  if (fields.peso) target.peso = fields.peso + ' kg';
+  if (fields.gc)   target.gc   = fields.gc + '%';
+  if (fields.musc) target.musc = fields.musc + ' kg';
+  if (fields.gv)   target.gv   = fields.gv;
+  if (fields.me)   target.me   = fields.me + ' kg';
+  if (fields.prot) target.prot = fields.prot + '%';
+  if (fields.agua) target.agua = fields.agua + '%';
+  if (fields.met)  target.met  = fields.met;
+  if (fields.fc)      target.fc = +fields.fc;
+  if (fields.passos)  target.passos = +fields.passos;
+  if (isToday) snapshotHealthHistory(TODAY);
+
   closeModal('health-modal');
   renderHealth(); updateDash();
   await pushToGitHub();
@@ -1977,6 +2244,91 @@ async function saveHealth() {
 
 function goToMetric(id) {
   location.href = 'detail.html?metric=' + encodeURIComponent(id);
+}
+
+// ══════════════════════════════════════════
+// SONO
+// ══════════════════════════════════════════
+let sleepViewDate = TODAY;
+
+function sleepShiftDay(delta) {
+  const next = shiftDate(sleepViewDate, delta);
+  if (next > TODAY) return; // não navega para o futuro
+  sleepViewDate = next;
+  renderSleep();
+}
+
+function fmtMin(min) {
+  if (min === null || min === undefined) return '—';
+  const h = Math.floor(min / 60), m = Math.round(min % 60);
+  return h > 0 ? `${h}h${String(m).padStart(2,'0')}` : `${m}min`;
+}
+
+function renderSleep() {
+  document.getElementById('sleep-date-label').textContent = dateNavLabel(sleepViewDate);
+  document.getElementById('sleep-next-btn').disabled = sleepViewDate >= TODAY;
+
+  const rec = state.sleepHistory[sleepViewDate];
+  const content = document.getElementById('sleep-content');
+  const empty = document.getElementById('sleep-empty');
+  if (!rec || !rec.duration) {
+    content.style.display = 'none';
+    empty.style.display = 'block';
+    return;
+  }
+  content.style.display = 'block';
+  empty.style.display = 'none';
+
+  const h = Math.floor(rec.duration), m = Math.round((rec.duration - h) * 60);
+  document.getElementById('sleep-duration').textContent = `${h}h${String(m).padStart(2,'0')}`;
+  const status = classifyByRange(rec.duration, SLEEP_RANGE);
+  const badge = document.getElementById('sleep-duration-badge');
+  if (status) {
+    badge.className = 'stat-badge ' + status.cls;
+    badge.textContent = `${status.emoji} Meta: 7–9h`;
+  }
+
+  const stages = [
+    { key: 'light', txt: 'sleep-light-txt', bar: 'sleep-light-bar' },
+    { key: 'deep',  txt: 'sleep-deep-txt',  bar: 'sleep-deep-bar' },
+    { key: 'rem',   txt: 'sleep-rem-txt',   bar: 'sleep-rem-bar' },
+    { key: 'awake', txt: 'sleep-awake-txt', bar: 'sleep-awake-bar' },
+  ];
+  const totalMin = rec.duration * 60;
+  stages.forEach(s => {
+    const val = rec[s.key];
+    document.getElementById(s.txt).textContent = fmtMin(val);
+    const pct = val && totalMin ? Math.min(100, Math.round(val / totalMin * 100)) : 0;
+    document.getElementById(s.bar).style.width = pct + '%';
+  });
+}
+
+function openSleepModal() {
+  const rec = state.sleepHistory[sleepViewDate] || {};
+  document.getElementById('s-duration-i').value = rec.duration || '';
+  document.getElementById('s-light-i').value = rec.light || '';
+  document.getElementById('s-deep-i').value = rec.deep || '';
+  document.getElementById('s-rem-i').value = rec.rem || '';
+  document.getElementById('s-awake-i').value = rec.awake || '';
+  document.getElementById('sleep-modal').classList.add('open');
+}
+
+async function saveSleep() {
+  const duration = parseFloat(document.getElementById('s-duration-i').value);
+  if (!duration) { showToast('⚠️ Indica as horas dormidas'); return; }
+  if (!state.sleepHistory) state.sleepHistory = {};
+  state.sleepHistory[sleepViewDate] = {
+    duration,
+    light: +document.getElementById('s-light-i').value || 0,
+    deep:  +document.getElementById('s-deep-i').value  || 0,
+    rem:   +document.getElementById('s-rem-i').value   || 0,
+    awake: +document.getElementById('s-awake-i').value || 0,
+  };
+  closeModal('sleep-modal');
+  renderSleep();
+  updateDash();
+  await pushToGitHub();
+  showToast('✅ Sono registado!');
 }
 
 // ══════════════════════════════════════════
