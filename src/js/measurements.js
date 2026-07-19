@@ -29,6 +29,7 @@ function renderMeasurements() {
   const defs = state.measurements.defs;
   const list = document.getElementById('measurements-list');
   const empty = document.getElementById('measurements-empty');
+  if (!list || !empty) return; // página sem a secção de medidas (ex: detail.html)
   if (!defs.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
   empty.style.display = 'none';
   list.innerHTML = defs.map(d => {
@@ -87,13 +88,15 @@ async function saveMeasurement() {
 }
 
 async function deleteMeasurementDef(id) {
-  if (!confirm('Remover esta medida e todo o seu histórico?')) return;
+  if (!confirm('Remover esta medida e todo o seu histórico?')) return false;
   state.measurements.defs = state.measurements.defs.filter(d => d.id !== id);
   Object.values(state.measurements.history).forEach(day => { delete day[id]; });
   renderMeasurements();
   await pushToGitHub();
+  return true;
 }
 
 function goToMeasurement(id) {
+  rememberReturnScreen();
   location.href = 'detail.html?measurement=' + encodeURIComponent(id);
 }

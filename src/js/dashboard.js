@@ -20,6 +20,12 @@ function updateFlameIcon(perf) {
   if (perf.score >= 80) flame.classList.add('flame-pulse');
 }
 
+function dashGoToDate(dk) {
+  if (dk > TODAY) return;
+  dashViewDate = dk;
+  updateDash();
+}
+
 function renderWeekStrip() {
   const strip = document.getElementById('week-strip');
   if (!strip) return;
@@ -30,8 +36,9 @@ function renderWeekStrip() {
     const perf = computeDailyScore(dk);
     const color = perf.score === null ? 'var(--g4)' : (perf.score >= 100 ? 'var(--gold)' : perf.color);
     const filled = perf.score !== null;
+    const viewing = dk === dashViewDate;
     items.push(`
-      <div class="week-day">
+      <div class="week-day${viewing ? ' viewing' : ''}" onclick="dashGoToDate('${dk}')">
         <div class="week-day-dot${filled ? ' filled' : ''}" style="background:${color}${filled ? `;box-shadow:0 0 8px ${color}55` : ''}"></div>
         <div class="week-day-lbl${dk === TODAY ? ' today' : ''}">${days[d.getDay()]}</div>
       </div>
