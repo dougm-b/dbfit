@@ -565,6 +565,18 @@ input[type="file"].form-input::file-selector-button{
   </div>
 
   <div class="section-hdr">
+    <h3>❤️ Coração e energia</h3>
+  </div>
+  <div class="health-row">
+    <div class="health-box" onclick="goToMetric('fcmed')"><div class="health-lbl">FC média do dia</div><div class="health-val" id="h-fcmed">—</div><div class="health-status" id="h-fcmed-status">Média diária</div></div>
+    <div class="health-box" onclick="goToMetric('fcmax')"><div class="health-lbl">FC máxima do dia</div><div class="health-val" id="h-fcmax">—</div><div class="health-status" id="h-fcmax-status">Pico do dia</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box" onclick="goToMetric('gasto')"><div class="health-lbl">Gasto calórico total</div><div class="health-val" id="h-gasto">—</div><div class="health-status" id="h-gasto-status">kcal queimadas</div></div>
+    <div class="health-box" onclick="goToMetric('gastoativo')"><div class="health-lbl">Gasto em exercício</div><div class="health-val" id="h-gastoativo">—</div><div class="health-status" id="h-gastoativo-status">kcal em treino</div></div>
+  </div>
+
+  <div class="section-hdr">
     <h3>📏 Medidas corporais</h3>
     <button class="add-btn" onclick="openMeasurementModal()">+ Adicionar</button>
   </div>
@@ -595,6 +607,19 @@ input[type="file"].form-input::file-selector-button{
         <div class="stat-badge" id="sleep-duration-badge">Meta: 7–9h</div>
       </div>
     </div>
+    <div class="card" id="sleep-chart-card" style="display:none">
+      <div class="card-title">🌙 A noite, hora a hora</div>
+      <div id="sleep-hypnogram"></div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--txt3);margin-top:4px">
+        <span id="sleep-start-lbl">—</span><span id="sleep-end-lbl">—</span>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--txt3);margin-top:8px">
+        <span><span style="color:var(--warn)">■</span> Acordado</span>
+        <span><span style="color:#c084fc">■</span> REM</span>
+        <span><span style="color:var(--blue)">■</span> Leve</span>
+        <span><span style="color:var(--acc)">■</span> Profundo</span>
+      </div>
+    </div>
     <div class="card">
       <div class="card-title">📈 Fases do sono</div>
       <div style="display:flex;flex-direction:column;gap:10px">
@@ -623,6 +648,13 @@ input[type="file"].form-input::file-selector-button{
           <div class="progress-bar"><div class="progress-fill" id="sleep-awake-bar" style="background:var(--warn);width:0%"></div></div>
         </div>
       </div>
+    </div>
+    <div class="card">
+      <div class="card-title">🧠 Leitura do sono</div>
+      <div id="sleep-impact" style="font-size:13px;color:var(--txt2);line-height:1.6"></div>
+      <div style="font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px;color:var(--acc);text-transform:uppercase;letter-spacing:.08em;margin:14px 0 6px">Possíveis motivos</div>
+      <div id="sleep-causes" style="font-size:13px;color:var(--txt2);line-height:1.6"></div>
+      <p style="font-size:10px;color:var(--txt3);margin-top:10px">Leitura heurística com base nos padrões da noite — não substitui aconselhamento médico.</p>
     </div>
   </div>
   <div id="sleep-empty" class="empty-state" style="display:none">
@@ -1402,6 +1434,34 @@ const METRICS = {
     range: [8000, Infinity], rangeLabel: 'Meta: 8.000+/dia',
     explain: 'Número de passos dados no dia. Mais passos aumentam o gasto calórico diário fora do treino (NEAT) e ajudam a criar défice calórico sem depender só das sessões de treino.',
     related: ['fc', 'gc', 'gv']
+  },
+  fcmed: {
+    key: 'fcmed', label: 'FC média do dia', unit: 'bpm',
+    parse: v => parseFloat(v),
+    range: [60, 90], rangeLabel: 'Média diária típica: 60–90 bpm',
+    explain: 'Média de todos os batimentos medidos ao longo do dia (incluindo atividade), diferente da frequência em repouso. Uma média diária persistentemente alta pode indicar stress, má recuperação, desidratação ou excesso de estimulantes; uma média mais baixa costuma acompanhar melhor condicionamento.',
+    related: ['fc', 'fcmax', 'passos']
+  },
+  fcmax: {
+    key: 'fcmax', label: 'FC máxima do dia', unit: 'bpm',
+    parse: v => parseFloat(v),
+    range: null, rangeLabel: 'Depende do esforço do dia — máx. teórica ≈ 220 − idade',
+    explain: 'O pico de batimentos atingido no dia, normalmente durante o treino. Treinar por zonas usa esta referência: ~60–70% da FC máxima para queima de gordura em regime aeróbio, ~80%+ para melhorar capacidade cardiovascular. Picos altos sem exercício associado merecem atenção.',
+    related: ['fc', 'fcmed', 'gastoativo']
+  },
+  gasto: {
+    key: 'gasto', label: 'Gasto calórico total', unit: 'kcal',
+    parse: v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')),
+    range: null, rangeLabel: 'Basal + atividade — comparar com as calorias ingeridas',
+    explain: 'Estimativa de todas as calorias queimadas no dia: metabolismo basal + passos + treino. Para perder gordura de forma sustentada, a ingestão calórica deve ficar consistentemente abaixo deste valor (défice moderado de ~300–500 kcal).',
+    related: ['met', 'gastoativo', 'passos']
+  },
+  gastoativo: {
+    key: 'gastoativo', label: 'Gasto em exercício', unit: 'kcal',
+    parse: v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')),
+    range: null, rangeLabel: 'Só conta atividade registada como exercício',
+    explain: 'Calorias queimadas especificamente durante sessões de exercício registadas (não inclui o metabolismo basal nem os passos do dia a dia). Útil para comparar o custo energético real de diferentes treinos.',
+    related: ['gasto', 'fcmax', 'met']
   }
 };
 
@@ -2177,6 +2237,21 @@ function renderHealth() {
   if (setHealthField('h-passos', 'h-passos-status', h, 'passos', v => (v || 0).toLocaleString('pt-PT'))) {
     applyMetricStatus('passos', 'h-passos', 'h-passos-status', h);
   }
+  if (setHealthField('h-fcmed', 'h-fcmed-status', h, 'fcmed', v => v + ' bpm')) {
+    applyMetricStatus('fcmed', 'h-fcmed', 'h-fcmed-status', h);
+  }
+  if (setHealthField('h-fcmax', 'h-fcmax-status', h, 'fcmax', v => v + ' bpm', 'var(--txt)')) {
+    const st = document.getElementById('h-fcmax-status');
+    st.textContent = 'Pico do dia'; st.style.color = 'var(--txt3)';
+  }
+  if (setHealthField('h-gasto', 'h-gasto-status', h, 'gasto', null, 'var(--warn)')) {
+    const st = document.getElementById('h-gasto-status');
+    st.textContent = 'kcal queimadas'; st.style.color = 'var(--txt3)';
+  }
+  if (setHealthField('h-gastoativo', 'h-gastoativo-status', h, 'gastoativo', null, 'var(--warn)')) {
+    const st = document.getElementById('h-gastoativo-status');
+    st.textContent = 'kcal em treino'; st.style.color = 'var(--txt3)';
+  }
 
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   const alturaM = (h.altura || state.health.altura || 184) / 100;
@@ -2264,6 +2339,89 @@ function fmtMin(min) {
   return h > 0 ? `${h}h${String(m).padStart(2,'0')}` : `${m}min`;
 }
 
+// ── Hipnograma: linha do tempo da noite, com um nível por fase ──
+const SLEEP_STAGE_LEVELS = { a: 0, r: 1, l: 2, d: 3 }; // acordado no topo, profundo em baixo
+const SLEEP_STAGE_COLORS = { a: 'var(--warn)', r: '#c084fc', l: 'var(--blue)', d: 'var(--acc)' };
+
+function sleepHypnogramSvg(stages) {
+  const W = 600, H = 130, PAD_TOP = 8, ROW = 28, BAR = 20;
+  const totalMin = stages.reduce((a, s) => Math.max(a, s[0] + s[1]), 0);
+  if (!totalMin) return '';
+  const x = min => (min / totalMin) * W;
+  let out = '';
+  // linhas de grelha a cada hora
+  for (let m = 60; m < totalMin; m += 60) {
+    out += `<line x1="${x(m).toFixed(1)}" y1="0" x2="${x(m).toFixed(1)}" y2="${H}" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`;
+  }
+  stages.forEach(([off, dur, code]) => {
+    const lvl = SLEEP_STAGE_LEVELS[code];
+    if (lvl === undefined) return;
+    const y = PAD_TOP + lvl * ROW;
+    out += `<rect x="${x(off).toFixed(1)}" y="${y}" width="${Math.max(1.5, x(dur)).toFixed(1)}" height="${BAR}" rx="2" fill="${SLEEP_STAGE_COLORS[code]}"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;display:block">${out}</svg>`;
+}
+
+// ── Leitura descritiva da noite: impacto no dia seguinte + possíveis motivos ──
+function sleepInsights(rec, date) {
+  const impact = [], causes = [];
+  const dur = rec.duration;
+  const totalMin = dur * 60;
+  const hasStages = (rec.deep || 0) + (rec.rem || 0) + (rec.light || 0) > 0;
+  const deepPct = hasStages ? (rec.deep || 0) / totalMin : null;
+  const remPct = hasStages ? (rec.rem || 0) / totalMin : null;
+  const awakeMin = rec.awake || 0;
+
+  // Duração
+  if (dur < 6) {
+    impact.push('⚠️ Dormiste menos de 6 horas — espera mais fome e apetite por doces (a grelina sobe e a leptina desce), menos força e foco no treino, e pior sensibilidade à insulina ao longo do dia.');
+  } else if (dur < 7) {
+    impact.push('🟡 Ficaste ligeiramente abaixo das 7 horas recomendadas — pode haver alguma quebra de energia e de foco à tarde; se puderes, evita decisões alimentares por impulso.');
+  } else if (dur <= 9) {
+    impact.push('✅ Duração dentro da faixa recomendada (7–9h) — boas condições para recuperação muscular, controlo do apetite e energia estável durante o dia.');
+  } else {
+    impact.push('🟡 Mais de 9 horas de sono — dormir demais de forma recorrente pode ser sinal de sono pouco reparador ou de fadiga acumulada, e costuma deixar uma sensação de lentidão ao acordar.');
+  }
+
+  // Fases
+  if (deepPct !== null) {
+    if (deepPct < 0.10) {
+      impact.push('💪 Pouco sono profundo (' + fmtMin(rec.deep) + ') — é nesta fase que há maior libertação de hormona de crescimento e recuperação física; os músculos podem sentir-se mais pesados e a recuperação do treino fica mais lenta.');
+    } else if (deepPct >= 0.15) {
+      impact.push('💪 Boa dose de sono profundo (' + fmtMin(rec.deep) + ') — recuperação física favorecida; bom dia para treinar com intensidade.');
+    }
+    if (remPct !== null && remPct < 0.15) {
+      impact.push('🧠 Pouco sono REM (' + fmtMin(rec.rem) + ') — esta fase consolida memória e humor; podes notar menos paciência e mais dificuldade de concentração.');
+    } else if (remPct !== null && remPct >= 0.20) {
+      impact.push('🧠 Sono REM em boa quantidade (' + fmtMin(rec.rem) + ') — memória e humor bem servidos.');
+    }
+  }
+  if (awakeMin > 30) {
+    impact.push('⏰ Estiveste acordado ' + fmtMin(awakeMin) + ' durante a noite — sono fragmentado reduz a qualidade mesmo com duração razoável; pode haver sonolência diurna.');
+  }
+
+  // Possíveis motivos
+  const startedLate = rec.start && rec.start >= '00:00' && rec.start < '05:00';
+  if (dur < 7 && startedLate) {
+    causes.push('🌙 Foste dormir tarde (' + rec.start + ') — o motivo mais provável para a noite curta é simplesmente a hora de deitar, não a qualidade do sono em si.');
+  } else if (dur < 7) {
+    causes.push('⏱️ Noite curta — se o despertar foi por alarme, tentar antecipar a hora de deitar é a alavanca mais eficaz.');
+  }
+  if (deepPct !== null && deepPct < 0.10) {
+    causes.push('🍷 Sono profundo reduzido costuma estar associado a: álcool ou cafeína ao fim do dia, refeição pesada perto de deitar, quarto quente, ou stress elevado.');
+  }
+  if (awakeMin > 30) {
+    causes.push('💡 Despertares frequentes podem vir de ruído ou luz no quarto, líquidos em excesso antes de deitar, ou temperatura desconfortável. Se for um padrão recorrente (com ressonar ou cansaço constante), vale a pena falar com um médico sobre apneia do sono.');
+  }
+  if (date && state.workoutLogs[date] && state.workoutLogs[date].length && deepPct !== null && deepPct >= 0.15) {
+    causes.push('🏋️ Treinaste neste dia — exercício regular é dos fatores que mais aumenta o sono profundo, e parece ter ajudado.');
+  }
+  if (!causes.length) {
+    causes.push('✅ Nada fora do padrão a apontar — manter um horário de deitar consistente é o que mais protege noites como esta.');
+  }
+  return { impact, causes };
+}
+
 function renderSleep() {
   document.getElementById('sleep-date-label').textContent = dateNavLabel(sleepViewDate);
   document.getElementById('sleep-next-btn').disabled = sleepViewDate >= TODAY;
@@ -2301,6 +2459,22 @@ function renderSleep() {
     const pct = val && totalMin ? Math.min(100, Math.round(val / totalMin * 100)) : 0;
     document.getElementById(s.bar).style.width = pct + '%';
   });
+
+  // Hipnograma — só quando há a linha do tempo detalhada (dados importados)
+  const chartCard = document.getElementById('sleep-chart-card');
+  if (rec.stages && rec.stages.length) {
+    chartCard.style.display = 'block';
+    document.getElementById('sleep-hypnogram').innerHTML = sleepHypnogramSvg(rec.stages);
+    document.getElementById('sleep-start-lbl').textContent = rec.start ? '🛏️ ' + rec.start : '';
+    document.getElementById('sleep-end-lbl').textContent = rec.end ? '⏰ ' + rec.end : '';
+  } else {
+    chartCard.style.display = 'none';
+  }
+
+  // Leitura descritiva da noite
+  const insights = sleepInsights(rec, sleepViewDate);
+  document.getElementById('sleep-impact').innerHTML = insights.impact.map(t => `<p style="margin-bottom:8px">${t}</p>`).join('');
+  document.getElementById('sleep-causes').innerHTML = insights.causes.map(t => `<p style="margin-bottom:8px">${t}</p>`).join('');
 }
 
 function openSleepModal() {
@@ -2317,13 +2491,14 @@ async function saveSleep() {
   const duration = parseFloat(document.getElementById('s-duration-i').value);
   if (!duration) { showToast('⚠️ Indica as horas dormidas'); return; }
   if (!state.sleepHistory) state.sleepHistory = {};
-  state.sleepHistory[sleepViewDate] = {
+  // Mantém start/end/stages importados, se existirem — só atualiza os totais
+  state.sleepHistory[sleepViewDate] = Object.assign({}, state.sleepHistory[sleepViewDate] || {}, {
     duration,
     light: +document.getElementById('s-light-i').value || 0,
     deep:  +document.getElementById('s-deep-i').value  || 0,
     rem:   +document.getElementById('s-rem-i').value   || 0,
     awake: +document.getElementById('s-awake-i').value || 0,
-  };
+  });
   closeModal('sleep-modal');
   renderSleep();
   updateDash();

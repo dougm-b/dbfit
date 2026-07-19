@@ -98,6 +98,34 @@ const METRICS = {
     range: [8000, Infinity], rangeLabel: 'Meta: 8.000+/dia',
     explain: 'Número de passos dados no dia. Mais passos aumentam o gasto calórico diário fora do treino (NEAT) e ajudam a criar défice calórico sem depender só das sessões de treino.',
     related: ['fc', 'gc', 'gv']
+  },
+  fcmed: {
+    key: 'fcmed', label: 'FC média do dia', unit: 'bpm',
+    parse: v => parseFloat(v),
+    range: [60, 90], rangeLabel: 'Média diária típica: 60–90 bpm',
+    explain: 'Média de todos os batimentos medidos ao longo do dia (incluindo atividade), diferente da frequência em repouso. Uma média diária persistentemente alta pode indicar stress, má recuperação, desidratação ou excesso de estimulantes; uma média mais baixa costuma acompanhar melhor condicionamento.',
+    related: ['fc', 'fcmax', 'passos']
+  },
+  fcmax: {
+    key: 'fcmax', label: 'FC máxima do dia', unit: 'bpm',
+    parse: v => parseFloat(v),
+    range: null, rangeLabel: 'Depende do esforço do dia — máx. teórica ≈ 220 − idade',
+    explain: 'O pico de batimentos atingido no dia, normalmente durante o treino. Treinar por zonas usa esta referência: ~60–70% da FC máxima para queima de gordura em regime aeróbio, ~80%+ para melhorar capacidade cardiovascular. Picos altos sem exercício associado merecem atenção.',
+    related: ['fc', 'fcmed', 'gastoativo']
+  },
+  gasto: {
+    key: 'gasto', label: 'Gasto calórico total', unit: 'kcal',
+    parse: v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')),
+    range: null, rangeLabel: 'Basal + atividade — comparar com as calorias ingeridas',
+    explain: 'Estimativa de todas as calorias queimadas no dia: metabolismo basal + passos + treino. Para perder gordura de forma sustentada, a ingestão calórica deve ficar consistentemente abaixo deste valor (défice moderado de ~300–500 kcal).',
+    related: ['met', 'gastoativo', 'passos']
+  },
+  gastoativo: {
+    key: 'gastoativo', label: 'Gasto em exercício', unit: 'kcal',
+    parse: v => parseFloat(String(v).replace(/\./g, '').replace(',', '.')),
+    range: null, rangeLabel: 'Só conta atividade registada como exercício',
+    explain: 'Calorias queimadas especificamente durante sessões de exercício registadas (não inclui o metabolismo basal nem os passos do dia a dia). Útil para comparar o custo energético real de diferentes treinos.',
+    related: ['gasto', 'fcmax', 'met']
   }
 };
 

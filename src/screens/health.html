@@ -36,6 +36,18 @@
   </div>
 
   <div class="section-hdr">
+    <h3>❤️ Coração e energia</h3>
+  </div>
+  <div class="health-row">
+    <div class="health-box" onclick="goToMetric('fcmed')"><div class="health-lbl">FC média do dia</div><div class="health-val" id="h-fcmed">—</div><div class="health-status" id="h-fcmed-status">Média diária</div></div>
+    <div class="health-box" onclick="goToMetric('fcmax')"><div class="health-lbl">FC máxima do dia</div><div class="health-val" id="h-fcmax">—</div><div class="health-status" id="h-fcmax-status">Pico do dia</div></div>
+  </div>
+  <div class="health-row">
+    <div class="health-box" onclick="goToMetric('gasto')"><div class="health-lbl">Gasto calórico total</div><div class="health-val" id="h-gasto">—</div><div class="health-status" id="h-gasto-status">kcal queimadas</div></div>
+    <div class="health-box" onclick="goToMetric('gastoativo')"><div class="health-lbl">Gasto em exercício</div><div class="health-val" id="h-gastoativo">—</div><div class="health-status" id="h-gastoativo-status">kcal em treino</div></div>
+  </div>
+
+  <div class="section-hdr">
     <h3>📏 Medidas corporais</h3>
     <button class="add-btn" onclick="openMeasurementModal()">+ Adicionar</button>
   </div>

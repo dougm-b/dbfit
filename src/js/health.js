@@ -45,6 +45,21 @@ function renderHealth() {
   if (setHealthField('h-passos', 'h-passos-status', h, 'passos', v => (v || 0).toLocaleString('pt-PT'))) {
     applyMetricStatus('passos', 'h-passos', 'h-passos-status', h);
   }
+  if (setHealthField('h-fcmed', 'h-fcmed-status', h, 'fcmed', v => v + ' bpm')) {
+    applyMetricStatus('fcmed', 'h-fcmed', 'h-fcmed-status', h);
+  }
+  if (setHealthField('h-fcmax', 'h-fcmax-status', h, 'fcmax', v => v + ' bpm', 'var(--txt)')) {
+    const st = document.getElementById('h-fcmax-status');
+    st.textContent = 'Pico do dia'; st.style.color = 'var(--txt3)';
+  }
+  if (setHealthField('h-gasto', 'h-gasto-status', h, 'gasto', null, 'var(--warn)')) {
+    const st = document.getElementById('h-gasto-status');
+    st.textContent = 'kcal queimadas'; st.style.color = 'var(--txt3)';
+  }
+  if (setHealthField('h-gastoativo', 'h-gastoativo-status', h, 'gastoativo', null, 'var(--warn)')) {
+    const st = document.getElementById('h-gastoativo-status');
+    st.textContent = 'kcal em treino'; st.style.color = 'var(--txt3)';
+  }
 
   const pesoNum = parseFloat(String(h.peso).replace(',', '.'));
   const alturaM = (h.altura || state.health.altura || 184) / 100;
