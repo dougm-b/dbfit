@@ -57,19 +57,23 @@ function openScoreBreakdown() {
     empty.style.display = 'block';
   } else {
     empty.style.display = 'none';
+    const ALL_LABELS = ['Bioimpedância', 'Alimentação', 'Treino', 'Sono (noite anterior)', 'Evolução'];
+    const present = perf.breakdown.map(p => p.label);
+    const missing = ALL_LABELS.filter(l => !present.includes(l));
     list.innerHTML = perf.breakdown.map(part => {
       const score = Math.round(part.score);
       const tier = scoreTierFor(score);
       return `
         <div class="breakdown-row">
           <div class="breakdown-hdr">
-            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.weight}%)</span></span>
+            <span class="b-label">${esc(part.label)} <span style="color:var(--txt3);font-weight:400">(peso ${part.effWeight}%)</span></span>
             <span class="b-score" style="color:${tier.color}">${score}</span>
           </div>
           <div class="progress-bar breakdown-bar"><div class="progress-fill" style="width:${score}%;background:${tier.color}"></div></div>
         </div>
       `;
-    }).join('');
+    }).join('') + (missing.length ? `
+      <p style="font-size:11px;color:var(--txt3);margin-top:4px">Sem dados de ${missing.map(l => l.toLowerCase()).join(', ')} neste dia — o peso foi redistribuído pelos restantes indicadores (soma sempre 100%).</p>` : '');
   }
   document.getElementById('score-breakdown-modal').classList.add('open');
 }

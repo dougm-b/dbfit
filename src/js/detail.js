@@ -118,20 +118,66 @@ function renderMeasurementDetail(id) {
       <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values.reduce((a, b) => a + b, 0) / values.length)}</div><div class="detail-stat-lbl">Média</div></div>
     </div>` : '';
 
+  const historyListHtml = series.length ? `
+    <div class="card">
+      <div class="card-title">🗓️ Registos</div>
+      ${[...series].reverse().map(p => `
+        <div class="measure-log-row">
+          <span class="measure-log-date">${p.date}</span>
+          <span class="measure-log-val">${fmtNum(p.value)}${unit}</span>
+          <button class="mg-icon-btn" onclick="deleteMeasurementValue('${id}', '${p.date}')" title="Apagar este registo">🗑</button>
+        </div>
+      `).join('')}
+    </div>` : '';
+
   container.innerHTML = `
     <div class="card">
       <div class="card-title">${esc(def.name)}</div>
       <div class="detail-current">${current === null ? '—' : fmtNum(current)}<span class="detail-unit">${unit}</span></div>
     </div>
     <div class="card">
+      <div class="card-title">➕ Registar valor</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:8px"><label class="form-label">Data</label><input type="date" class="form-input" id="md-date" value="${TODAY}" max="${TODAY}"/></div>
+        <div class="form-group" style="margin-bottom:8px"><label class="form-label">Valor${def.unit ? ' (' + esc(def.unit) + ')' : ''}</label><input type="number" step="0.1" class="form-input" id="md-value" placeholder="${current === null ? '' : fmtNum(current)}"/></div>
+      </div>
+      <button class="btn-primary" onclick="addMeasurementValue('${id}')">Guardar</button>
+    </div>
+    <div class="card">
       <div class="card-title">📈 Histórico</div>
       ${chartHtml}
       ${statsHtml}
     </div>
+    ${historyListHtml}
     <div class="card">
       <button class="btn-secondary" onclick="removeMeasurementAndBack('${id}')">🗑 Remover esta medida</button>
     </div>
   `;
+}
+
+async function addMeasurementValue(id) {
+  const date = document.getElementById('md-date').value;
+  const raw = document.getElementById('md-value').value;
+  const value = parseFloat(raw);
+  if (!date || date > TODAY) { showToast('⚠️ Data inválida'); return; }
+  if (raw === '' || isNaN(value)) { showToast('⚠️ Indica um valor'); return; }
+  if (!state.measurements.history[date]) state.measurements.history[date] = {};
+  state.measurements.history[date][id] = value;
+  renderDetail();
+  await pushToGitHub();
+  showToast('✅ Medida guardada!');
+}
+
+async function deleteMeasurementValue(id, date) {
+  if (!confirm(`Apagar o registo de ${date}?`)) return;
+  const day = state.measurements.history[date];
+  if (day) {
+    delete day[id];
+    if (!Object.keys(day).length) delete state.measurements.history[date];
+  }
+  renderDetail();
+  await pushToGitHub();
+  showToast('🗑 Registo apagado');
 }
 
 // Espera que a remoção seja mesmo guardada (e não navega se o utilizador

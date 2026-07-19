@@ -54,14 +54,51 @@ def latest_per_day(conn, table, value_col):
     return out
 
 
+# Várias apps escrevem passos no Health Connect ao mesmo tempo (Zepp do
+# relógio, pedómetro do telemóvel, Google Fit...) com registos sobrepostos —
+# somar tudo conta os mesmos passos 2-3x. Em vez disso, por dia escolhe-se
+# UMA fonte, pela ordem de prioridade abaixo (Google Fit no telemóvel
+# primeiro, por ser o número que o utilizador vê na app do Fit), e o dia é
+# calculado explicitamente das 00:00 às 23:59:59 locais do registo.
+STEP_SOURCE_PRIORITY = [
+    ('com.google.android.apps.fitness', True),
+    ('com.android.healthconnect.phone', True),
+    ('android', True),
+    ('com.huami.watch.hmwatchmanager', False),
+    ('com.google.android.apps.fitness', False),
+]
+
+
 def steps_per_day(conn):
     cur = conn.cursor()
-    cur.execute("SELECT local_date, SUM(count) FROM steps_record_table GROUP BY local_date")
-    out = {}
-    for local_date, total in cur.fetchall():
-        if total is None:
+    cur.execute("""
+        SELECT s.start_time, COALESCE(s.start_zone_offset, 0), s.count,
+               COALESCE(a.package_name, ''), d.model
+        FROM steps_record_table s
+        LEFT JOIN application_info_table a ON s.app_info_id = a.row_id
+        LEFT JOIN device_info_table d ON s.device_info_id = d.row_id
+    """)
+    per_day_source = {}
+    for start_ms, offset_s, count, package, model in cur.fetchall():
+        if count is None:
             continue
-        out[epoch_day_to_iso(local_date)] = int(total)
+        day = datetime.datetime.utcfromtimestamp(start_ms / 1000 + offset_s).date().isoformat()
+        has_device = bool(model)
+        per_day_source.setdefault(day, {})
+        key = (package, has_device)
+        per_day_source[day][key] = per_day_source[day].get(key, 0) + count
+
+    def priority_index(key):
+        package, has_device = key
+        for i, (prefix, dev) in enumerate(STEP_SOURCE_PRIORITY):
+            if package.startswith(prefix) and has_device == dev:
+                return i
+        return len(STEP_SOURCE_PRIORITY)
+
+    out = {}
+    for day, sources in per_day_source.items():
+        best = min(sources, key=priority_index)
+        out[day] = int(sources[best])
     return out
 
 

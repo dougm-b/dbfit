@@ -192,6 +192,11 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .health-lbl{font-size:11px;color:var(--txt3);margin-bottom:6px}
 .health-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:20px}
 .health-status{font-size:11px;margin-top:4px}
+.tile-add-btn{position:absolute;top:8px;right:8px;width:24px;height:24px;border-radius:50%;
+  background:var(--g3);border:1px solid var(--g4);color:var(--acc);font-size:15px;line-height:1;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;
+  font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif}
+.tile-add-btn:active{background:var(--acc);color:#000}
 
 /* ── DETAIL PAGE ── */
 #detail-topbar{
@@ -233,6 +238,12 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 .corr-name{color:var(--txt2)}
 .corr-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px}
 .corr-tag{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
+
+/* ── REGISTOS DE UMA MEDIDA (lista com apagar por ponto) ── */
+.measure-log-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--card-b)}
+.measure-log-row:last-child{border-bottom:none}
+.measure-log-date{font-size:12px;color:var(--txt3);flex:1}
+.measure-log-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px}
 
 </style>
 </head>
@@ -957,7 +968,8 @@ function renderMeasurements() {
   list.innerHTML = defs.map(d => {
     const v = measurementLatestValue(d.id);
     return `
-    <div class="health-box" onclick="goToMeasurement('${d.id}')">
+    <div class="health-box" onclick="goToMeasurement('${d.id}')" style="position:relative">
+      <button class="tile-add-btn" onclick="event.stopPropagation(); openMeasurementModal('${d.id}')" title="Registar ${esc(d.name)}">+</button>
       <div class="health-lbl">${esc(d.name)}</div>
       <div class="health-val">${v === null || v === undefined ? '—' : fmtMeasureVal(v)}<span style="font-size:13px;color:var(--txt3)"> ${esc(d.unit || '')}</span></div>
       <div class="health-status" style="color:var(--txt3)">toca para ver histórico</div>
@@ -969,11 +981,12 @@ function fmtMeasureVal(v) {
   return (Math.round(v * 10) / 10).toLocaleString('pt-PT');
 }
 
-function openMeasurementModal() {
+function openMeasurementModal(preselectId) {
   const sel = document.getElementById('ms-type');
   sel.innerHTML = state.measurements.defs.map(d => `<option value="${d.id}">${esc(d.name)}</option>`).join('')
     + `<option value="__new__">+ Nova medida…</option>`;
-  sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
+  if (preselectId && state.measurements.defs.some(d => d.id === preselectId)) sel.value = preselectId;
+  else sel.value = state.measurements.defs.length ? state.measurements.defs[0].id : '__new__';
   document.getElementById('ms-value').value = '';
   document.getElementById('ms-new-name').value = '';
   document.getElementById('ms-new-unit').value = '';
@@ -1143,20 +1156,66 @@ function renderMeasurementDetail(id) {
       <div class="detail-stat"><div class="detail-stat-val">${fmtNum(values.reduce((a, b) => a + b, 0) / values.length)}</div><div class="detail-stat-lbl">Média</div></div>
     </div>` : '';
 
+  const historyListHtml = series.length ? `
+    <div class="card">
+      <div class="card-title">🗓️ Registos</div>
+      ${[...series].reverse().map(p => `
+        <div class="measure-log-row">
+          <span class="measure-log-date">${p.date}</span>
+          <span class="measure-log-val">${fmtNum(p.value)}${unit}</span>
+          <button class="mg-icon-btn" onclick="deleteMeasurementValue('${id}', '${p.date}')" title="Apagar este registo">🗑</button>
+        </div>
+      `).join('')}
+    </div>` : '';
+
   container.innerHTML = `
     <div class="card">
       <div class="card-title">${esc(def.name)}</div>
       <div class="detail-current">${current === null ? '—' : fmtNum(current)}<span class="detail-unit">${unit}</span></div>
     </div>
     <div class="card">
+      <div class="card-title">➕ Registar valor</div>
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:8px"><label class="form-label">Data</label><input type="date" class="form-input" id="md-date" value="${TODAY}" max="${TODAY}"/></div>
+        <div class="form-group" style="margin-bottom:8px"><label class="form-label">Valor${def.unit ? ' (' + esc(def.unit) + ')' : ''}</label><input type="number" step="0.1" class="form-input" id="md-value" placeholder="${current === null ? '' : fmtNum(current)}"/></div>
+      </div>
+      <button class="btn-primary" onclick="addMeasurementValue('${id}')">Guardar</button>
+    </div>
+    <div class="card">
       <div class="card-title">📈 Histórico</div>
       ${chartHtml}
       ${statsHtml}
     </div>
+    ${historyListHtml}
     <div class="card">
       <button class="btn-secondary" onclick="removeMeasurementAndBack('${id}')">🗑 Remover esta medida</button>
     </div>
   `;
+}
+
+async function addMeasurementValue(id) {
+  const date = document.getElementById('md-date').value;
+  const raw = document.getElementById('md-value').value;
+  const value = parseFloat(raw);
+  if (!date || date > TODAY) { showToast('⚠️ Data inválida'); return; }
+  if (raw === '' || isNaN(value)) { showToast('⚠️ Indica um valor'); return; }
+  if (!state.measurements.history[date]) state.measurements.history[date] = {};
+  state.measurements.history[date][id] = value;
+  renderDetail();
+  await pushToGitHub();
+  showToast('✅ Medida guardada!');
+}
+
+async function deleteMeasurementValue(id, date) {
+  if (!confirm(`Apagar o registo de ${date}?`)) return;
+  const day = state.measurements.history[date];
+  if (day) {
+    delete day[id];
+    if (!Object.keys(day).length) delete state.measurements.history[date];
+  }
+  renderDetail();
+  await pushToGitHub();
+  showToast('🗑 Registo apagado');
 }
 
 // Espera que a remoção seja mesmo guardada (e não navega se o utilizador

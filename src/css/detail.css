@@ -38,3 +38,9 @@
 .corr-name{color:var(--txt2)}
 .corr-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:12px}
 .corr-tag{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:400;color:var(--txt3);font-size:11px}
+
+/* ── REGISTOS DE UMA MEDIDA (lista com apagar por ponto) ── */
+.measure-log-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--card-b)}
+.measure-log-row:last-child{border-bottom:none}
+.measure-log-date{font-size:12px;color:var(--txt3);flex:1}
+.measure-log-val{font-family:'Onest',-apple-system,BlinkMacSystemFont,sans-serif;font-weight:700;font-size:14px}
