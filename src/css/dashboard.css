@@ -27,8 +27,9 @@
 /* ── WEEK STRIP ── */
 .week-strip{display:flex;justify-content:space-between;gap:6px;margin-bottom:12px}
 .week-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
-  cursor:pointer;padding:6px 0 4px;border-radius:10px;border:1px solid transparent;transition:border-color .2s}
-.week-day.viewing{border-color:var(--card-b);background:var(--card)}
+  cursor:pointer;padding:6px 0 4px;border-radius:10px}
+.week-day.viewing .week-day-dot{outline:2px solid var(--txt2);outline-offset:3px}
+.week-day.viewing .week-day-lbl{color:var(--txt);font-weight:700}
 .week-day:active .week-day-dot{transform:scale(1.15)}
 .week-day-dot{width:22px;height:22px;border-radius:50%;background:var(--g3);
   display:flex;align-items:center;justify-content:center;font-size:11px;transition:transform .15s}

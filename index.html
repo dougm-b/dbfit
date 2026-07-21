@@ -218,8 +218,9 @@ html,body{height:100%;overflow:hidden;background:var(--g0);color:var(--txt);font
 /* ── WEEK STRIP ── */
 .week-strip{display:flex;justify-content:space-between;gap:6px;margin-bottom:12px}
 .week-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
-  cursor:pointer;padding:6px 0 4px;border-radius:10px;border:1px solid transparent;transition:border-color .2s}
-.week-day.viewing{border-color:var(--card-b);background:var(--card)}
+  cursor:pointer;padding:6px 0 4px;border-radius:10px}
+.week-day.viewing .week-day-dot{outline:2px solid var(--txt2);outline-offset:3px}
+.week-day.viewing .week-day-lbl{color:var(--txt);font-weight:700}
 .week-day:active .week-day-dot{transform:scale(1.15)}
 .week-day-dot{width:22px;height:22px;border-radius:50%;background:var(--g3);
   display:flex;align-items:center;justify-content:center;font-size:11px;transition:transform .15s}
@@ -1538,12 +1539,31 @@ function classifyMetricValue(id, value) {
   return classifyByRange(value, m.range);
 }
 
+// Campos que só fazem sentido no próprio dia (contagens/medições diárias) —
+// nunca são arrastados de dias anteriores ao consultar uma data passada.
+const DAILY_HEALTH_FIELDS = ['passos', 'fc', 'fcmed', 'fcmax', 'gasto', 'gastoativo'];
+
 // Devolve o "instantâneo" de bioimpedância de uma data: hoje é o espelho
-// atual (state.health), qualquer outra data é o que ficou gravado nesse dia
-// (pode estar incompleto, ou nem existir).
+// atual (state.health); para uma data passada, os indicadores de nível
+// (peso, gordura, músculo, ...) usam o último valor registado ATÉ essa data
+// (o teu peso a 18 Jul é a última pesagem feita até 18 Jul, mesmo que não
+// tenha havido pesagem nesse dia exato), enquanto os campos diários
+// (passos, FC, gasto calórico) ficam vazios se não houver registo do dia.
 function healthObjForDate(date) {
   if (date === TODAY) return state.health;
-  return state.healthHistory[date] || {};
+  const out = {};
+  Object.keys(state.healthHistory || {})
+    .filter(d => d <= date)
+    .sort()
+    .forEach(d => {
+      const h = state.healthHistory[d];
+      Object.keys(h).forEach(k => {
+        if (DAILY_HEALTH_FIELDS.includes(k) && d !== date) return;
+        if (h[k] === null || h[k] === undefined || h[k] === '') return;
+        out[k] = h[k];
+      });
+    });
+  return out;
 }
 
 // Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
