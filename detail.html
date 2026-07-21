@@ -855,12 +855,31 @@ function classifyMetricValue(id, value) {
   return classifyByRange(value, m.range);
 }
 
+// Campos que só fazem sentido no próprio dia (contagens/medições diárias) —
+// nunca são arrastados de dias anteriores ao consultar uma data passada.
+const DAILY_HEALTH_FIELDS = ['passos', 'fc', 'fcmed', 'fcmax', 'gasto', 'gastoativo'];
+
 // Devolve o "instantâneo" de bioimpedância de uma data: hoje é o espelho
-// atual (state.health), qualquer outra data é o que ficou gravado nesse dia
-// (pode estar incompleto, ou nem existir).
+// atual (state.health); para uma data passada, os indicadores de nível
+// (peso, gordura, músculo, ...) usam o último valor registado ATÉ essa data
+// (o teu peso a 18 Jul é a última pesagem feita até 18 Jul, mesmo que não
+// tenha havido pesagem nesse dia exato), enquanto os campos diários
+// (passos, FC, gasto calórico) ficam vazios se não houver registo do dia.
 function healthObjForDate(date) {
   if (date === TODAY) return state.health;
-  return state.healthHistory[date] || {};
+  const out = {};
+  Object.keys(state.healthHistory || {})
+    .filter(d => d <= date)
+    .sort()
+    .forEach(d => {
+      const h = state.healthHistory[d];
+      Object.keys(h).forEach(k => {
+        if (DAILY_HEALTH_FIELDS.includes(k) && d !== date) return;
+        if (h[k] === null || h[k] === undefined || h[k] === '') return;
+        out[k] = h[k];
+      });
+    });
+  return out;
 }
 
 // Aplica a cor de intensidade ao valor (e, se existir, ao texto de estado)
